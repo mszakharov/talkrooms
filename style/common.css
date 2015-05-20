@@ -1,0 +1,33 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    background: #EBE9E6;
+    color: #404040;
+}
+
+body,
+input,
+button,
+textarea {
+    font: 17px/21px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+input,
+button,
+textarea {
+    margin: 0;
+}
+
+/* Popup */
+.popup {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    border-radius: 5px;
+    background: #FFF;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.22);
+}

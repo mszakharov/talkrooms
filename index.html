@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+    <meta charset="utf-8">
+    <title>Talkrooms</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width">
+    <link rel="stylesheet" href="/style/common.css">
+    <link rel="stylesheet" href="/style/room.css">
+</head>
+<body>
+
+<div id="room">
+<div id="side">
+    <h1 class="talkrooms">Talkrooms</h1>
+    <div class="room-users"></div>
+</div>
+<div id="talk">
+    <div class="talk-header">
+        <div class="placeholder"></div>
+        <div class="sticky">
+            <div class="content">
+                <h2 class="topic"></h2>
+            </div>
+        </div>
+    </div>
+    <div class="talk-messages">
+
+    </div>
+    <form class="talk-reply">
+        <div class="sticky">
+            <div class="content">
+                <svg class="reply-send" title="Отправить">
+                    <path d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
+                </svg>
+                <div class="wrapper">
+                    <textarea name="text"></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<form class="popup" id="profile">
+    <label for="profile-nickname">Имя</label>
+    <input type="text" id="profile-nickname">
+    <button type="submit">Сохранить</button>
+</form>
+</div>
+
+<script type="text/html" id="message-template">
+<div class="message">
+    <div class="msg-author">
+        <span class="nickname">{nickname}</span>
+    </div>
+    <time class="msg-time" datetime="{created}">{time}</time>
+    <p class="msg-text">{content}</p>
+</div>
+</script>
+
+<script type="text/html" id="user-template">
+<div class="user" data-socket="{socket_id}">
+    <span class="state">{online}</span>
+    <span class="nickname">{nickname}</span>
+</div>
+</script>
+
+<audio id="notifier">
+    <source src="/script/sound/message.mp3" type="audio/mp3">
+    <source src="/script/sound/message.ogg" type="audio/ogg">
+</audio>
+
+<script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="/script/utility.js"></script>
+<script src="/script/collection.js"></script>
+<script src="/script/events.js"></script>
+<script src="/script/rest.js"></script>
+
+<script src="/script/models/room.js"></script>
+<script src="/script/models/users.js"></script>
+
+<script src="/script/views/users.js"></script>
+<script src="/script/views/talk.js"></script>
+<script src="/script/views/reply.js"></script>
+
+<script>
+Room.reset('main');
+</script>
+
+</body>
+</html>
