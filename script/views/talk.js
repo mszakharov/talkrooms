@@ -84,7 +84,7 @@
                 container.empty();
                 recent.reverse().forEach(addMessage);
                 container.find('.date').first().hide();
-                $window.scrollTop($document.height() - $window.height());
+                $window.scrollTop($document.height() - $window.height() - 1);
             });
     };
 
