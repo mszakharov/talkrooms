@@ -22,6 +22,11 @@ textarea {
     margin: 0;
 }
 
+/* Links */
+a {
+    color: #1270b2;
+}
+
 /* Popup */
 .popup {
     display: none;

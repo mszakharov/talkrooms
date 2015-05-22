@@ -51,11 +51,17 @@
 
     var render = $.template('#message-template');
 
+    function format(content) {
+        return content
+            .replace(/\n/g, '<br>')
+            .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>');
+    }
+
     function addMessage(data) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
-        data.content = data.content.replace(/\n/g, '<br>');
+        data.content = format(data.content);
         if (data.date !== lastMessage.date) {
             renderDate(data.date).appendTo(container);
         }
