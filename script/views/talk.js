@@ -44,11 +44,8 @@
 // Talk
 (function() {
 
-    var messages = $.Rest('/api/messages');
-    var container = $('#talk .talk-messages');
-
     var lastMessage = {};
-
+    var container = $('#talk .talk-messages');
     var render = $.template('#message-template');
 
     function format(content) {
@@ -81,7 +78,7 @@
     }
 
     Room.loadRecent = function() {
-        return messages
+        return Rest.messages
             .get({
                 room_id: Room.data.room_id,
                 order_by: {'-desc': 'message_id'}

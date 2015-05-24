@@ -1,8 +1,6 @@
 /* Users cache */
 Room.users = (function() {
 
-    var api = $.Rest('/api/sockets');
-
     var online = new Collection({
         index: 'socket_id',
         order: 'nickname'
@@ -13,7 +11,7 @@ Room.users = (function() {
     }
 
     function getSockets() {
-        return api.get({room_id: Room.data.room_id}).done(update);
+        return Rest.sockets.get({room_id: Room.data.room_id}).done(update);
     }
 
     function update(sockets) {

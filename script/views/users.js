@@ -21,8 +21,6 @@
 
 (function() {
 
-    var sockets = $.Rest('/api/sockets');
-
     var field = $('#profile-nickname');
     var popup = $.popup('#profile', function() {
         this.fadeIn(100);
@@ -43,7 +41,7 @@
         event.preventDefault();
         var value = $.trim(field.val());
         if (value) {
-            sockets.update(Room.socket.socket_id, {nickname: value}).done(hide);
+            Rest.sockets.update(Room.socket.socket_id, {nickname: value}).done(hide);
         }
     });
 

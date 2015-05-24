@@ -1,14 +1,12 @@
 (function() {
 
-    var messages = $.Rest('/api/messages');
-
     var form = $('#talk .talk-reply');
     var field = form.find('textarea');
 
     function send() {
         var content = field.val().trim();
         if (content) {
-            messages.create({
+            Rest.messages.create({
                 room_id: Room.data.room_id,
                 content: content
             });

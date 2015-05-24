@@ -1,15 +1,19 @@
+// REST shortcuts
+var Rest = {
+    rooms:    $.Rest('/api/rooms'),
+    sockets:  $.Rest('/api/sockets'),
+    messages: $.Rest('/api/messages')
+};
+
 // Room
 var Room = new Events;
 
 (function() {
 
-    var rooms = $.Rest('/api/rooms');
-    var sockets = $.Rest('/api/sockets');
-
     function enter(data) {
         Room.data = data;
         Room.trigger('topic.updated', data.topic);
-        sockets.create({hash: data.hash}).done(ready);
+        Rest.sockets.create({hash: data.hash}).done(ready);
     }
 
     function ready(socket) {
@@ -24,7 +28,7 @@ var Room = new Events;
     }
 
     Room.reset = function(hash) {
-        rooms.get(hash).done(enter).fail(stop);
+        Rest.rooms.get(hash).done(enter).fail(stop);
     };
 
 })();
@@ -33,9 +37,6 @@ var Room = new Events;
 (function() {
 
     var path = String.mix('wss://$1/sockets/', window.location.host);
-
-    var sockets = $.Rest('/api/sockets');
-    var current;
 
     function onOpen() {
         console.log('Open socket');
@@ -57,7 +58,7 @@ var Room = new Events;
     }
 
     function reconnect() {
-        sockets
+        Rest.sockets
             .get(Room.socket.socket_id)
             .done(restore)
             .fail(reconnectFailed);
@@ -85,7 +86,7 @@ var Room = new Events;
     Room.on('ready', connect);
 
     window.addEventListener('beforeunload', function(event) {
-        if (Room.socket) sockets.destroy(Room.socket.socket_id);
+        if (Room.socket) Rest.sockets.destroy(Room.socket.socket_id);
     });
 
 })();
