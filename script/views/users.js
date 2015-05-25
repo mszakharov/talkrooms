@@ -14,7 +14,7 @@
     });
 
     list.on('click', '.user:not(.me) .nickname', function() {
-        // Copy the nickname to the reply form
+        Room.replyTo(this.innerHTML);
     });
 
 })();

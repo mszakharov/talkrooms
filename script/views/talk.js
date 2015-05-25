@@ -77,6 +77,10 @@
         }
     }
 
+    container.on('click', '.nickname', function() {
+        Room.replyTo(this.innerHTML);
+    });
+
     Room.loadRecent = function() {
         return Rest.messages
             .get({

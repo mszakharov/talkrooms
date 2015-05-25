@@ -136,6 +136,10 @@ body {
     font-size: 14px;
     line-height: 16px;
 }
+.msg-author .nickname {
+    color: #0F6799;
+    cursor: pointer;
+}
 .msg-time {
     position: absolute;
     left: 100%;
@@ -148,9 +152,6 @@ body {
 }
 .msg-text {
     margin: 0 0 4px;
-}
-.nickname {
-    color: #0F6799;
 }
 
 /* Users */
@@ -176,6 +177,7 @@ body {
 }
 .user .nickname {
     color: #807E7D;
+    cursor: pointer;
 }
 .user.me {
     position: relative;

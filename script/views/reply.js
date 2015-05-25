@@ -11,6 +11,8 @@
                 content: content
             });
             field.val('').focus();
+        } else {
+            field.focus();
         }
     }
 
@@ -29,5 +31,9 @@
             send();
         }
     });
+
+    Room.replyTo = function(nickname) {
+        field.val(nickname + ', ' + field.val()).focus();
+    };
 
 })();
