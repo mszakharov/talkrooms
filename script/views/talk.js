@@ -47,6 +47,7 @@
     var lastMessage = {};
     var container = $('#talk .talk-messages');
     var render = $.template('#message-template');
+    var counter = 0;
 
     function format(content) {
         return content
@@ -77,6 +78,22 @@
         }
     }
 
+    function clearOld(next) {
+        var messages = container.find('.message');
+        var scrolled = $window.scrollTop();
+        var cut = messages.eq(50);
+        if (cut.position().top < scrolled) {
+            var height = $document.height();
+            var dates = cut.prevAll('.date');
+            messages.slice(0, 50).remove();
+            dates.slice(1).remove();
+            dates.eq(0).hide();
+            $window.scrollTop(scrolled - (height - $document.height()));
+            counter = messages.length - 50;
+        }
+        next();
+    }
+
     container.on('click', '.nickname', function() {
         Room.replyTo($(this).text());
     });
@@ -92,12 +109,16 @@
                 recent.reverse().forEach(addMessage);
                 container.find('.date').first().hide();
                 $window.scrollTop($document.height() - $window.height() - 1);
+                counter = recent.length;
             });
     };
 
     Room.on('message.created', function(message) {
         if (message.message_id > lastMessage.message_id) {
             scrollDown(addMessage(message).offset().top);
+            if (counter++ > 500) {
+                $window.queue(clearOld);
+            }
         }
     });
 
