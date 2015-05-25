@@ -17,6 +17,10 @@
         Room.replyTo($(this).text());
     });
 
+    // Set padding to ignore scrollbar width
+    $('#side .side-scrollable')
+        .css('padding-right', list.width() + 45 - $('#side').width());
+
 })();
 
 (function() {
