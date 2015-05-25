@@ -78,7 +78,7 @@
     }
 
     container.on('click', '.nickname', function() {
-        Room.replyTo(this.innerHTML);
+        Room.replyTo($(this).text());
     });
 
     Room.loadRecent = function() {

@@ -14,7 +14,7 @@
     });
 
     list.on('click', '.user:not(.me) .nickname', function() {
-        Room.replyTo(this.innerHTML);
+        Room.replyTo($(this).text());
     });
 
 })();
