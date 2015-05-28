@@ -33,7 +33,13 @@
     });
 
     Room.replyTo = function(nickname) {
-        field.val(nickname + ', ' + field.val()).focus();
+        var raw = field.get(0);
+        var pos = raw.selectionStart;
+        field.focus().val(nickname + ', ' + field.val());
+        if ('setSelectionRange' in raw) {
+            pos = pos ? pos + nickname.length + 2 : raw.value.length;
+            raw.setSelectionRange(pos, pos);
+        }
     };
 
 })();
