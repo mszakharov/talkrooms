@@ -3,6 +3,12 @@
     var form = $('#talk .talk-reply');
     var field = form.find('textarea');
 
+    if (!('WebSocket' in window)) {
+        form.hide();
+        Room.replyTo = $.noop;
+        return;
+    }
+
     function send() {
         var content = field.val().trim();
         if (content) {

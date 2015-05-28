@@ -83,7 +83,9 @@ var Room = new Events;
         connect(Room.socket);
     }
 
-    Room.on('ready', connect);
+    if ('WebSocket' in window) {
+        Room.on('ready', connect);
+    }
 
     window.addEventListener('beforeunload', function(event) {
         if (Room.socket) Rest.sockets.destroy(Room.socket.socket_id);
