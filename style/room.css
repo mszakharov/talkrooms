@@ -62,11 +62,11 @@ body {
     left: 5px;
     margin: 0 10px 0 25%;
     background: #F6F6F6;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.16);
 }
 .topic {
     margin: 0 35px;
-    padding: 20px 0;
+    padding: 20px 0 4px;
     font-weight: normal;
     font-size: 36px;
     line-height: 42px;
@@ -119,19 +119,37 @@ body {
 
 /* Date */
 .date {
-    margin: -10px 5px 18px;
-    border-bottom: 1px solid #CCCCCC;
-    box-shadow: 0 1px 0 #FFFFFF;
     font-size: 13px;
     line-height: 16px;
     text-align: center;
     color: #999999;
+}
+.talk-messages .date {
+    margin: -10px 5px 18px;
+    border-bottom: 1px solid #CCCCCC;
+    box-shadow: 0 1px 0 #FFFFFF;
 }
 .date-text {
     position: relative;
     top: 7px;
     padding: 0 14px;
     background: #F6F6F6;
+    cursor: default;
+}
+.talk-header .date-text {
+    padding: 0 14px 4px;
+    border-radius: 0 0 11px 11px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+.talk-header .date-text:after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: -3px;
+    width: 100%;
+    height: 8px;
+    border: 4px solid #f6f6f6;
+    border-bottom: none;
 }
 
 /* Message */
@@ -286,13 +304,13 @@ body {
 
     .topic {
         margin: 0 15px;
-        padding: 10px 0 14px;
+        padding: 12px 0 0;
         font-size: 28px;
         line-height: 30px;
     }
 
     .talk-header .placeholder {
-        height: 54px;
+        height: 56px;
     }
 
     .message {

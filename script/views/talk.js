@@ -55,13 +55,16 @@
             .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>');
     }
 
-    function addMessage(data) {
+    function addMessage(data, single) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
         data.content = format(data.content);
         if (data.date !== lastMessage.date) {
             renderDate(data.date).appendTo(container);
+            if (single) {
+                Room.trigger('dates.changed');
+            }
         }
         lastMessage = data;
         return render(data).appendTo(container);
@@ -109,13 +112,14 @@
                 recent.reverse().forEach(addMessage);
                 container.find('.date').first().hide();
                 $window.scrollTop($document.height() - $window.height() - 1);
+                Room.trigger('dates.changed');
                 counter = recent.length;
             });
     };
 
     Room.on('message.created', function(message) {
         if (message.message_id > lastMessage.message_id) {
-            scrollDown(addMessage(message).offset().top);
+            scrollDown(addMessage(message, true).offset().top);
             if (counter++ > 500) {
                 $window.queue(clearOld);
             }
@@ -130,10 +134,71 @@
             date = (new Date(time)).toSmartDate();
             elem.find('.date-text').text(date);
         });
+        Room.trigger('dates.changed');
         lastMessage.date = date;
     });
 
 })();
+
+
+// Sticky dates
+(function() {
+
+    var container = $('#talk .talk-messages');
+    var header = $('#talk .talk-header');
+    var value = header.find('.date-text');
+
+    var dates = [];
+    var min, max;
+    var headerHeight;
+
+    function update() {
+        var active = dates.length > 1;
+        headerHeight = header.height();
+        dates = container.find('.date').map(getDate);
+        toggle(window.pageYOffset);
+        if (dates.length < 2 && active) {
+            window.removeEventListener('scroll', check, false);
+            window.removeEventListener('resize', update);
+        }
+        if (dates.length > 1 && !active) {
+            window.addEventListener('scroll', check, false);
+            window.addEventListener('resize', update);
+        }
+    }
+
+    function getDate(i, node) {
+        var elem = $(node);
+        return {
+            text: elem.find('.date-text').text(),
+            offset: i ? elem.position().top - headerHeight + 6 : -Infinity
+        };
+    }
+
+    function toggle(offset) {
+        max = Infinity;
+        for (var i = dates.length; i--;) {
+            if (dates[i].offset <= offset) {
+                value.text(dates[i].text);
+                min = dates[i].offset;
+                break;
+            } else {
+                max = dates[i].offset;
+            }
+        }
+    }
+
+    function check() {
+        var offset = window.pageYOffset;
+        if (offset < min || offset > max) {
+            toggle(offset);
+        }
+    }
+
+    Room.on('dates.changed', update);
+
+})();
+
 
 // Notifier
 (function() {
