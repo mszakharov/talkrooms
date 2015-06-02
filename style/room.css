@@ -179,6 +179,7 @@ body {
 }
 .msg-text {
     margin: 0 0 4px;
+    word-wrap: break-word;
 }
 
 /* Users */
