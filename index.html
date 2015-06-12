@@ -45,11 +45,18 @@
         </div>
     </form>
 </div>
-<form class="popup" id="profile">
-    <label for="profile-nickname">Имя</label>
-    <input type="text" id="profile-nickname">
-    <button type="submit">Сохранить</button>
-</form>
+<div class="popup" id="profile">
+    <form class="profile-edit">
+        <label for="profile-nickname">Имя</label>
+        <input type="text" id="profile-nickname">
+        <button type="submit">Сохранить</button>
+    </form>
+    <div class="profile-login">
+        Войдите через <a class="login-fb" href="/api/login/facebook">Фейсбук</a>, <a class="login-vk" href="/api/login/vk">Вконтакте</a> или <a class="login-ok" href="/api/login/ok">Одноклассники</a>
+    </div>
+    <div class="profile-logout">
+        <a href="/api/logout">Выйти</a>
+    </div>
 </div>
 
 <script type="text/html" id="message-template">

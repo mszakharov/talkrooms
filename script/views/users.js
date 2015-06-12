@@ -1,3 +1,4 @@
+// Users list
 (function() {
 
     var list = $('#room .room-users');
@@ -23,6 +24,7 @@
 
 })();
 
+// Profile
 (function() {
 
     var field = $('#profile-nickname');
@@ -41,7 +43,7 @@
         popup.hide();
     }
 
-    popup.on('submit', function(event) {
+    popup.find('form').on('submit', function(event) {
         event.preventDefault();
         var value = $.trim(field.val());
         if (value) {
@@ -49,8 +51,15 @@
         }
     });
 
+    Room.on('ready', function(socket) {
+        var logged = socket.user_id != null;
+        popup.find('.profile-login').toggle(!logged);
+        popup.find('.profile-logout').toggle(logged);
+    });
+
     Room.profile = {
-        show: show
+        show: show,
+        hide: hide
     };
 
 })();

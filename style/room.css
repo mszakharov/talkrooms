@@ -227,18 +227,39 @@ body {
     top: 20px;
     left: 40px;
     margin-top: -6px;
+}
+.profile-edit {
     padding: 12px 15px;
+}
+.profile-login,
+.profile-logout {
+    border-top: 1px solid #D5D3D0;
+    padding: 8px 15px 10px;
+    font-size: 14px;
+    color: #666;
+    background: #F4F2F0;
+    border-radius: 0 0 6px 6px;
+}
+.login-fb {
+    color: #3b5998;
+}
+.login-vk {
+    color: #45688e;
+}
+.login-ok {
+    color: #eb722e;
 }
 #profile label {
     vertical-align: 1px;
     color: #808080;
 }
 #profile-nickname {
-    vertical-align: top;
+    width: 220px;
     margin: 0 4px;
     border: 1px solid #CCC;
     border-radius: 3px;
     padding: 2px 5px;
+    vertical-align: top;
 }
 #profile button {
     vertical-align: top;

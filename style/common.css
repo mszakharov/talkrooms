@@ -34,5 +34,5 @@ a {
     z-index: 10;
     border-radius: 5px;
     background: #FFF;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.22);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.05);
 }
