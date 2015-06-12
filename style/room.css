@@ -227,6 +227,7 @@ body {
     top: 20px;
     left: 40px;
     margin-top: -6px;
+    -webkit-font-smoothing: subpixel-antialiased;
 }
 .profile-edit {
     padding: 12px 15px;
