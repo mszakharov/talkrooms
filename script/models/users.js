@@ -13,8 +13,11 @@ Room.users = (function() {
     function groupOnline(socket) {
         var uid = socket.user_id;
         if (uid) {
-            if (uid === Room.socket.user_id && !isMySocket(socket)) return false;
-            return this[uid] ? false : this[uid] = true;
+            if (uid === Room.socket.user_id) {
+                return isMySocket(socket);
+            } else {
+                return this[uid] ? false : this[uid] = socket.online;
+            }
         } else {
             return socket.online !== 0;
         }
