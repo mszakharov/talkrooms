@@ -162,7 +162,7 @@ body {
 /* Message */
 .message {
     position: relative;
-    margin: 0 120px 17px 96px;
+    margin: 0 120px 22px 96px;
 }
 .msg-author {
     padding-top: 3px;
@@ -196,6 +196,25 @@ body {
 .msg-text {
     margin: 0 0 4px;
     word-wrap: break-word;
+}
+
+/* Message from the same author */
+.idem {
+    margin-top: -14px;
+}
+.idem:before {
+    content: '';
+    position: absolute;
+    left: -34px;
+    top: 11px;
+    width: 16px;
+    border-top: 1px solid #909090;
+}
+.idem .msg-author {
+    display: none;
+}
+.idem .msg-time {
+    top: 5px;
 }
 
 /* Users */

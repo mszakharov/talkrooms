@@ -67,8 +67,12 @@
                 Room.trigger('dates.changed');
             }
         }
+        var elem = render(data);
+        if (data.nickname === lastMessage.nickname) {
+            elem.addClass('idem');
+        }
         lastMessage = data;
-        return render(data).appendTo(container);
+        return elem.appendTo(container);
     }
 
     function renderDate(date) {
@@ -90,6 +94,7 @@
             var height = $document.height();
             var dates = cut.prevAll('.date');
             messages.slice(0, 50).remove();
+            messages.eq(50).removeClass('idem');
             dates.slice(1).remove();
             dates.eq(0).hide();
             $window.scrollTop(scrolled - (height - $document.height()));
