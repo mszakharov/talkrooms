@@ -62,6 +62,7 @@
 <script type="text/html" id="message-template">
 <div class="message">
     <div class="msg-author">
+        <div class="userpic" style="background-image: url({userpic});"></div>
         <span class="nickname">{nickname}</span>
     </div>
     <time class="msg-time" datetime="{created}">{time}</time>
@@ -71,6 +72,7 @@
 
 <script type="text/html" id="user-template">
 <div class="user" data-socket="{socket_id}">
+    <div class="userpic" style="background-image: url({userpic});"></div>
     <span class="nickname">{nickname}</span>
 </div>
 </script>
@@ -88,6 +90,7 @@
 
 <script src="/script/models/room.js"></script>
 <script src="/script/models/users.js"></script>
+<script src="/script/models/userpics.js"></script>
 
 <script src="/script/views/users.js"></script>
 <script src="/script/views/talk.js"></script>

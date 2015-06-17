@@ -29,6 +29,7 @@ Room.users = (function() {
 
     function reset(data) {
         sockets.raw = data;
+        sockets.raw.forEach(setUserpic);
         sockets.sort();
         apply();
     }
@@ -37,9 +38,14 @@ Room.users = (function() {
         Room.trigger('users.updated', sockets.raw.filter(groupOnline, {}));
     }
 
+    function setUserpic(socket) {
+        socket.userpic = getUserpic(socket.nickname);
+    }
+
     function addSocket(socket) {
         if (!sockets.get(socket.socket_id)) {
             sockets.add(socket);
+            setUserpic(socket);
             apply();
         }
     }
@@ -63,8 +69,10 @@ Room.users = (function() {
     });
 
     Room.on('socket.nickname.updated', function(updated) {
-        sockets.get(updated.socket_id).nickname = updated.nickname;
+        var socket = sockets.get(updated.socket_id);
+        socket.nickname = updated.nickname;
         sockets.sort();
+        setUserpic(socket);
         apply();
     });
 

@@ -20,7 +20,7 @@
 
     // Set padding to ignore scrollbar width
     $('#side .side-scrollable')
-        .css('padding-right', list.width() + 45 - $('#side').width());
+        .css('padding-right', list.width() + 74 - $('#side').width());
 
 })();
 
