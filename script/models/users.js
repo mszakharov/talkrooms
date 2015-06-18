@@ -39,7 +39,11 @@ Room.users = (function() {
     }
 
     function setUserpic(socket) {
-        socket.userpic = getUserpic(socket.nickname);
+        if (!socket.userpic) {
+            socket.userpic = getUserpic(socket.nickname);
+        } else if (/^\d+\.png/.test(socket.userpic)) {
+            socket.userpic = '/userpics/' + socket.userpic;
+        }
     }
 
     function addSocket(socket) {
@@ -72,6 +76,20 @@ Room.users = (function() {
         var socket = sockets.get(updated.socket_id);
         socket.nickname = updated.nickname;
         sockets.sort();
+        setUserpic(socket);
+        apply();
+    });
+
+    Room.on('socket.user_id.updated', function(updated) {
+        var socket = sockets.get(updated.socket_id);
+        $.extend(socket, updated);
+        setUserpic(socket);
+        apply();
+    });
+
+    Room.on('socket.userpic.updated', function(updated) {
+        var socket = sockets.get(updated.socket_id);
+        socket.userpic = updated.userpic;
         setUserpic(socket);
         apply();
     });

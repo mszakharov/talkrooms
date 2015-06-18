@@ -60,7 +60,7 @@
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
         data.content = format(data.content);
-        data.userpic = getUserpic(data.nickname);
+        data.userpic = data.userpic ? '/userpics/' + data.userpic : getUserpic(data.nickname);
         if (data.date !== lastMessage.date) {
             renderDate(data.date).appendTo(container);
             if (single) {
