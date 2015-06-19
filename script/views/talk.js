@@ -212,21 +212,45 @@
     var title = document.title;
     var sound = $('#notifier').get(0);
 
+    var icon = $('#talk .notifications');
+    icon.on('click', function() {
+        toggleSound(!soundEnabled);
+    });
+
+    var inBackground;
+    var soundEnabled;
+    function toggleSound(enabled) {
+        soundEnabled = Boolean(enabled);
+        if (soundEnabled) {
+            icon[0].classList.add('enabled');
+            localStorage.setItem('sound_in_' + Room.data.room_id, 1);
+        } else {
+            icon[0].classList.remove('enabled');
+            localStorage.removeItem('sound_in_' + Room.data.room_id);
+        }
+    }
+
     $window.on('blur', function() {
         title = document.title;
-        active = true;
+        inBackground = true;
     });
 
     $window.on('focus', function() {
         document.title = title;
-        active = false;
+        inBackground = false;
+    });
+
+    Room.on('ready', function() {
+        toggleSound(localStorage.getItem('sound_in_' + Room.data.room_id))
     });
 
     Room.on('message.created', function(message) {
-        if (active) {
+        if (inBackground) {
             document.title = '+ ' + title;
-            sound.currentTime = 0;
-            sound.play();
+            if (soundEnabled) {
+                sound.currentTime = 0;
+                sound.play();
+            }
         }
     });
 

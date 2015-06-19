@@ -73,6 +73,35 @@ body {
     -webkit-font-smoothing: subpixel-antialiased;
 }
 
+/* Notifications icon */
+.notifications {
+    position: absolute;
+    top: 33px;
+    right: 33px;
+    cursor: pointer;
+}
+.bell-sound-1,
+.bell-sound-2 {
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+.bell-sound-1 {
+    transition-delay: 0.1s;
+}
+.bell-sound-2 {
+    transition-delay: 0.2s;
+}
+.enabled .bell {
+    stroke: #1278B3;
+}
+.enabled .bell-parts {
+    fill: #1278B3;
+}
+.enabled .bell-sound-1,
+.enabled .bell-sound-2 {
+    opacity: 1;
+}
+
 /* Userpic */
 .userpic {
     background-origin: border-box;
