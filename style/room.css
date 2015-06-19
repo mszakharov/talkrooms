@@ -388,6 +388,10 @@ body {
         margin-left: 0;
     }
 
+    .notifications {
+        display: none;
+    }
+
 }
 
 @media (max-width: 500px) {
