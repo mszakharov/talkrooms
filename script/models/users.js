@@ -39,7 +39,7 @@ Room.users = (function() {
     }
 
     function setUserpic(socket) {
-        if (!socket.userpic) {
+        if (!socket.userpic || socket.userpic.indexOf('data') === 0) {
             socket.userpic = getUserpic(socket.nickname);
         } else if (/^\d+\.png/.test(socket.userpic)) {
             socket.userpic = '/userpics/' + socket.userpic;
