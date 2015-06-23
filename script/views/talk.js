@@ -61,14 +61,13 @@
         data.time = created.toHumanTime();
         data.content = format(data.content);
         data.userpic = data.userpic ? '/userpics/' + data.userpic : getUserpic(data.nickname);
+        var elem = render(data);
         if (data.date !== lastMessage.date) {
             renderDate(data.date).appendTo(container);
             if (single) {
                 Room.trigger('dates.changed');
             }
-        }
-        var elem = render(data);
-        if (data.nickname === lastMessage.nickname) {
+        } else if (data.nickname === lastMessage.nickname) {
             elem.addClass('idem');
         }
         lastMessage = data;
