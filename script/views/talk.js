@@ -78,10 +78,21 @@
         return $('<div class="date"><span class="date-text">' + date + '</span></div>');
     }
 
+    var scrolledIdle = 0;
+
+    $window.on('focus', function() {
+        scrolledIdle = 0;
+    });
+
     function scrollDown(offset) {
         var wh = $window.height();
-        if (offset < $window.scrollTop() + wh) {
-            $scrollWindow.stop(true).to($document.height() - wh);
+        var st = $window.scrollTop();
+        if (scrolledIdle < wh / 2 && offset < st + wh) {
+            var pos = $document.height() - wh;
+            if (Room.idle) {
+                scrolledIdle += pos - st;
+            }
+            $scrollWindow.stop(true).to(pos);
         }
     }
 
@@ -216,7 +227,6 @@
         toggleSound(!soundEnabled);
     });
 
-    var inBackground;
     var soundEnabled;
     function toggleSound(enabled) {
         soundEnabled = Boolean(enabled);
@@ -231,12 +241,10 @@
 
     $window.on('blur', function() {
         title = document.title;
-        inBackground = true;
     });
 
     $window.on('focus', function() {
         document.title = title;
-        inBackground = false;
     });
 
     Room.on('ready', function() {
@@ -244,7 +252,7 @@
     });
 
     Room.on('message.created', function(message) {
-        if (inBackground) {
+        if (Room.idle) {
             document.title = '+ ' + title;
             if (soundEnabled) {
                 sound.currentTime = 0;

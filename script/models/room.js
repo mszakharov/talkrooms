@@ -8,6 +8,7 @@ var Rest = {
 // Room
 var Room = new Events;
 
+// Enter a room
 (function() {
 
     function enter(data) {
@@ -93,5 +94,16 @@ var Room = new Events;
 
 })();
 
+// Inactive window detection
+(function() {
 
+    $window.on('blur', function() {
+        Room.idle = true;
+    });
+
+    $window.on('focus', function() {
+        Room.idle = false;
+    });
+
+})();
 
