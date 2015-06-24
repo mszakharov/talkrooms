@@ -140,8 +140,15 @@
 
     var cached = {};
 
-    window.getUserpic = function(name) {
-        return cached[name] || (cached[name] = createUserpic(name));
+    window.Userpics = {
+
+        create: createUserpic,
+
+        getUrl: function(data) {
+            if (data.userpic) return '/userpics/' + data.userpic;
+            return cached[data.nickname] || (cached[data.nickname] = createUserpic(data.nickname));
+        }
+
     };
 
 })();

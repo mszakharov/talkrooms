@@ -29,7 +29,7 @@ Room.users = (function() {
 
     function reset(data) {
         sockets.raw = data;
-        sockets.raw.forEach(setUserpic);
+        sockets.raw.forEach(setUserpicUrl);
         sockets.sort();
         apply();
     }
@@ -38,18 +38,14 @@ Room.users = (function() {
         Room.trigger('users.updated', sockets.raw.filter(groupOnline, {}));
     }
 
-    function setUserpic(socket) {
-        if (!socket.userpic || socket.userpic.indexOf('data') === 0) {
-            socket.userpic = getUserpic(socket.nickname);
-        } else if (/^\d+\.png/.test(socket.userpic)) {
-            socket.userpic = '/userpics/' + socket.userpic;
-        }
+    function setUserpicUrl(socket) {
+        socket.userpicUrl = Userpics.getUrl(socket);
     }
 
     function addSocket(socket) {
         if (!sockets.get(socket.socket_id)) {
             sockets.add(socket);
-            setUserpic(socket);
+            setUserpicUrl(socket);
             apply();
         }
     }
@@ -76,21 +72,21 @@ Room.users = (function() {
         var socket = sockets.get(updated.socket_id);
         socket.nickname = updated.nickname;
         sockets.sort();
-        setUserpic(socket);
+        setUserpicUrl(socket);
         apply();
     });
 
     Room.on('socket.user_id.updated', function(updated) {
         var socket = sockets.get(updated.socket_id);
         $.extend(socket, updated);
-        setUserpic(socket);
+        setUserpicUrl(socket);
         apply();
     });
 
     Room.on('socket.userpic.updated', function(updated) {
         var socket = sockets.get(updated.socket_id);
         socket.userpic = updated.userpic;
-        setUserpic(socket);
+        setUserpicUrl(socket);
         apply();
     });
 
