@@ -125,6 +125,9 @@
             })
             .done(function(recent) {
                 container.empty();
+                if (recent.length === 80) {
+                    recent = recent.slice(0, 50);
+                }
                 recent.reverse().forEach(addMessage);
                 container.find('.date').first().hide();
                 $window.scrollTop($document.height() - $window.height() - 1);
