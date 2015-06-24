@@ -55,6 +55,17 @@ Room.users = (function() {
         apply();
     }
 
+    function updateSocket(data) {
+        var socket = sockets.get(data.socket_id);
+        var renamed = data.nickname !== socket.nickname;
+        $.extend(socket, data);
+        setUserpicUrl(socket);
+        if (renamed) {
+            sockets.sort();
+        }
+        apply();
+    }
+
     Room.on('socket.created', addSocket);
     Room.on('socket.deleted', removeSocket);
 
@@ -68,27 +79,9 @@ Room.users = (function() {
         apply();
     });
 
-    Room.on('socket.nickname.updated', function(updated) {
-        var socket = sockets.get(updated.socket_id);
-        socket.nickname = updated.nickname;
-        sockets.sort();
-        setUserpicUrl(socket);
-        apply();
-    });
-
-    Room.on('socket.user_id.updated', function(updated) {
-        var socket = sockets.get(updated.socket_id);
-        $.extend(socket, updated);
-        setUserpicUrl(socket);
-        apply();
-    });
-
-    Room.on('socket.userpic.updated', function(updated) {
-        var socket = sockets.get(updated.socket_id);
-        socket.userpic = updated.userpic;
-        setUserpicUrl(socket);
-        apply();
-    });
+    Room.on('socket.nickname.updated', updateSocket);
+    Room.on('socket.user_id.updated', updateSocket);
+    Room.on('socket.userpic.updated', updateSocket);
 
     return {
         load: getSockets
