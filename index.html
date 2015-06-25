@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="talk-messages">
-
+        <div class="talk-previous">Показать предыдущие сообщения</div>
     </div>
     <form class="talk-reply">
         <div class="sticky">
@@ -71,7 +71,7 @@
 </div>
 
 <script type="text/html" id="message-template">
-<div class="message">
+<div class="message" data-id="{message_id}">
     <div class="msg-author">
         <div class="userpic" style="background-image: url({userpicUrl});"></div>
         <span class="nickname">{nickname}</span>

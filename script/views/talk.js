@@ -46,6 +46,7 @@
 
     var lastMessage = {};
     var container = $('#talk .talk-messages');
+    var previous = container.find('.talk-previous');
     var render = $.template('#message-template');
     var counter = 0;
 
@@ -55,23 +56,51 @@
             .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>');
     }
 
-    function addMessage(data, single) {
+    function extendMessage(data) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
         data.content = format(data.content);
         data.userpicUrl = Userpics.getUrl(data);
+        return data;
+    }
+
+    function sameAuthor(m1, m2) {
+        return m1.nickname === m2.nickname;
+    }
+
+    function toggleIdem(elem) {
+        var prev = elem.prev('.message');
+        if (prev) {
+            var n1 = prev.find('.nickname').text();
+            var n2 = elem.find('.nickname').text();
+            elem.toggleClass('idem', n1 === n2);
+        } else {
+            elem.removeClass('idem');
+        }
+    }
+
+    function renderMessage(data, last) {
+        extendMessage(data);
+        var nodes = [];
         var elem = render(data);
-        if (data.date !== lastMessage.date) {
-            renderDate(data.date).appendTo(container);
-            if (single) {
-                Room.trigger('dates.changed');
-            }
-        } else if (data.nickname === lastMessage.nickname) {
+        if (data.date !== last.date) {
+            nodes.push(renderDate(data.date)[0]);
+        } else if (sameAuthor(data, last)) {
             elem.addClass('idem');
         }
-        lastMessage = data;
-        return elem.appendTo(container);
+        nodes.push(elem[0]);
+        return nodes;
+    }
+
+    function renderMessages(messages) {
+        var last = {};
+        var nodes = [];
+        messages.forEach(function(message) {
+            nodes.push.apply(nodes, renderMessage(message, last));
+            last = message;
+        });
+        return nodes;
     }
 
     function renderDate(date) {
@@ -107,6 +136,7 @@
             messages.eq(50).removeClass('idem');
             dates.slice(1).remove();
             dates.eq(0).hide();
+            previous.show();
             $window.scrollTop(scrolled - (height - $document.height()));
             counter = messages.length - 50;
         }
@@ -124,11 +154,17 @@
                 order_by: {'-desc': 'message_id'}
             })
             .done(function(recent) {
-                container.empty();
+                previous.detach();
+                container.empty().append(previous);
                 if (recent.length === 80) {
                     recent = recent.slice(0, 50);
+                    previous.show();
+                } else {
+                    previous.hide();
                 }
-                recent.reverse().forEach(addMessage);
+                var nodes = renderMessages(recent.reverse());
+                lastMessage = recent[recent.length - 1];
+                container.append(nodes);
                 container.find('.date').first().hide();
                 $window.scrollTop($document.height() - $window.height() - 1);
                 Room.trigger('dates.changed');
@@ -136,10 +172,56 @@
             });
     };
 
+    previous.on('click', function() {
+        if (previous.hasClass('loading')) return;
+        var oldFirst = container.find('.message').eq(0);
+        var offset = oldFirst.next().offset().top - $window.scrollTop();
+        previous.addClass('loading');
+        Rest.messages
+            .get({
+                room_id: Room.data.room_id,
+                order_by: {'-desc': 'message_id'},
+                message_id: {'<': Number(oldFirst.attr('data-id'))}
+            })
+            .done(function(messages) {
+                if (messages.length === 80) {
+                    messages = messages.slice(0, 50);
+                    previous.show();
+                } else {
+                    previous.hide();
+                }
+                var nodes = renderMessages(messages.reverse());
+                previous.after(nodes);
+                var prevDates = oldFirst.prevAll('.date');
+                if (prevDates.eq(0).html() === prevDates.eq(1).html()) {
+                    prevDates.eq(0).remove();
+                } else {
+                    prevDates.eq(0).show();
+                }
+                toggleIdem(oldFirst);
+                container.find('.date').first().hide();
+                Room.trigger('dates.changed');
+                var pos = oldFirst.next().offset().top - offset;
+                $window.scrollTop(pos);
+                $scrollWindow.delay(150).to(pos - 150);
+                counter += messages.length;
+                previous.removeClass('loading');
+            })
+            .fail(function() {
+                previous.removeClass('loading');
+            });
+    });
+
     Room.on('message.created', function(message) {
         if (message.message_id > lastMessage.message_id) {
-            scrollDown(addMessage(message, true).offset().top);
-            if (counter++ > 500) {
+            var nodes = renderMessage(message, lastMessage);
+            lastMessage = message;
+            container.append(nodes);
+            scrollDown($(nodes).offset().top);
+            if (nodes.length > 1) {
+                Room.trigger('dates.changed');
+            }
+            if (counter++ > 1000) {
                 $window.queue(clearOld);
             }
         }
