@@ -88,6 +88,14 @@ var Room = new Events;
         Room.on('ready', connect);
     }
 
+    Room.on('socket.ignore.on', function(socket) {
+        if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 1;
+    });
+
+    Room.on('socket.ignore.off', function(socket) {
+        if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 0;
+    });
+
     window.addEventListener('beforeunload', function(event) {
         if (Room.socket) Rest.sockets.destroy(Room.socket.socket_id);
     });

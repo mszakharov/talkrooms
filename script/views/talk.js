@@ -213,6 +213,7 @@
     });
 
     Room.on('message.created', function(message) {
+        if (message.ignore && !Room.socket.ignore) return false;
         if (message.message_id > lastMessage.message_id) {
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
