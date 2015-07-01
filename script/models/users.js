@@ -12,6 +12,7 @@ Room.users = (function() {
 
     function groupOnline(socket) {
         var uid = socket.user_id;
+        if (socket.ignore && !Room.socket.ignore) return false;
         if (uid) {
             if (uid === Room.socket.user_id) {
                 return isMySocket(socket);
@@ -76,6 +77,16 @@ Room.users = (function() {
 
     Room.on('socket.offline', function(socket) {
         sockets.get(socket.socket_id).online = 0;
+        apply();
+    });
+
+    Room.on('socket.ignore.on', function(socket) {
+        sockets.get(socket.socket_id).ignore = 1;
+        apply();
+    });
+
+    Room.on('socket.ignore.off', function(socket) {
+        sockets.get(socket.socket_id).ignore = 0;
         apply();
     });
 

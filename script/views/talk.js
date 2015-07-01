@@ -213,6 +213,7 @@
     });
 
     Room.on('message.created', function(message) {
+        if (message.ignore && !Room.socket.ignore) return false;
         if (message.message_id > lastMessage.message_id) {
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
@@ -224,6 +225,7 @@
             if (counter++ > 1000) {
                 $window.queue(clearOld);
             }
+            Room.trigger('talk.updated');
         }
     });
 
@@ -336,7 +338,7 @@
         toggleSound(localStorage.getItem('sound_in_' + Room.data.room_id))
     });
 
-    Room.on('message.created', function(message) {
+    Room.on('talk.updated', function(message) {
         if (Room.idle) {
             document.title = '+ ' + title;
             if (soundEnabled) {
