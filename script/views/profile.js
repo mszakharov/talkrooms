@@ -91,19 +91,9 @@
 })();
 
 /* Login and logout */
-(function() {
-
-    var loggedIn;
-    Room.on('ready', function(socket) {
-        loggedIn = socket.user_id != null;
-    });
-
-    Profile.add('#profile-login', function(socket, me) {
-        return me && !loggedIn;
-    });
-
-    Profile.add('#profile-logout', function(socket, me) {
-        return me && loggedIn;
-    });
-
-})();
+Profile.add('#profile-login', function(socket, me) {
+    return me && !Room.socket.user_id;
+});
+Profile.add('#profile-logout', function(socket, me) {
+    return me && Room.socket.user_id;
+});
