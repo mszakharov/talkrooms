@@ -283,6 +283,7 @@ body {
     margin: -2px 0 0 -34px;
     background-size: 24px;
     border-radius: 3px;
+    cursor: pointer;
 }
 .user > .nickname {
     color: #807E7D;
@@ -302,16 +303,6 @@ body {
     cursor: pointer;
 }
 
-/* Profile */
-.profile-login,
-.profile-logout {
-    border-top: 1px solid #D5D3D0;
-    padding: 8px 15px 10px;
-    font-size: 14px;
-    color: #666;
-    background: #F4F2F0;
-    border-radius: 0 0 6px 6px;
-}
 
 @media (min-width: 1400px) {
 

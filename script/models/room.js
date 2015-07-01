@@ -1,6 +1,7 @@
 // REST shortcuts
 var Rest = {
     rooms:    $.Rest('/api/rooms'),
+    roles:    $.Rest('/api/roles'),
     sockets:  $.Rest('/api/sockets'),
     messages: $.Rest('/api/messages')
 };

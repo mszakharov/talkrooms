@@ -9,11 +9,13 @@
         list.find('.user[data-socket="' + Room.socket.socket_id + '"]').addClass('me');
     });
 
-    list.on('click', '.me', function(event) {
-        var elem = $(this);
+    list.on('click', '.me, .userpic', function(event) {
+        var elem = $(this).closest('.user');
         event.stopPropagation();
         Profile.show(elem.attr('data-socket'), elem);
-        $('#my-nickname').select();
+        if (elem.hasClass('me')) {
+            $('#my-nickname').select();
+        }
     });
 
     list.on('click', '.user:not(.me) .nickname', function() {

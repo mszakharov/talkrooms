@@ -77,3 +77,20 @@
     border-radius: 3px;
     padding: 3px 7px;
 }
+
+/* Details */
+.details-photo {
+    margin: -5px -10px 5px;
+    width: 300px;
+    border-radius: 3px;
+}
+.details-nickname {
+    font-size: 18px;
+    line-height: 20px;
+}
+.details-link {
+    margin-top: 3px;
+    font-size: 14px;
+    line-height: 17px;
+    color: #808080;
+}

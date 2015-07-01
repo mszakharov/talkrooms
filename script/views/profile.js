@@ -31,6 +31,9 @@
         sections.forEach(function(section) {
             section.toggle(socket, me);
         });
+        if (socket.user_id) {
+            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
+        }
         if (target) {
             var position = $(target).position();
             popup.css({
@@ -39,6 +42,10 @@
             });
         }
         popup.show();
+    }
+
+    function loaded(data) {
+        Profile.trigger('loaded', data);
     }
 
     function hide() {
@@ -54,14 +61,14 @@
 
     updateIndexes();
 
-    window.Profile = {
+    window.Profile = Events.mixin({
         sections: sections,
         add: function(selector, toggle) {
             sections.push(new Section(selector, toggle));
         },
         show: show,
         hide: hide
-    };
+    });
 
 })();
 
@@ -85,6 +92,46 @@
             return true;
         } else {
             return false;
+        }
+    });
+
+})();
+
+/* User details */
+(function() {
+
+    var section = $('#profile-details');
+
+    var types = /(facebook|vk|ok)/;
+    var titles = {
+        facebook: 'Профиль в Фейсбуке',
+        vk: 'Профиль Вконтакте',
+        ok: 'Профиль в Одноклассниках'
+    };
+
+    var link = '<a href="$1" target="_blank">$2</a>';
+    function renderLink(url) {
+        var type = url.match(types)[1];
+        return String.mix(link, url, titles[type]);
+    }
+
+    Profile.add(section, function(socket, me) {
+        if (me) return false;
+        section.find('.details-nickname').html(socket.nickname);
+        section.find('.details-link').html(socket.profile_url ? '…' : 'Без авторизации');
+        section.find('.details-photo').remove();
+        return true;
+    });
+
+    Profile.on('loaded', function(data) {
+        if (section.is(':visible')) {
+            section.find('.details-link').html(renderLink(data.profile_url));
+            if (data.photo) {
+                $('<img/>')
+                    .addClass('details-photo')
+                    .attr('src', '/photos/' + data.photo)
+                    .prependTo(section);
+            }
         }
     });
 
