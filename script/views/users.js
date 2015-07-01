@@ -10,8 +10,10 @@
     });
 
     list.on('click', '.me', function(event) {
+        var elem = $(this);
         event.stopPropagation();
-        Room.profile.show(this);
+        Profile.show(elem.attr('data-socket'), elem);
+        $('#my-nickname').select();
     });
 
     list.on('click', '.user:not(.me) .nickname', function() {
@@ -24,42 +26,3 @@
 
 })();
 
-// Profile
-(function() {
-
-    var field = $('#profile-nickname');
-    var popup = $.popup('#profile', function() {
-        this.fadeIn(100);
-    });
-
-    function show(target) {
-        var elem = $(target);
-        popup.css('top', elem.position().top).show();
-        field.val('').focus();
-        field.val(elem.find('.nickname').text());
-    }
-
-    function hide() {
-        popup.hide();
-    }
-
-    popup.find('form').on('submit', function(event) {
-        event.preventDefault();
-        var value = $.trim(field.val());
-        if (value) {
-            Rest.sockets.update(Room.socket.socket_id, {nickname: value}).done(hide);
-        }
-    });
-
-    Room.on('ready', function(socket) {
-        var logged = socket.user_id != null;
-        popup.find('.profile-login').toggle(!logged);
-        popup.find('.profile-logout').toggle(logged);
-    });
-
-    Room.profile = {
-        show: show,
-        hide: hide
-    };
-
-})();

@@ -84,7 +84,10 @@ Room.users = (function() {
     Room.on('socket.userpic.updated', updateSocket);
 
     return {
-        load: getSockets
+        load: getSockets,
+        get: function(socket_id) {
+            return sockets.get(socket_id)
+        }
     };
 
 })();
