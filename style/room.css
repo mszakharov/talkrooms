@@ -302,6 +302,15 @@ body {
     background: url('edit.svg') no-repeat;
     cursor: pointer;
 }
+.users-ignored .userpic {
+    opacity: 0.3;
+}
+.users-ignored .nickname {
+    color: #B8B8B8;
+}
+.users-ignored .user {
+    border-top: 1px solid #F3F1F0;
+}
 
 
 @media (min-width: 1400px) {

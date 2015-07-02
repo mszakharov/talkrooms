@@ -12,7 +12,6 @@ Room.users = (function() {
 
     function groupOnline(socket) {
         var uid = socket.user_id;
-        if (socket.ignore && !Room.socket.ignore) return false;
         if (uid) {
             if (uid === Room.socket.user_id) {
                 return isMySocket(socket);
@@ -24,6 +23,18 @@ Room.users = (function() {
         }
     }
 
+    function notIgnored(socket) {
+        var ignored = socket.ignore && !Room.socket.ignore;
+        if (ignored) this.push(socket);
+        return !ignored;
+    }
+
+    function apply() {
+        var ignore = [];
+        var online = sockets.raw.filter(groupOnline, {});
+        Room.trigger('users.updated', online.filter(notIgnored, ignore), ignore);
+    }
+
     function getSockets() {
         return Rest.sockets.get({room_id: Room.data.room_id}).done(reset);
     }
@@ -33,10 +44,6 @@ Room.users = (function() {
         sockets.raw.forEach(setUserpicUrl);
         sockets.sort();
         apply();
-    }
-
-    function apply() {
-        Room.trigger('users.updated', sockets.raw.filter(groupOnline, {}));
     }
 
     function setUserpicUrl(socket) {

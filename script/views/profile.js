@@ -31,9 +31,6 @@
         sections.forEach(function(section) {
             section.toggle(socket, me);
         });
-        if (socket.user_id) {
-            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
-        }
         if (target) {
             var position = $(target).position();
             Profile.position = {
@@ -41,6 +38,9 @@
                 left: position.left > 20 ? position.left : 20
             };
             Profile.fit();
+        }
+        if (socket.user_id) {
+            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
         }
         Profile.socket = socket;
         popup.show();
@@ -204,7 +204,6 @@
             section.children().hide();
             if (!socket.user_id) {
                 toggleControls(socket);
-                Profile.fit();
             }
             return true;
         } else {

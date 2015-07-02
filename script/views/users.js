@@ -4,8 +4,12 @@
     var list = $('#room .room-users');
     var renderUser = Template($('#user-template').html());
 
-    Room.on('users.updated', function(users) {
-        list.html(users.map(renderUser).join(''));
+    Room.on('users.updated', function(online, ignore) {
+        var content = online.map(renderUser).join('');
+        if (ignore.length) {
+            content += '<div class="users-ignored">' + ignore.map(renderUser).join('') + '</div>';
+        }
+        list.html(content);
         list.find('.user[data-socket="' + Room.socket.socket_id + '"]').addClass('me');
     });
 
