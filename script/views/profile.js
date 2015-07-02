@@ -150,6 +150,12 @@
         }
     });
 
+    Room.on('socket.nickname.updated', function(socket) {
+        if (socket.socket_id === Profile.socket.socket_id) {
+            section.find('.details-nickname').html(socket.nickname);
+        }
+    });
+
 })();
 
 /* Ignore */
