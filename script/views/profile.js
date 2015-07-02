@@ -36,10 +36,11 @@
         }
         if (target) {
             var position = $(target).position();
-            popup.css({
+            Profile.position = {
                 top: position.top - 10,
                 left: position.left > 20 ? position.left : 20
-            });
+            };
+            Profile.fit();
         }
         Profile.socket = socket;
         popup.show();
@@ -67,6 +68,14 @@
         sections: sections,
         add: function(selector, toggle) {
             sections.push(new Section(selector, toggle));
+        },
+        fit: function() {
+            var wh = $window.height();
+            var ph = popup.height();
+            popup.css({
+                top: Math.min(this.position.top, wh - ph - 20),
+                left: this.position.left
+            });
         },
         show: show,
         hide: hide
@@ -132,7 +141,11 @@
                 $('<img/>')
                     .addClass('details-photo')
                     .attr('src', '/photos/' + data.photo)
-                    .prependTo(section);
+                    .prependTo(section)
+                    .on('load', function() {
+                        Profile.fit();
+                    });
+                Profile.fit();
             }
         }
     });
@@ -191,6 +204,7 @@
             section.children().hide();
             if (!socket.user_id) {
                 toggleControls(socket);
+                Profile.fit();
             }
             return true;
         } else {
@@ -205,6 +219,7 @@
         } else {
             toggleControls(Profile.socket);
         }
+        Profile.fit();
     });
 
     function setIgnore(value) {
