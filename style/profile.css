@@ -30,7 +30,6 @@
 	border-color: #C0C0C0 #B8B8B8 #B0B0B0;
 	border-radius: 3px;
 	padding: 2px 9px;
-	vertical-align: 1px;
 	background: #ececec;
 	background-image: -moz-linear-gradient(top, #F8F8F8, #E0E0E0);
 	background-image: -webkit-linear-gradient(top, #F8F8F8, #E0E0E0);
@@ -93,4 +92,16 @@
     font-size: 14px;
     line-height: 17px;
     color: #808080;
+}
+
+/* Ignore */
+.ignore-denied {
+    color: #808080;
+}
+.ignored {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    background: #E64B39;
+    color: #FFF;
 }

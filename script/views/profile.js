@@ -41,6 +41,7 @@
                 left: position.left > 20 ? position.left : 20
             });
         }
+        Profile.socket = socket;
         popup.show();
     }
 
@@ -49,6 +50,7 @@
     }
 
     function hide() {
+        Profile.socket = null;
         popup.hide();
     }
 
@@ -133,6 +135,88 @@
                     .prependTo(section);
             }
         }
+    });
+
+})();
+
+/* Ignore */
+(function() {
+
+    var myLevel;
+    var section = $('#profile-ignore');
+
+    var ignoreOn = section.find('.ignore-on'),
+        ignoreOff = section.find('.ignore-off');
+
+    function getRole(socket) {
+        return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
+    }
+
+    function updateLevel(role) {
+        myLevel = role.level;
+    }
+
+    function toggleControls(socket) {
+        if (socket.ignore) showOn(); else showOff();
+    }
+
+    function showOn() {
+        ignoreOff.hide();
+        ignoreOn.show();
+    }
+
+    function showOff() {
+        ignoreOn.hide();
+        ignoreOff.show();
+    }
+
+    function isCurrent(socket) {
+        return socket.socket_id === Profile.socket.socket_id;
+    }
+
+    Room.on('ready', function(socket) {
+        if (socket.user_id) getRole(socket).done(updateLevel);
+    });
+
+    Room.on('socket.ignore.on', function(socket) {
+        if (isCurrent(socket) && ignoreOff.is(':visible')) showOn();
+    });
+
+    Room.on('socket.ignore.off', function(socket) {
+        if (isCurrent(socket) && ignoreOn.is(':visible')) showOff();
+    });
+
+    Profile.add(section, function(socket, me) {
+        if (myLevel >= 50 && !me) {
+            section.children().hide();
+            if (!socket.user_id) {
+                toggleControls(socket);
+            }
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    Profile.on('loaded', function(data) {
+        if (section.is(':hidden')) return;
+        if (data.level >= myLevel) {
+            section.find('.ignore-denied').show();
+        } else {
+            toggleControls(Profile.socket);
+        }
+    });
+
+    function setIgnore(value) {
+        return Rest.sockets.update(Profile.socket.socket_id, {ignore: value});
+    }
+
+    ignoreOff.find('button').on('click', function() {
+        setIgnore(true).done(showOn);
+    });
+
+    ignoreOn.find('button').on('click', function() {
+        setIgnore(false).done(showOff);
     });
 
 })();
