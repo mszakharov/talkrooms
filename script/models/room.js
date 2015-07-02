@@ -23,6 +23,16 @@ var Room = new Events;
         $.when(Room.loadRecent(), Room.users.load()).done(function() {
             Room.trigger('ready', socket);
         });
+        if (socket.user_id) {
+            getRole(socket).done(function(role) {
+                Room.myRole = role
+                Room.trigger('role.updated', role);
+            });
+        }
+    }
+
+    function getRole(socket) {
+        return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
     }
 
     function stop(xhr) {

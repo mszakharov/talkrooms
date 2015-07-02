@@ -6,6 +6,8 @@ Room.users = (function() {
         order: 'nickname'
     });
 
+    var showIgnored;
+
     function isMySocket(socket) {
         return socket.socket_id === Room.socket.socket_id;
     }
@@ -25,7 +27,7 @@ Room.users = (function() {
 
     function notIgnored(socket) {
         var ignored = socket.ignore && !Room.socket.ignore;
-        if (ignored) this.push(socket);
+        if (ignored && showIgnored) this.push(socket);
         return !ignored;
     }
 
@@ -73,6 +75,10 @@ Room.users = (function() {
         }
         apply();
     }
+
+    Room.on('role.updated', function(role) {
+        showIgnored = role.level >= 50;
+    });
 
     Room.on('socket.created', addSocket);
     Room.on('socket.deleted', removeSocket);

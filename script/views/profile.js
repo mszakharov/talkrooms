@@ -155,19 +155,11 @@
 /* Ignore */
 (function() {
 
-    var myLevel;
+    var myLevel = 0;
     var section = $('#profile-ignore');
 
     var ignoreOn = section.find('.ignore-on'),
         ignoreOff = section.find('.ignore-off');
-
-    function getRole(socket) {
-        return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
-    }
-
-    function updateLevel(role) {
-        myLevel = role.level;
-    }
 
     function toggleControls(socket) {
         if (socket.ignore) showOn(); else showOff();
@@ -187,8 +179,8 @@
         return socket.socket_id === Profile.socket.socket_id;
     }
 
-    Room.on('ready', function(socket) {
-        if (socket.user_id) getRole(socket).done(updateLevel);
+    Room.on('role.updated', function(role) {
+        myLevel = role.level;
     });
 
     Room.on('socket.ignore.on', function(socket) {
