@@ -349,3 +349,25 @@
     });
 
 })();
+
+// Talkrooms vesrion
+(function() {
+
+    var notice;
+    var version = 2;
+
+    function showNotice() {
+        notice = $('<div class="updated-notice"><div class="updated-text">Вышло обновление Talkrooms. Пожалуйста, <span class="updated-reload">обновите страницу</span>, чтобы сбросить кэш браузера.</div></div>')
+        notice.find('.updated-reload').on('click', function() {
+            location.reload(true);
+        });
+        notice.appendTo('body')
+            .css('top', -notice.height() - 20)
+            .animate({top: 0}, 300);
+    }
+
+    Room.on('talkrooms', function(data) {
+        if (data.version > version && !notice) showNotice();
+    });
+
+})();

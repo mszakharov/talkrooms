@@ -312,6 +312,28 @@ body {
     border-top: 1px solid #F3F1F0;
 }
 
+/* Talkrooms update */
+.updated-notice {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #f5efdc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+.updated-text {
+    padding: 16px 40px;
+    text-align: center;
+    color: #403e39;
+}
+.updated-reload {
+    padding: 10px 0;
+    color: #1270b2;
+    text-decoration: underline;
+    white-space: nowrap;
+    cursor: pointer;
+}
 
 @media (min-width: 1400px) {
 
@@ -357,6 +379,11 @@ body {
         display: none;
     }
 
+    .updated-text {
+        padding: 12px 40px;
+        text-align: left;
+    }
+
 }
 
 @media (max-width: 500px) {
@@ -398,6 +425,12 @@ body {
 
     .reply-send {
         display: none;
+    }
+
+    .updated-text {
+        padding: 10px 14px;
+        font-size: 16px;
+        line-height: 19px;
     }
 
 }
