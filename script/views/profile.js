@@ -186,15 +186,14 @@
     }
 
     Room.on('role.updated', function(role) {
-        myLevel = role.level;
+        myLevel = role ? role.level : 0;
     });
 
-    Room.on('socket.ignore.on', function(socket) {
-        if (isCurrent(socket) && ignoreOff.is(':visible')) showOn();
-    });
-
-    Room.on('socket.ignore.off', function(socket) {
-        if (isCurrent(socket) && ignoreOn.is(':visible')) showOff();
+    Room.on('socket.ignore.updated', function(socket) {
+        if (isCurrent(socket)) {
+            if (socket.ignore && ignoreOff.is(':visible')) showOn();
+            if (!socket.ignore && ignoreOn.is(':visible')) showOff();
+        }
     });
 
     Profile.add(section, function(socket, me) {

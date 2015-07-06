@@ -113,17 +113,9 @@ var Room = new Events;
 })();
 
 // Ignore
-(function() {
-
-    Room.on('socket.ignore.on', function(socket) {
-        if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 1;
-    });
-
-    Room.on('socket.ignore.off', function(socket) {
-        if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 0;
-    });
-
-})();
+Room.on('socket.ignore.updated', function(socket) {
+    if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = socket.ignore;
+});
 
 // Inactive window detection
 (function() {

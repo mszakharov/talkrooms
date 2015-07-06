@@ -65,12 +65,16 @@ Room.users = (function() {
         apply();
     }
 
-    function updateSocket(data) {
+    function simplePatch(data) {
+        $.extend(sockets.get(data.socket_id), data);
+        apply();
+    }
+
+    function complexPatch(data) {
         var socket = sockets.get(data.socket_id);
-        var renamed = data.nickname !== socket.nickname;
         $.extend(socket, data);
         setUserpicUrl(socket);
-        if (renamed) {
+        if (data.nickname) {
             sockets.sort();
         }
         apply();
@@ -81,35 +85,17 @@ Room.users = (function() {
     });
 
     Room.on('role.updated', function(role) {
-        showIgnored = this.myRole.level >= 50;
+        showIgnored = role ? role.level >= 50 : false;
     });
 
     Room.on('socket.created', addSocket);
     Room.on('socket.deleted', removeSocket);
 
-    Room.on('socket.online', function(socket) {
-        sockets.get(socket.socket_id).online = 1;
-        apply();
-    });
+    Room.on('socket.online.updated', simplePatch);
+    Room.on('socket.ignore.updated', simplePatch);
 
-    Room.on('socket.offline', function(socket) {
-        sockets.get(socket.socket_id).online = 0;
-        apply();
-    });
-
-    Room.on('socket.ignore.on', function(socket) {
-        sockets.get(socket.socket_id).ignore = 1;
-        apply();
-    });
-
-    Room.on('socket.ignore.off', function(socket) {
-        sockets.get(socket.socket_id).ignore = 0;
-        apply();
-    });
-
-    Room.on('socket.nickname.updated', updateSocket);
-    Room.on('socket.user_id.updated', updateSocket);
-    Room.on('socket.userpic.updated', updateSocket);
+    Room.on('socket.nickname.updated', complexPatch);
+    Room.on('socket.userpic.updated', complexPatch);
 
     return {
         get: function(socket_id) {
