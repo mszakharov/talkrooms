@@ -147,7 +147,7 @@
         Room.replyTo($(this).text());
     });
 
-    Room.loadRecent = function() {
+    function loadRecent() {
         return Rest.messages
             .get({
                 room_id: Room.data.room_id,
@@ -210,6 +210,10 @@
             .fail(function() {
                 previous.removeClass('loading');
             });
+    });
+
+    Room.on('enter', function() {
+        Room.promises.push(loadRecent());
     });
 
     Room.on('message.created', function(message) {

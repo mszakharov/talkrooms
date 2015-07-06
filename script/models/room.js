@@ -12,36 +12,51 @@ var Room = new Events;
 // Enter a room
 (function() {
 
-    function enter(data) {
+    function admit(data) {
         Room.data = data;
         Room.trigger('topic.updated', data.topic);
         Rest.sockets.create({hash: data.hash}).done(ready);
     }
 
     function ready(socket) {
+        Room.promises = [];
         Room.socket = socket;
-        $.when(Room.loadRecent(), Room.users.load()).done(function() {
-            Room.trigger('ready', socket);
-        });
+        Room.trigger('enter');
         if (socket.user_id) {
-            getRole(socket).done(function(role) {
-                Room.myRole = role
-                Room.trigger('role.updated', role);
-            });
+            Room.promises.push(getRole(socket).done(updateRole));
+        } else {
+            updateRole(null);
         }
+        $.when.apply($, Room.promises).done(function() {
+            Room.trigger('ready');
+        });
+    }
+
+    function stop(xhr) {
+        Room.trigger('lost');
     }
 
     function getRole(socket) {
         return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
     }
 
-    function stop(xhr) {
-        Room.trigger('notfound');
+    function updateRole(role) {
+        Room.myRole = role;
+        Room.trigger('role.updated', role);
     }
 
-    Room.reset = function(hash) {
-        Rest.rooms.get(hash).done(enter).fail(stop);
+    Room.enter = function(hash) {
+        Rest.rooms.get(hash).done(admit).fail(stop);
     };
+
+    Room.leave = function() {
+        Rest.sockets.destroy(Room.socket.socket_id);
+        Room.trigger('leave');
+    };
+
+    $window.on('beforeunload', function(event) {
+        if (Room.socket) Room.leave();
+    });
 
 })();
 
@@ -72,32 +87,33 @@ var Room = new Events;
     function reconnect() {
         Rest.sockets
             .get(Room.socket.socket_id)
-            .done(restore)
+            .done(connect)
             .fail(reconnectFailed);
     }
 
     function reconnectFailed(xhr) {
         if (xhr.status == 404) {
-            Room.reset(Room.data.hash);
+            Room.enter(Room.data.hash);
         } else {
             setTimeout(reconnect, 10000);
         }
     }
 
-    function connect(socket) {
-        var ws = new WebSocket(path + socket.token);
+    function connect() {
+        var ws = new WebSocket(path + Room.socket.token);
         ws.addEventListener('open', onOpen);
         ws.addEventListener('message', onMessage);
         ws.addEventListener('close', onClose);
     }
 
-    function restore() {
-        connect(Room.socket);
-    }
-
     if ('WebSocket' in window) {
         Room.on('ready', connect);
     }
+
+})();
+
+// Ignore
+(function() {
 
     Room.on('socket.ignore.on', function(socket) {
         if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 1;
@@ -105,10 +121,6 @@ var Room = new Events;
 
     Room.on('socket.ignore.off', function(socket) {
         if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = 0;
-    });
-
-    window.addEventListener('beforeunload', function(event) {
-        if (Room.socket) Rest.sockets.destroy(Room.socket.socket_id);
     });
 
 })();

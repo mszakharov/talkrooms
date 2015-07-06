@@ -76,8 +76,12 @@ Room.users = (function() {
         apply();
     }
 
+    Room.on('enter', function(role) {
+        this.promises.push(getSockets());
+    });
+
     Room.on('role.updated', function(role) {
-        showIgnored = role.level >= 50;
+        showIgnored = this.myRole.level >= 50;
     });
 
     Room.on('socket.created', addSocket);
@@ -108,7 +112,6 @@ Room.users = (function() {
     Room.on('socket.userpic.updated', updateSocket);
 
     return {
-        load: getSockets,
         get: function(socket_id) {
             return sockets.get(socket_id)
         }
