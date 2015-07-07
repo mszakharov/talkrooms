@@ -354,6 +354,25 @@
 
 })();
 
+// Ignore sound
+(function() {
+
+    var whip = new Audio('/script/sound/whip.mp3');
+    whip.volume = 0.15;
+
+    Room.on('role.updated', function(role) {
+        if (role && role.level >= 50) whip.volume = 0.5;
+    });
+
+    Room.on('socket.ignore.updated', function(socket) {
+        if (socket.ignore && !Room.socket.ignore) {
+            whip.currentTime = 0;
+            whip.play();
+        }
+    });
+
+})();
+
 // Talkrooms vesrion
 (function() {
 

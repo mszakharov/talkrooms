@@ -161,74 +161,23 @@
 /* Ignore */
 (function() {
 
-    var myLevel = 0;
-    var section = $('#profile-ignore');
+    var options = {
+        url: '/script/views/ignore.js',
+        dataType: 'script',
+        cache: false
+    };
 
-    var ignoreOn = section.find('.ignore-on'),
-        ignoreOff = section.find('.ignore-off');
-
-    function toggleControls(socket) {
-        if (socket.ignore) showOn(); else showOff();
-    }
-
-    function showOn() {
-        ignoreOff.hide();
-        ignoreOn.show();
-    }
-
-    function showOff() {
-        ignoreOn.hide();
-        ignoreOff.show();
-    }
-
-    function isCurrent(socket) {
-        return socket.socket_id === Profile.socket.socket_id;
-    }
-
-    Room.on('role.updated', function(role) {
-        myLevel = role ? role.level : 0;
-    });
-
-    Room.on('socket.ignore.updated', function(socket) {
-        if (isCurrent(socket)) {
-            if (socket.ignore && ignoreOff.is(':visible')) showOn();
-            if (!socket.ignore && ignoreOn.is(':visible')) showOff();
+    function checkLevel(role) {
+        if (role && role.level >= 50) {
+            $.ajax(options).done(loaded);
         }
-    });
-
-    Profile.add(section, function(socket, me) {
-        if (myLevel >= 50 && !me) {
-            section.children().hide();
-            if (!socket.user_id) {
-                toggleControls(socket);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    Profile.on('loaded', function(data) {
-        if (section.is(':hidden')) return;
-        if (data.level >= myLevel) {
-            section.find('.ignore-denied').show();
-        } else {
-            toggleControls(Profile.socket);
-        }
-        Profile.fit();
-    });
-
-    function setIgnore(value) {
-        return Rest.sockets.update(Profile.socket.socket_id, {ignore: value});
     }
 
-    ignoreOff.find('button').on('click', function() {
-        setIgnore(true).done(showOn);
-    });
+    function loaded() {
+        Room.off('role.updated', checkLevel);
+    }
 
-    ignoreOn.find('button').on('click', function() {
-        setIgnore(false).done(showOff);
-    });
+    Room.on('role.updated', checkLevel);
 
 })();
 
