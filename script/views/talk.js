@@ -84,6 +84,9 @@
         extendMessage(data);
         var nodes = [];
         var elem = render(data);
+        if (data.socket_id) {
+            elem.attr('data-socket', data.socket_id);
+        }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
         } else if (sameAuthor(data, last)) {
@@ -141,6 +144,38 @@
             counter = messages.length - 50;
         }
         next();
+    }
+
+    function clearBySocket(socket) {
+        var ignored = container.find('.message[data-socket="' + socket.socket_id + '"]');
+        var after = ignored.next('.message:not(.idem)');
+        if (ignored.length) {
+            $window.queue(function(next) {
+                ignored.remove();
+                after.each(function(i, node) {
+                    toggleIdem($(node));
+                });
+                var dates = container.find('.date');
+                var removed = dates.prev('.date').remove().length;
+                if (dates.last().next('.message').length === 0) {
+                    dates.last().remove();
+                    removed++;
+                }
+                if (removed) {
+                    Room.trigger('dates.changed');
+                }
+                if (lastMessage.socket_id == socket.socket_id) {
+                    var last = container.find('.message').last();
+                    lastMessage = {
+                        message_id: Number(last.attr('data-id')),
+                        socket_id: last.attr('data-socket'),
+                        nickname: last.find('.nickname').text(),
+                        date: container.find('.date-text').last().text()
+                    };
+                }
+                next();
+            });
+        }
     }
 
     container.on('click', '.nickname', function() {
@@ -219,6 +254,7 @@
     Room.on('message.created', function(message) {
         if (message.ignore && !Room.socket.ignore) return false;
         if (message.message_id > lastMessage.message_id) {
+            console.log(message, lastMessage);
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
             container.append(nodes);
@@ -230,6 +266,12 @@
                 $window.queue(clearOld);
             }
             Room.trigger('talk.updated');
+        }
+    });
+
+    Room.on('socket.ignore.updated', function(socket) {
+        if (socket.ignore && !Room.socket.ignore) {
+            clearBySocket(socket);
         }
     });
 
