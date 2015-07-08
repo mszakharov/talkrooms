@@ -8,21 +8,21 @@ Room.users = (function() {
 
     var showIgnored;
 
-    function isMySocket(socket) {
-        return socket.socket_id === Room.socket.socket_id;
-    }
-
-    function groupOnline(socket) {
-        var uid = socket.user_id;
-        if (uid) {
-            if (uid === Room.socket.user_id) {
-                return isMySocket(socket);
-            } else {
-                return this[uid] ? false : this[uid] = socket.online;
+    function groupOnline(sockets, mySocketId) {
+        var grouped = [];
+        var indexes = {};
+        for (var i = 0; i < sockets.length; i++) {
+            var socket = sockets[i];
+            if (socket.online) {
+                var digest = socket.user_id || socket.nickname;
+                if (indexes[digest] === undefined) {
+                    indexes[digest] = grouped.push(socket) - 1;
+                } else if (socket.socket_id === mySocketId) {
+                    grouped[indexes[digest]] = socket;
+                }
             }
-        } else {
-            return socket.online !== 0;
         }
+        return grouped;
     }
 
     function notIgnored(socket) {
@@ -33,7 +33,7 @@ Room.users = (function() {
 
     function apply() {
         var ignore = [];
-        var online = sockets.raw.filter(groupOnline, {});
+        var online = groupOnline(sockets.raw, Room.socket.socket_id);
         Room.trigger('users.updated', online.filter(notIgnored, ignore), ignore);
     }
 
