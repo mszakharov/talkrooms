@@ -212,6 +212,7 @@ body {
     margin-bottom: 3px;
     font-size: 14px;
     line-height: 16px;
+    word-wrap: break-word;
 }
 .msg-author > .userpic {
     position: absolute;
