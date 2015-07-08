@@ -271,8 +271,9 @@ body {
 .user {
     border-top: 1px solid #F3F1F0;
     border-bottom: 1px solid #CECCCA;
-    padding: 8px 30px 8px 0;
+    padding: 8px 20px 8px 0;
     line-height: 20px;
+    word-wrap: break-word;
 }
 .user:first-child {
     border-top: none;
@@ -292,10 +293,12 @@ body {
 }
 .user.me {
     position: relative;
+    padding-right: 45px;
 }
 .user.me:after {
     content: '';
     position: absolute;
+    top: 8px;
     right: 20px;
     margin-top: 3px;
     width: 15px;
