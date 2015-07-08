@@ -347,11 +347,28 @@
 
 })();
 
+// Window title
+(function() {
+
+    Room.on('enter', function() {
+        document.title = Room.data.topic;
+    });
+
+    $window.on('focus', function() {
+        document.title = Room.data.topic;
+    });
+
+    Room.on('talk.updated', function() {
+        if (Room.idle) {
+            document.title = '+ ' + Room.data.topic;
+        }
+    });
+
+})();
 
 // Notifier
 (function() {
 
-    var title = document.title;
     var sound = $('#notifier').get(0);
 
     var icon = $('#talk .notifications');
@@ -371,25 +388,14 @@
         }
     }
 
-    $window.on('blur', function() {
-        title = document.title;
-    });
-
-    $window.on('focus', function() {
-        document.title = title;
-    });
-
     Room.on('ready', function() {
         toggleSound(localStorage.getItem('sound_in_' + Room.data.room_id))
     });
 
-    Room.on('talk.updated', function(message) {
-        if (Room.idle) {
-            document.title = '+ ' + title;
-            if (soundEnabled) {
-                sound.currentTime = 0;
-                sound.play();
-            }
+    Room.on('talk.updated', function() {
+        if (Room.idle && soundEnabled) {
+            sound.currentTime = 0;
+            sound.play();
         }
     });
 
