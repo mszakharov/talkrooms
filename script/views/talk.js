@@ -355,7 +355,7 @@
     });
 
     $window.on('focus', function() {
-        document.title = Room.data.topic;
+        if (Room.data) document.title = Room.data.topic;
     });
 
     Room.on('talk.updated', function() {

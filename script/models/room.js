@@ -14,7 +14,6 @@ var Room = new Events;
 
     function admit(data) {
         Room.data = data;
-        Room.trigger('topic.updated', data.topic);
         Rest.sockets.create({hash: data.hash}).done(ready);
     }
 
