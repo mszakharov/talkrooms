@@ -35,8 +35,8 @@
 
     var elem = $('#room .topic');
 
-    Room.on('topic.updated', function(topic) {
-        elem.html(topic);
+    Room.on('enter', function() {
+        elem.html(Room.data.topic);
     });
 
 })();
