@@ -1,3 +1,20 @@
+// Adjust padding to scrollbar width
+(function() {
+
+    var sample = document.createElement('div');
+    sample.style.width = '100px';
+    sample.style.position = 'absolute';
+    sample.style.overflowY = 'scroll';
+    sample.style.top = '-100px';
+
+    document.body.appendChild(sample);
+    var scrollBarWidth = sample.offsetWidth - sample.clientWidth;
+    document.body.removeChild(sample);
+
+    $('#side .side-scrollable').css('padding-right', 25 - scrollBarWidth);
+
+})();
+
 // Users list
 (function() {
 
@@ -25,10 +42,6 @@
     list.on('click', '.user:not(.me) .nickname', function() {
         Room.replyTo($(this).text());
     });
-
-    // Set padding to ignore scrollbar width
-    $('#side .side-scrollable')
-        .css('padding-right', list.width() + 74 - $('#side').width());
 
 })();
 
