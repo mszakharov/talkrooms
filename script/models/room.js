@@ -64,15 +64,24 @@ var Room = new Events;
 
     var path = String.mix('wss://$1/sockets/', window.location.host);
 
+    var connectedAt = 0;
+    var breaksCount = 0;
+
+    function since(time) {
+        var now = new Date();
+        return now - time;
+    }
+
     function onOpen() {
-        console.log('Open socket');
         Room.trigger('connected');
+        connectedAt = new Date();
     }
 
     function onClose(event) {
         console.log('Close socket', event.code);
         Room.trigger('disconnected');
-        if (event.code !== 1000) {
+        breaksCount = since(connectedAt) < 5000 ? breaksCount + 1 : 0;
+        if (event.code !== 1000 && breaksCount < 4) {
             setTimeout(reconnect, 1000);
         }
     }
