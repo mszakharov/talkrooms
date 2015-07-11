@@ -3,7 +3,7 @@
     var form = $('#talk .talk-reply');
     var field = form.find('textarea');
 
-    if (!('WebSocket' in window)) {
+    if (!(window.WebSocket && WebSocket.CLOSED === 3)) {
         form.hide();
         Room.replyTo = $.noop;
         return;
