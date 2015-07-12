@@ -49,13 +49,8 @@ var Room = new Events;
     };
 
     Room.leave = function() {
-        Rest.sockets.destroy(Room.socket.socket_id);
         Room.trigger('leave');
     };
-
-    $window.on('beforeunload', function(event) {
-        if (Room.socket) Room.leave();
-    });
 
 })();
 
