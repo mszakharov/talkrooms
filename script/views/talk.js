@@ -87,6 +87,9 @@
         if (data.socket_id) {
             elem.attr('data-socket', data.socket_id);
         }
+        if (data.user_id) {
+            elem.find('.msg-author').attr('data-id', data.user_id);
+        }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
         } else if (sameAuthor(data, last)) {
@@ -178,8 +181,23 @@
         }
     }
 
+    function getSocket(message) {
+        var socket_id = Number(message.attr('data-socket'));
+        return Room.users.get(socket_id) || {
+            socket_id: socket_id,
+            nickname: message.find('.nickname').text()
+        };
+    }
+
     container.on('click', '.nickname', function() {
         Room.replyTo($(this).text());
+    });
+
+    container.on('click', '.userpic', function(event) {
+        event.stopPropagation();
+        var userpic = $(this);
+        var message = userpic.closest('.message');
+        Profile.show(getSocket(message), userpic);
     });
 
     function loadRecent() {

@@ -16,9 +16,9 @@
         Profile.socket = socket;
         Profile.trigger('show', socket, me);
         if (target) {
-            var position = $(target).position();
+            var position = $(target).offset();
             Profile.position = {
-                top: position.top - 10,
+                top: position.top - 10 - $window.scrollTop(),
                 left: position.left > 20 ? position.left : 20
             };
             Profile.fit();
