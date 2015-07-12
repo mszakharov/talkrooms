@@ -25,21 +25,16 @@
         return socket.socket_id === Profile.socket.socket_id;
     }
 
-    Profile.add(section, function(socket, me) {
+    Profile.on('show', function(socket, me) {
         if (myLevel >= 50 && !me) {
             section.children().hide();
-            if (!socket.user_id) {
-                toggleControls(socket);
-            }
-            return true;
-        } else {
-            return false;
+            section.show();
         }
     });
 
-    Profile.on('loaded', function(data) {
+    Profile.on('ready', function(data) {
         if (section.is(':hidden')) return;
-        if (data.level >= myLevel) {
+        if (data.level && data.level >= myLevel) {
             section.find('.ignore-denied').show();
         } else {
             toggleControls(Profile.socket);

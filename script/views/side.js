@@ -31,9 +31,10 @@
     });
 
     list.on('click', '.me, .userpic', function(event) {
-        var elem = $(this).closest('.user');
         event.stopPropagation();
-        Profile.show(elem.attr('data-socket'), elem);
+        var elem = $(this).closest('.user');
+        var socket_id = Number(elem.attr('data-socket'));
+        Profile.show(Room.users.get(socket_id), elem);
         if (elem.hasClass('me')) {
             $('#my-nickname').select();
         }

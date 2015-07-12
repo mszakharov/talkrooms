@@ -1,36 +1,20 @@
 // Profile
 (function() {
 
-    var sections = [];
-
     var popup = $.popup('#profile', function() {
         this.fadeIn(100);
     });
-
-    function Section(selector, callback) {
-        this.elem = $(selector);
-        this.callback = callback;
-    }
-
-    Section.prototype.toggle = function(socket, me) {
-        if (this.callback(socket, me)) {
-            this.elem.show();
-        } else {
-            this.elem.hide();
-        }
-    };
 
     function isMySocket(socket) {
         var uid = Room.socket.user_id;
         return uid ? (socket.user_id === uid) : (Room.socket.socket_id === socket.socket_id);
     }
 
-    function show(socket_id, target) {
-        var socket = Room.users.get(Number(socket_id));
+    function show(socket, target) {
         var me = isMySocket(socket);
-        sections.forEach(function(section) {
-            section.toggle(socket, me);
-        });
+        popup.find('.section').hide();
+        Profile.socket = socket;
+        Profile.trigger('show', socket, me);
         if (target) {
             var position = $(target).position();
             Profile.position = {
@@ -39,19 +23,32 @@
             };
             Profile.fit();
         }
-        if (socket.user_id) {
-            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
-        }
-        Profile.socket = socket;
         popup.show();
+        if (me) {
+            Profile.trigger('ready', Room.myRole || {});
+        } else if (socket.user_id) {
+            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
+        } else {
+            Profile.trigger('ready', {});
+        }
     }
 
     function loaded(data) {
-        Profile.trigger('loaded', data);
+        Profile.role = data;
+        if (data.photo) {
+            var img = new Image();
+            img.src = '/photos/' + data.photo;
+            img.onload = function() {
+                Profile.trigger('ready', data, img);
+            };
+        } else {
+            Profile.trigger('ready', data);
+        }
     }
 
     function hide() {
         Profile.socket = null;
+        Profile.tole = null;
         popup.hide();
     }
 
@@ -65,10 +62,6 @@
     updateIndexes();
 
     window.Profile = Events.mixin({
-        sections: sections,
-        add: function(selector, toggle) {
-            sections.push(new Section(selector, toggle));
-        },
         fit: function() {
             var wh = $window.height();
             var ph = popup.height();
@@ -86,9 +79,10 @@
 /* Edit nickname */
 (function() {
 
+    var form = $('#profile-edit');
     var field = $('#my-nickname');
 
-    $('#profile-edit').on('submit', function(event) {
+    form.on('submit', function(event) {
         event.preventDefault();
         var value = $.trim(field.val());
         if (value) {
@@ -96,13 +90,10 @@
         }
     });
 
-    Profile.add('#profile-edit', function(socket) {
-        if (Room.socket.socket_id === socket.socket_id) {
-            field.val('').focus();
+    Profile.on('show', function(socket, me) {
+        if (me) {
             field.val(socket.nickname);
-            return true;
-        } else {
-            return false;
+            form.show();
         }
     });
 
@@ -126,25 +117,21 @@
         return String.mix(link, url, titles[type]);
     }
 
-    Profile.add(section, function(socket, me) {
+    Profile.on('show', function(socket, me) {
         if (me) return false;
         section.find('.details-nickname').html(socket.nickname);
-        section.find('.details-link').html(socket.profile_url ? '…' : 'Без авторизации');
+        section.find('.details-link').html(socket.user_id ? 'Профиль…' : 'Без авторизации');
         section.find('.details-photo').remove();
-        return true;
+        section.show();
     });
 
-    Profile.on('loaded', function(data) {
+    Profile.on('ready', function(data, photo) {
         if (section.is(':visible')) {
-            section.find('.details-link').html(renderLink(data.profile_url));
-            if (data.photo) {
-                $('<img/>')
-                    .addClass('details-photo')
-                    .attr('src', '/photos/' + data.photo)
-                    .prependTo(section)
-                    .on('load', function() {
-                        Profile.fit();
-                    });
+            if (data.profile_url) {
+                section.find('.details-link').html(renderLink(data.profile_url));
+            }
+            if (photo) {
+                $(photo).addClass('details-photo').prependTo(section);
                 Profile.fit();
             }
         }
@@ -182,9 +169,13 @@
 })();
 
 /* Login and logout */
-Profile.add('#profile-login', function(socket, me) {
-    return me && !Room.socket.user_id;
-});
-Profile.add('#profile-logout', function(socket, me) {
-    return me && Room.socket.user_id;
-});
+(function() {
+
+    var login = $('#profile-login'),
+        logout = $('#profile-logout');
+
+    Profile.on('show', function(socket, me) {
+        if (me) (Room.socket.user_id ? logout : login).show();
+    });
+
+})();
