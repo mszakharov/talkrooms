@@ -185,7 +185,8 @@
         var socket_id = Number(message.attr('data-socket'));
         return Room.users.get(socket_id) || {
             socket_id: socket_id,
-            nickname: message.find('.nickname').text()
+            nickname: message.find('.nickname').text(),
+            user_id: Number(message.find('.msg-author').attr('data-id'))
         };
     }
 
