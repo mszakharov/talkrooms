@@ -14,6 +14,7 @@ input,
 button,
 textarea {
     font: 17px/21px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #404040;
 }
 
 input,

@@ -108,6 +108,12 @@ body {
     background-repeat: no-repeat;
     border: 1px solid rgba(0, 0, 0, 0.2);
 }
+#talk .userpic {
+    width: 38px;
+    height: 38px;
+    background-size: 40px;
+    border-radius: 4px;
+}
 
 /* Messages */
 .talk-messages {
@@ -131,29 +137,37 @@ body {
 
 /* Reply form */
 .talk-reply {
-    height: 78px;
+    height: 80px;
 }
 .talk-reply .sticky {
     position: fixed;
     bottom: 0;
     width: 100%;
+    -webkit-font-smoothing: subpixel-antialiased;
 }
 .talk-reply .content {
     position: relative;
     margin-left: 25%;
+    padding: 18px 0 20px;
     background: #FFF;
     box-shadow: 0 -1px 0 rgba(0,0,0,0.18);
 }
+.talk-reply .userpic {
+    visibility: hidden;
+    position: absolute;
+    left: 40px;
+    top: 18px;
+}
 .talk-reply .wrapper {
-    margin-right: 145px;
+    margin: 0 120px 0 96px;
 }
 .talk-reply textarea {
     width: 100%;
-    height: 48px;
+    height: 42px;
     margin: 0;
-    padding: 15px 15px 15px 40px;
+    padding: 0;
     border: none;
-    background: transparent;
+    background: #FFF;
     resize: none;
     outline: none;
 }
@@ -163,7 +177,7 @@ body {
     top: 10px;
     width: 90px;
     height: 58px;
-    border-left: 1px solid #D8D8D8;
+    border-left: 1px dotted #C5C5C5;
     cursor: pointer;
 }
 
@@ -218,10 +232,6 @@ body {
     position: absolute;
     left: -56px;
     top: 2px;
-    width: 38px;
-    height: 38px;
-    background-size: 40px;
-    border-radius: 4px;
 }
 .msg-author > .nickname {
     color: #0F6799;

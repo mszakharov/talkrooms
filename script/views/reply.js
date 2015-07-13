@@ -26,6 +26,10 @@
         send();
     });
 
+    form.on('click', function() {
+        field.focus();
+    });
+
     form.on('submit', function(event) {
         event.preventDefault();
         send();
@@ -36,6 +40,19 @@
             event.preventDefault();
             send();
         }
+    });
+
+    function showUserpic() {
+        form.find('.userpic').css({
+            backgroundImage: 'url(' + Userpics.getUrl(Room.socket) + ')',
+            visibility: 'visible'
+        });
+    }
+
+    Room.on('ready', showUserpic);
+
+    Room.on('my.nickname.updated', function() {
+        if (!Room.socket.userpic) showUserpic();
     });
 
     Room.replyTo = function(nickname) {
