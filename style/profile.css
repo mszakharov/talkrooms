@@ -95,7 +95,8 @@
 }
 
 /* Ignore */
-.ignore-denied {
+.ignore-denied,
+.ignore-disabled {
     color: #808080;
 }
 .ignored {

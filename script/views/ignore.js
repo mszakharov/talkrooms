@@ -36,6 +36,8 @@
         if (section.is(':hidden')) return;
         if (data.level && data.level >= myLevel) {
             section.find('.ignore-denied').show();
+        } else if (!Profile.socket.socket_id) {
+            section.find('.ignore-disabled').show();
         } else {
             toggleControls(Profile.socket);
         }
