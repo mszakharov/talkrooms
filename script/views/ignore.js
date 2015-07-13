@@ -22,7 +22,7 @@
     }
 
     function isCurrent(socket) {
-        return socket.socket_id === Profile.socket.socket_id;
+        return Profile.socket && socket.socket_id === Profile.socket.socket_id;
     }
 
     Profile.on('show', function(socket, me) {
