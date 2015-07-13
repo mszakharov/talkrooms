@@ -57,7 +57,7 @@ if (typeof console === 'undefined') {
 $scrollWindow = $({}).extend({
     to: function(pos, dur) {
         var cur = this[0].winst = $window.scrollTop();
-        return this.animate({winst: pos}, dur || Math.abs(pos - cur) / 5 + 200);
+        return this.animate({winst: pos}, dur || Math.abs(pos - cur) / 4 + 250);
     }
 });
 $.Tween.propHooks.winst = {
