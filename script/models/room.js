@@ -110,6 +110,14 @@ Room.on('socket.ignore.updated', function(socket) {
     if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = socket.ignore;
 });
 
+// Update my nickname
+Room.on('socket.nickname.updated', function(socket) {
+    if (Room.socket.socket_id === socket.socket_id) {
+        Room.socket.nickname = socket.nickname;
+        Room.trigger('my.nickname.updated', socket);
+    }
+});
+
 // Inactive window detection
 (function() {
 
