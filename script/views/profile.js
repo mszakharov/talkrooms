@@ -7,7 +7,7 @@
 
     function isMySocket(socket) {
         var uid = Room.socket.user_id;
-        return uid ? (socket.user_id === uid) : (Room.socket.socket_id === socket.socket_id);
+        return uid ? (socket.user_id === uid) : (Room.socket.session_id === socket.session_id);
     }
 
     function show(socket, target) {

@@ -84,8 +84,8 @@
         extendMessage(data);
         var nodes = [];
         var elem = render(data);
-        if (data.socket_id) {
-            elem.attr('data-socket', data.socket_id);
+        if (data.session_id) {
+            elem.attr('data-session', data.session_id);
         }
         if (data.user_id) {
             elem.find('.msg-author').attr('data-id', data.user_id);
@@ -182,9 +182,8 @@
     }
 
     function getSocket(message) {
-        var socket_id = Number(message.attr('data-socket'));
-        return Room.users.get(socket_id) || {
-            socket_id: socket_id,
+        return {
+            session_id: Number(message.attr('data-session')),
             nickname: message.find('.nickname').text(),
             user_id: Number(message.find('.msg-author').attr('data-id'))
         };
@@ -284,12 +283,6 @@
                 $window.queue(clearOld);
             }
             Room.trigger('talk.updated');
-        }
-    });
-
-    Room.on('socket.ignore.updated', function(socket) {
-        if (socket.ignore && !Room.socket.ignore) {
-            clearBySocket(socket);
         }
     });
 

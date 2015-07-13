@@ -3,6 +3,7 @@ var Rest = {
     rooms:    $.Rest('/api/rooms'),
     roles:    $.Rest('/api/roles'),
     sockets:  $.Rest('/api/sockets'),
+    sessions: $.Rest('/api/sessions'),
     messages: $.Rest('/api/messages')
 };
 

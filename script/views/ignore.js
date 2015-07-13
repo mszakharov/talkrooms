@@ -26,7 +26,7 @@
     }
 
     Profile.on('show', function(socket, me) {
-        if (myLevel >= 50 && !me) {
+        if (myLevel >= 50 && !me && socket.session_id) {
             section.children().hide();
             section.show();
         }
@@ -36,8 +36,6 @@
         if (section.is(':hidden')) return;
         if (data.level && data.level >= myLevel) {
             section.find('.ignore-denied').show();
-        } else if (!Profile.socket.socket_id) {
-            section.find('.ignore-disabled').show();
         } else {
             toggleControls(Profile.socket);
         }
@@ -49,7 +47,10 @@
     });
 
     function setIgnore(value) {
-        return Rest.sockets.update(Profile.socket.socket_id, {ignore: value});
+        return Rest.sessions.update(Profile.socket.session_id, {
+            room_id: Room.data.room_id,
+            ignore: value
+        });
     }
 
     ignoreOff.find('button').on('click', function() {
