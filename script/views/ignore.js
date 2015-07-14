@@ -24,11 +24,13 @@
             clear.hide();
         }
         ignoreOn.show();
+        Profile.fit();
     }
 
     function showOff() {
         ignoreOn.hide();
         ignoreOff.show();
+        Profile.fit();
     }
 
     function isCurrent(socket) {
@@ -48,10 +50,10 @@
         if (section.is(':hidden')) return;
         if (data.level && data.level >= myLevel) {
             section.find('.ignore-denied').show();
+            Profile.fit();
         } else {
             toggleControls(Profile.socket);
         }
-        Profile.fit();
     });
 
     Room.on('socket.ignore.updated', function(socket) {
