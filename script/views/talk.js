@@ -181,6 +181,12 @@
     }
 
     function getSocket(message) {
+        var session_id = Number(message.attr('data-session'));
+        var socket = session_id && Room.users.findSession(session_id)[0];
+        return socket || parseSocket(message);
+    }
+
+    function parseSocket(message) {
         var data = {
             session_id: Number(message.attr('data-session')),
             nickname: message.find('.nickname').text(),

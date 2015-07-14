@@ -100,6 +100,11 @@ Room.users = (function() {
     return {
         get: function(socket_id) {
             return sockets.get(socket_id)
+        },
+        findSession: function(session_id) {
+            return sockets.raw.filter(function(socket) {
+                return socket.session_id === session_id;
+            });
         }
     };
 
