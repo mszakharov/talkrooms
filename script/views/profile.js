@@ -14,9 +14,10 @@
         var me = isMySocket(socket);
         popup.find('.section').hide();
         Profile.socket = socket;
+        Profile.target = target && $(target);
         Profile.trigger('show', socket, me);
-        if (target) {
-            var position = $(target).offset();
+        if (Profile.target) {
+            var position = Profile.target.offset();
             Profile.position = {
                 top: position.top - 15 - $window.scrollTop(),
                 left: position.left > 40 ? position.left - 20 : 20
@@ -47,6 +48,7 @@
     }
 
     function hide() {
+        Profile.target = null;
         Profile.socket = null;
         Profile.tole = null;
         popup.hide();

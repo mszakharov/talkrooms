@@ -232,6 +232,7 @@ body {
     position: absolute;
     left: -56px;
     top: 2px;
+    cursor: pointer;
 }
 .msg-author > .nickname {
     color: #0F6799;
