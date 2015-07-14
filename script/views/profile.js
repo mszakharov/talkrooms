@@ -19,7 +19,7 @@
         if (Profile.target) {
             var position = Profile.target.offset();
             Profile.position = {
-                top: position.top - 15 - $window.scrollTop(),
+                top: position.top - 16 - $window.scrollTop(),
                 left: position.left > 40 ? position.left - 20 : 20
             };
             Profile.fit();
