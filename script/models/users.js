@@ -91,11 +91,17 @@ Room.users = (function() {
     Room.on('socket.created', addSocket);
     Room.on('socket.deleted', removeSocket);
 
-    Room.on('socket.online.updated', simplePatch);
-    Room.on('socket.ignore.updated', simplePatch);
+    Room.on('session.ignore.updated', function(session) {
+        var sid = session.session_id;
+        sockets.raw.forEach(function(socket) {
+            if (socket.session_id === sid) socket.ignore = session.ignore;
+        });
+        apply();
+    });
 
     Room.on('socket.nickname.updated', complexPatch);
     Room.on('socket.userpic.updated', complexPatch);
+    Room.on('socket.online.updated', simplePatch);
 
     return {
         get: function(socket_id) {

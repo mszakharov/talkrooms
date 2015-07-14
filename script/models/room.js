@@ -112,8 +112,8 @@ var Room = new Events;
 })();
 
 // Ignore
-Room.on('socket.ignore.updated', function(socket) {
-    if (Room.socket.socket_id === socket.socket_id) Room.socket.ignore = socket.ignore;
+Room.on('session.ignore.updated', function(session) {
+    if (Room.socket.session_id === session.session_id) Room.socket.ignore = session.ignore;
 });
 
 // Update my nickname

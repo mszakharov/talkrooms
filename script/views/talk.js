@@ -456,8 +456,8 @@
         if (role && role.level >= 50) whip.volume = 0.5;
     });
 
-    Room.on('socket.ignore.updated', function(socket) {
-        if (socket.ignore && !Room.socket.ignore) {
+    Room.on('session.ignore.updated', function(session) {
+        if (session.ignore && !Room.socket.ignore) {
             whip.currentTime = 0;
             whip.play();
         }

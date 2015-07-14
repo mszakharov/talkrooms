@@ -33,8 +33,8 @@
         Profile.fit();
     }
 
-    function isCurrent(socket) {
-        return Profile.socket && socket.socket_id === Profile.socket.socket_id;
+    function isCurrent(session) {
+        return Profile.socket && session.session_id === Profile.socket.session_id;
     }
 
     Profile.on('show', function(socket, me) {
@@ -56,8 +56,8 @@
         }
     });
 
-    Room.on('socket.ignore.updated', function(socket) {
-        if (isCurrent(socket)) toggleControls(socket);
+    Room.on('session.ignore.updated', function(session) {
+        if (isCurrent(session)) toggleControls(session);
     });
 
     function setIgnore(value) {
