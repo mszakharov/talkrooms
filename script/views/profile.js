@@ -26,7 +26,7 @@
         }
         popup.show();
         if (me) {
-            Profile.trigger('ready', Room.myRole || {});
+            Profile.trigger('ready', Room.socket);
         } else if (socket.user_id) {
             Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
         } else {
@@ -159,17 +159,17 @@
         cache: false
     };
 
-    function checkLevel(role) {
-        if (role && role.level >= 50) {
+    function checkLevel(socket) {
+        if (socket.level && socket.level >= 50) {
             $.ajax(options).done(loaded);
         }
     }
 
     function loaded() {
-        Room.off('role.updated', checkLevel);
+        Room.off('enter', checkLevel);
     }
 
-    Room.on('role.updated', checkLevel);
+    Room.on('enter', checkLevel);
 
 })();
 

@@ -452,8 +452,8 @@
     var whip = new Audio('/script/sound/whip.mp3');
     whip.volume = 0.15;
 
-    Room.on('role.updated', function(role) {
-        if (role && role.level >= 50) whip.volume = 0.5;
+    Room.on('enter', function(socket) {
+        if (socket.level && socket.level >= 50) whip.volume = 0.5;
     });
 
     Room.on('session.ignore.updated', function(session) {

@@ -1,7 +1,7 @@
 /* Ignore */
 (function() {
 
-    var myLevel = Room.myRole ? Room.myRole.level : 0;
+    var myLevel = Room.socket.level || 0;
     var section = $('#profile-ignore');
 
     var ignoreOn = section.find('.ignore-on'),

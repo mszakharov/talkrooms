@@ -80,12 +80,9 @@ Room.users = (function() {
         apply();
     }
 
-    Room.on('enter', function(role) {
+    Room.on('enter', function(socket) {
+        showIgnored = socket.level ? socket.level >= 50 : false;
         this.promises.push(getSockets());
-    });
-
-    Room.on('role.updated', function(role) {
-        showIgnored = role ? role.level >= 50 : false;
     });
 
     Room.on('socket.created', addSocket);

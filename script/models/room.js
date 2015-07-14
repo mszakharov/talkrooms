@@ -21,12 +21,7 @@ var Room = new Events;
     function ready(socket) {
         Room.promises = [];
         Room.socket = socket;
-        Room.trigger('enter');
-        if (socket.user_id) {
-            Room.promises.push(getRole(socket).done(updateRole));
-        } else {
-            updateRole(null);
-        }
+        Room.trigger('enter', socket);
         $.when.apply($, Room.promises).done(function() {
             Room.trigger('ready');
         });
@@ -38,11 +33,6 @@ var Room = new Events;
 
     function getRole(socket) {
         return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
-    }
-
-    function updateRole(role) {
-        Room.myRole = role;
-        Room.trigger('role.updated', role);
     }
 
     Room.enter = function(hash) {
