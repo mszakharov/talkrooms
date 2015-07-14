@@ -149,35 +149,34 @@
         next();
     }
 
-    function clearBySocket(socket) {
-        var ignored = container.find('.message[data-socket="' + socket.socket_id + '"]');
-        var after = ignored.next('.message:not(.idem)');
-        if (ignored.length) {
-            $window.queue(function(next) {
-                ignored.remove();
-                after.each(function(i, node) {
-                    toggleIdem($(node));
-                });
-                var dates = container.find('.date');
-                var removed = dates.prev('.date').remove().length;
-                if (dates.last().next('.message').length === 0) {
-                    dates.last().remove();
-                    removed++;
-                }
-                if (removed) {
-                    Room.trigger('dates.changed');
-                }
-                if (lastMessage.socket_id == socket.socket_id) {
-                    var last = container.find('.message').last();
-                    lastMessage = {
-                        message_id: Number(last.attr('data-id')),
-                        socket_id: last.attr('data-socket'),
-                        nickname: last.find('.nickname').text(),
-                        date: container.find('.date-text').last().text()
-                    };
-                }
-                next();
-            });
+    function clearMessages(messages) {
+        var wasLast = messages.last().next().length === 0;
+        var after = messages.next('.message:not(.idem)');
+        messages.remove();
+        after.each(function(i, node) {
+            toggleIdem($(node));
+        });
+        clearDates();
+        if (wasLast) {
+            var last = container.find('.message').last();
+            lastMessage = {
+                message_id: Number(last.attr('data-id')),
+                socket_id: last.attr('data-socket'),
+                nickname: last.find('.nickname').text(),
+                date: container.find('.date-text').last().text()
+            };
+        }
+    }
+
+    function clearDates() {
+        var dates = container.find('.date');
+        var waste = dates.prev('.date');
+        if (dates.last().next().length === 0) {
+            waste = waste.add(dates.last());
+        }
+        if (waste.length) {
+            waste.remove();
+            Room.trigger('dates.changed');
         }
     }
 
@@ -288,6 +287,29 @@
                 $window.queue(clearOld);
             }
             Room.trigger('talk.updated');
+        }
+    });
+
+    var ignoredTimer;
+    var ignoredNodes = [];
+
+    function clearIgnored() {
+        $window.queue(function(next) {
+            clearMessages($(ignoredNodes));
+            ignoredNodes = [];
+            next();
+        });
+    }
+
+    Room.on('message.ignore.updated', function(data) {
+        if (data.ignore && !Room.socket.ignore) {
+            clearTimeout(ignoredTimer);
+            var selector = '.message[data-id="' + data.message_id + '"]';
+            var message = container.find(selector);
+            if (message.length) {
+                ignoredNodes.push(container.find(selector)[0]);
+                ignoredTimer = setTimeout(clearIgnored, 50);
+            }
         }
     });
 
