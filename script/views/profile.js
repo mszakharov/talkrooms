@@ -2,7 +2,7 @@
 (function() {
 
     var popup = $.popup('#profile', function() {
-        this.fadeIn(100);
+        this.fadeIn(120);
     });
 
     function isMySocket(socket) {
@@ -18,8 +18,8 @@
         if (target) {
             var position = $(target).offset();
             Profile.position = {
-                top: position.top - 10 - $window.scrollTop(),
-                left: position.left > 20 ? position.left : 20
+                top: position.top - 15 - $window.scrollTop(),
+                left: position.left > 40 ? position.left - 20 : 20
             };
             Profile.fit();
         }
@@ -119,6 +119,8 @@
 
     Profile.on('show', function(socket, me) {
         if (me) return false;
+        section.addClass('no-photo');
+        section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);
         section.find('.details-link').html(socket.user_id ? 'Профиль…' : 'Без авторизации');
         section.find('.details-photo').remove();
@@ -131,6 +133,7 @@
                 section.find('.details-link').html(renderLink(data.profile_url));
             }
             if (photo) {
+                section.removeClass('no-photo');
                 $(photo).addClass('details-photo').prependTo(section);
                 Profile.fit();
             }

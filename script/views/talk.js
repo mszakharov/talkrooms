@@ -182,11 +182,16 @@
     }
 
     function getSocket(message) {
-        return {
+        var data = {
             session_id: Number(message.attr('data-session')),
             nickname: message.find('.nickname').text(),
             user_id: Number(message.find('.msg-author').attr('data-id'))
         };
+        if (data.user_id) {
+            var userpicUrl = message.find('.userpic').css('background-image');
+            data.userpic = userpicUrl.match(/\d+\.png(\?\d+)?/)[0];
+        }
+        return data;
     }
 
     container.on('click', '.nickname', function() {
