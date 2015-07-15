@@ -65,21 +65,6 @@ Room.users = (function() {
         apply();
     }
 
-    function simplePatch(data) {
-        $.extend(sockets.get(data.socket_id), data);
-        apply();
-    }
-
-    function complexPatch(data) {
-        var socket = sockets.get(data.socket_id);
-        $.extend(socket, data);
-        setUserpicUrl(socket);
-        if (data.nickname) {
-            sockets.sort();
-        }
-        apply();
-    }
-
     Room.on('enter', function(socket) {
         showIgnored = socket.level ? socket.level >= 50 : false;
         this.promises.push(getSockets());
@@ -107,8 +92,20 @@ Room.users = (function() {
         apply();
     });
 
-    Room.on('socket.nickname.updated', complexPatch);
-    Room.on('socket.online.updated', simplePatch);
+    Room.on('socket.nickname.updated', function(data) {
+        var socket = sockets.get(data.socket_id);
+        socket.nickname = data.nickname;
+        sockets.sort();
+        if (!socket.userpic) {
+            setUserpicUrl(socket);
+        }
+        apply();
+    });
+
+    Room.on('socket.online.updated', function(data) {
+        sockets.get(data.socket_id).online = data.online;
+        apply();
+    });
 
     return {
         get: function(socket_id) {
