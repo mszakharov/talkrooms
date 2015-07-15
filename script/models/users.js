@@ -81,15 +81,24 @@ Room.users = (function() {
         apply();
     });
 
-    Room.on('user.userpic.updated', function(user) {
-        var uid = user.user_id;
+    function patchUser(user_id, callback) {
         sockets.raw.forEach(function(socket) {
-            if (socket.user_id === uid) {
-                socket.userpic = user.userpic;
-                setUserpicUrl(socket);
-            }
+            if (socket.user_id === user_id) callback(socket);
+        });
+    }
+
+    Room.on('user.userpic.updated', function(user) {
+        patchUser(user.user_id, function(socket) {
+            socket.userpic = user.userpic;
+            setUserpicUrl(socket);
         });
         apply();
+    });
+
+    Room.on('user.photo.updated', function(user) {
+        patchUser(user.user_id, function(socket) {
+            socket.photo = user.photo;
+        });
     });
 
     Room.on('socket.nickname.updated', function(data) {
