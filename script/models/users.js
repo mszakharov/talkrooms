@@ -96,8 +96,18 @@ Room.users = (function() {
         apply();
     });
 
+    Room.on('user.userpic.updated', function(user) {
+        var uid = user.user_id;
+        sockets.raw.forEach(function(socket) {
+            if (socket.user_id === uid) {
+                socket.userpic = user.userpic;
+                setUserpicUrl(socket);
+            }
+        });
+        apply();
+    });
+
     Room.on('socket.nickname.updated', complexPatch);
-    Room.on('socket.userpic.updated', complexPatch);
     Room.on('socket.online.updated', simplePatch);
 
     return {
