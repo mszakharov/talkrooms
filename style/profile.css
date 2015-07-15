@@ -78,9 +78,8 @@
 
 /* Details */
 .details-photo {
-    margin: -5px -10px 5px;
-    width: 300px;
-    border-radius: 3px;
+    margin: -16px -20px 8px;
+    width: 320px;
 }
 .details-userpic {
     display: none;
