@@ -25,17 +25,19 @@
             Profile.fit();
         }
         popup.show();
-        if (me) {
-            Profile.trigger('ready', Room.socket);
-        } else if (socket.user_id) {
-            Rest.roles.get(Room.data.room_id + '/' + socket.user_id).done(loaded);
+        if (socket.user_id && !socket.socket_id) {
+            Rest.roles
+                .get(Room.data.room_id + '/' + socket.user_id)
+                .done(function(data) {
+                    $.extend(socket, data);
+                    preloadPhoto(socket);
+                })
         } else {
-            Profile.trigger('ready', {});
+            preloadPhoto(socket);
         }
     }
 
-    function loaded(data) {
-        Profile.role = data;
+    function preloadPhoto(data) {
         if (data.photo) {
             var img = new Image();
             img.src = '/photos/' + data.photo;
