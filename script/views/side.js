@@ -33,10 +33,12 @@
     list.on('click', '.me, .userpic', function(event) {
         event.stopPropagation();
         var elem = $(this).closest('.user');
-        var socket_id = Number(elem.attr('data-socket'));
-        Profile.show(Room.users.get(socket_id), elem);
         if (elem.hasClass('me')) {
+            Profile.edit(elem);
             $('#my-nickname').select();
+        } else {
+            var socket_id = Number(elem.attr('data-socket'));
+            Profile.show(Room.users.get(socket_id), elem);
         }
     });
 

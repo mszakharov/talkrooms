@@ -10,12 +10,12 @@
         return uid ? (socket.user_id === uid) : (Room.socket.session_id === socket.session_id);
     }
 
-    function show(socket, target) {
+    function show(socket, target, edit) {
         var me = isMySocket(socket);
         popup.find('.section').hide();
         Profile.socket = socket;
         Profile.target = target && $(target);
-        Profile.trigger('show', socket, me);
+        Profile.trigger(edit ? 'edit' : 'show', socket, me);
         if (Profile.target) {
             var position = Profile.target.offset();
             Profile.position = {
@@ -74,6 +74,14 @@
                 left: this.position.left
             });
         },
+        edit: function(target) {
+            if (target) {
+                this.show(Room.socket, target, true);
+            } else {
+                popup.find('.section').hide();
+                this.trigger('edit', Room.socket, true);
+            }
+        },
         show: show,
         hide: hide
     });
@@ -94,11 +102,9 @@
         }
     });
 
-    Profile.on('show', function(socket, me) {
-        if (me) {
-            field.val(socket.nickname);
-            form.show();
-        }
+    Profile.on('edit', function() {
+        field.val(Room.socket.nickname);
+        form.show();
     });
 
 })();
@@ -115,6 +121,11 @@
         ok: 'Профиль в Одноклассниках'
     };
 
+    var edit = section.find('.details-edit');
+    edit.on('click', function() {
+        Profile.edit();
+    });
+
     var link = '<a href="$1" target="_blank">$2</a>';
     function renderLink(url) {
         var type = url.match(types)[1];
@@ -122,7 +133,7 @@
     }
 
     Profile.on('show', function(socket, me) {
-        if (me) return false;
+        edit.toggle(me);
         section.addClass('no-photo');
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);
@@ -181,8 +192,8 @@
     var login = $('#profile-login'),
         logout = $('#profile-logout');
 
-    Profile.on('show', function(socket, me) {
-        if (me) (Room.socket.user_id ? logout : login).show();
+    Profile.on('edit', function() {
+        (Room.socket.user_id ? logout : login).show();
     });
 
 })();

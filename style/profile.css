@@ -35,8 +35,7 @@
 	cursor: pointer;
 }
 #profile button {
-    height: 27px;
-	padding: 2px 9px;
+	padding: 3px 9px;
     vertical-align: top;
 	font-size: 15px;
 }
@@ -103,6 +102,13 @@
     font-size: 14px;
     line-height: 17px;
     color: #808080;
+}
+.details-edit {
+    margin-top: 20px;
+    padding: 7px 13px;
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
 }
 
 /* Details without photo */
