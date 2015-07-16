@@ -66,15 +66,23 @@
     }
 
     function sameAuthor(m1, m2) {
-        return m1.nickname === m2.nickname;
+        return m1.nickname === m2.nickname && m1.recipient_nickname === m2.recipient_nickname;
+    }
+
+    function getNicknames(message) {
+        var recipient = message.find('.msg-recipient').html();
+        return {
+            nickname: message.find('.nickname').text(),
+            recipient_nickname: recipient ? recipient.substring(2) : null
+        };
     }
 
     function toggleIdem(elem) {
         var prev = elem.prev('.message');
         if (prev) {
-            var n1 = prev.find('.nickname').text();
-            var n2 = elem.find('.nickname').text();
-            elem.toggleClass('idem', n1 === n2);
+            var m1 = getNicknames(prev);
+            var m2 = getNicknames(elem);
+            elem.toggleClass('idem', sameAuthor(m1, m2));
         } else {
             elem.removeClass('idem');
         }
@@ -95,7 +103,7 @@
             elem.addClass('private');
             $('<span></span>')
                 .addClass('msg-recipient')
-                .html('&rarr; ' + (me ? 'Я' : data.recipient_nickname))
+                .html('&rarr; ' + (me ? 'я' : data.recipient_nickname))
                 .appendTo(elem.find('.msg-author'));
         }
         if (data.date !== last.date) {
@@ -167,12 +175,11 @@
         clearDates();
         if (wasLast) {
             var last = container.find('.message').last();
-            lastMessage = {
+            lastMessage = $.extend(getNicknames(last), {
                 message_id: Number(last.attr('data-id')),
                 socket_id: last.attr('data-socket'),
-                nickname: last.find('.nickname').text(),
                 date: container.find('.date-text').last().text()
-            };
+            });
         }
     }
 

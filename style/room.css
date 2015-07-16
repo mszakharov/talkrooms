@@ -255,18 +255,6 @@ body {
     word-wrap: break-word;
 }
 
-/* Private message */
-.private .msg-content {
-    border: 1px solid #EDE8DA;
-    border-radius: 3px;
-    padding: 6px 19px 3px 67px;
-    background: #F0ECE1;
-}
-.msg-recipient {
-    color: #B3ACA1;
-    cursor: pointer;
-}
-
 /* Message from the same author */
 .idem {
     margin-top: -5px;
@@ -287,6 +275,29 @@ body {
 }
 .idem .msg-time {
     top: 5px;
+}
+
+/* Private message */
+.private .msg-content {
+    border: 1px solid #EDE8DA;
+    border-radius: 4px;
+    padding: 6px 19px 3px 67px;
+    background: #F0ECE1;
+}
+.private.idem {
+    margin-top: -9px;
+}
+.private.idem:before {
+    top: 15px;
+}
+.private.idem .msg-content {
+    padding-top: 4px;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+.msg-recipient {
+    color: #B3ACA1;
+    cursor: pointer;
 }
 
 /* Users */
