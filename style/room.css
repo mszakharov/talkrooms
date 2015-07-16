@@ -484,27 +484,45 @@ body {
     }
 
     .message {
-        margin: 0 52px 17px 66px;
+        margin-right: 14px;
+        margin-left: 9px;
+    }
+
+    .msg-content {
+        margin-right: 40px;
+        padding-left: 62px;
+        padding-right: 5px;
+    }
+
+    .private .msg-content {
+        padding-left: 61px;
+    }
+
+    .idem::before {
+        left: 32px;
     }
 
     .msg-author > .userpic {
-        left: -52px;
-    }
-
-    .msg-time {
-        width: 38px;
+        left: 10px;
     }
 
     .talk-reply {
-        height: 64px;
+        height: 66px;
     }
 
-    .talk-reply .wrapper {
-        margin-right: 40px;
+    .talk-reply .content {
+        padding: 4px 0;
     }
 
-    .talk-reply textarea {
-        padding: 10px 14px 6px;
+    .reply-wrapper {
+        margin-right: 9px;
+        margin-left: 9px;
+        padding-right: 10px;
+        padding-left: 61px;
+    }
+
+    .reply-wrapper .userpic {
+        left: 9px;
     }
 
     .reply-send {
