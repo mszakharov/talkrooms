@@ -70,10 +70,10 @@
     }
 
     function getNicknames(message) {
-        var recipient = message.find('.msg-recipient').html();
+        var recipient = message.find('.recipient-nickname');
         return {
             nickname: message.find('.nickname').text(),
-            recipient_nickname: recipient ? recipient.substring(2) : null
+            recipient_nickname: recipient.length ? recipient.text() : null
         };
     }
 
@@ -88,6 +88,16 @@
         }
     }
 
+    function renderRecipient(message) {
+        var nickname = message.recipient_nickname;
+        if (nickname === Room.socket.nickname) nickname = 'я';
+        return $('<span></span>')
+            .addClass('msg-recipient')
+            .attr('data-session', message.recipient_session_id)
+            .attr('data-user', message.recipient_id)
+            .html('&rarr; <span class="recipient-nickname">' + nickname + '</span>');
+    }
+
     function renderMessage(data, last) {
         extendMessage(data);
         var nodes = [];
@@ -99,12 +109,8 @@
             elem.find('.msg-author').attr('data-id', data.user_id);
         }
         if (data.recipient_nickname) {
-            var me = data.recipient_nickname === Room.socket.nickname;
+            elem.find('.msg-author').append(renderRecipient(data));
             elem.addClass('private');
-            $('<span></span>')
-                .addClass('msg-recipient')
-                .html('&rarr; ' + (me ? 'я' : data.recipient_nickname))
-                .appendTo(elem.find('.msg-author'));
         }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
