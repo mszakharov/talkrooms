@@ -219,7 +219,19 @@ body {
 /* Message */
 .message {
     position: relative;
-    margin: 0 120px 22px 96px;
+    margin: 0 40px 5px 28px;
+}
+.msg-time {
+    position: absolute;
+    right: 0;
+    top: 27px;
+    font-size: 12px;
+    line-height: 14px;
+    color: #B8B8B8;
+}
+.msg-content {
+    margin-right: 50px;
+    padding: 7px 20px 4px 68px;
 }
 .msg-author {
     padding-top: 3px;
@@ -230,23 +242,13 @@ body {
 }
 .msg-author > .userpic {
     position: absolute;
-    left: -56px;
-    top: 2px;
+    left: 12px;
+    top: 9px;
     cursor: pointer;
 }
 .msg-author > .nickname {
     color: #0F6799;
     cursor: pointer;
-}
-.msg-time {
-    position: absolute;
-    left: 100%;
-    top: 27px;
-    width: 80px;
-    text-align: right;
-    font-size: 12px;
-    line-height: 14px;
-    color: #B8B8B8;
 }
 .msg-text {
     margin: 0 0 4px;
@@ -255,15 +257,18 @@ body {
 
 /* Message from the same author */
 .idem {
-    margin-top: -14px;
+    margin-top: -5px;
 }
 .idem:before {
     content: '';
     position: absolute;
-    left: -34px;
+    left: 34px;
     top: 11px;
     width: 16px;
     border-top: 1px solid #909090;
+}
+.idem .msg-content {
+    padding-top: 0;
 }
 .idem .msg-author {
     display: none;

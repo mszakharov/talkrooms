@@ -102,12 +102,14 @@
 
 <script type="text/html" id="message-template">
 <div class="message" data-id="{message_id}">
-    <div class="msg-author">
-        <div class="userpic" style="background-image: url({userpicUrl});"></div>
-        <span class="nickname">{nickname}</span>
-    </div>
     <time class="msg-time" datetime="{created}">{time}</time>
-    <p class="msg-text">{content}</p>
+    <div class="msg-content">
+        <div class="msg-author">
+            <div class="userpic" style="background-image: url({userpicUrl});"></div>
+            <span class="nickname">{nickname}</span>
+        </div>
+        <p class="msg-text">{content}</p>
+    </div>
 </div>
 </script>
 
