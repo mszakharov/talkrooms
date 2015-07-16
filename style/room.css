@@ -118,11 +118,11 @@ body {
 /* Messages */
 .talk-messages {
     margin-left: 25%;
-    padding: 18px 0 12px;
+    padding: 12px 0 14px;
 }
 .talk-previous {
     display: none;
-    margin: -18px 35px 18px;
+    margin: -12px 35px 12px;
     padding: 15px 5px;
     border-bottom: 1px dashed #CCC;
     font-size: 14px;
@@ -137,7 +137,7 @@ body {
 
 /* Reply form */
 .talk-reply {
-    height: 80px;
+    height: 78px;
 }
 .talk-reply .sticky {
     position: fixed;
@@ -230,7 +230,7 @@ body {
     color: #999999;
 }
 .talk-messages .date {
-    margin: -10px 5px 18px;
+    margin: -5px 5px 16px;
     border-bottom: 1px solid #CCCCCC;
     box-shadow: 0 1px 0 #FFFFFF;
 }
@@ -260,7 +260,7 @@ body {
 /* Message */
 .message {
     position: relative;
-    margin: 0 40px 5px 28px;
+    margin: 5px 40px 5px 28px;
 }
 .msg-time {
     position: absolute;
