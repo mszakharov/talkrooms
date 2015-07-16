@@ -126,6 +126,12 @@
         Profile.edit();
     });
 
+    var sendPrivate = section.find('.details-private');
+    sendPrivate.on('click', function() {
+        Room.replyPrivate(Profile.socket);
+        Profile.hide();
+    });
+
     var link = '<a href="$1" target="_blank">$2</a>';
     function renderLink(url) {
         var type = url.match(types)[1];
@@ -134,6 +140,7 @@
 
     Profile.on('show', function(socket, me) {
         edit.toggle(me);
+        sendPrivate.toggle((socket.user_id || socket.session_id) && !me);
         section.addClass('no-photo');
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);

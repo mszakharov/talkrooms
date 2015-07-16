@@ -103,11 +103,21 @@
     color: #808080;
 }
 .details-edit {
-    margin-top: 20px;
+    margin-top: 18px;
     padding: 7px 13px;
     font-size: 16px;
     line-height: 18px;
     text-align: center;
+}
+.details-private {
+    margin-top: 18px;
+    padding: 7px 13px;
+    border: 1px solid #EDE8DA;
+    border-radius: 4px;
+    background: #F0ECE1;
+    text-align: center;
+    color: #736F67;
+    cursor: pointer;
 }
 
 /* Details without photo */
