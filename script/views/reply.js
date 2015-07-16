@@ -80,6 +80,7 @@
     });
 
     Room.replyTo = function(nickname) {
+        if (!nickname) return field.focus();
         var raw = field.get(0);
         var pos = raw.selectionStart;
         field.focus().val(nickname + ', ' + field.val());

@@ -220,8 +220,50 @@
         return data;
     }
 
+    function isMe(data) {
+        if (data.user_id && data.user_id === Room.socket.user_id) return true;
+        return data.session_id === Room.socket.session_id;
+    }
+
+    function parseRecipient(elem) {
+        return {
+            user_id: Number(elem.attr('data-user')),
+            session_id: Number(elem.attr('data-session')),
+            nickname: elem.find('.recipient-nickname').text()
+        };
+    }
+
+    function replyPrivate(message) {
+        var socket = getSocket(message);
+        if (!isMe(socket)) {
+            Room.replyPrivate(socket);
+        } else {
+            var recipient = message.find('.msg-recipient');
+            Room.replyPrivate(parseRecipient(recipient));
+        }
+    }
+
+    container.on('click', '.msg-recipient', function() {
+        var data = parseRecipient($(this));
+        if (!isMe(data)) {
+            Room.replyPrivate(data);
+        } else {
+            var message = $(this).closest('.message');
+            Room.replyPrivate(getSocket(message));
+        }
+    });
+
     container.on('click', '.nickname', function() {
-        Room.replyTo($(this).text());
+        var target = $(this);
+        var nickname = target.text();
+        var message = target.closest('.message');
+        if (message.hasClass('private')) {
+            replyPrivate(message);
+        } else if (nickname !== Room.socket.nickname) {
+            Room.replyTo(nickname);
+        } else {
+            Room.replyTo();
+        }
     });
 
     container.on('click', '.userpic', function(event) {
