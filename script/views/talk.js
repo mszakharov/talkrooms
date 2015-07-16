@@ -90,6 +90,14 @@
         if (data.user_id) {
             elem.find('.msg-author').attr('data-id', data.user_id);
         }
+        if (data.recipient_nickname) {
+            var me = data.recipient_nickname === Room.socket.nickname;
+            elem.addClass('private');
+            $('<span></span>')
+                .addClass('msg-recipient')
+                .html('&rarr; ' + (me ? 'Я' : data.recipient_nickname))
+                .appendTo(elem.find('.msg-author'));
+        }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
         } else if (sameAuthor(data, last)) {

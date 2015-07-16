@@ -230,7 +230,7 @@ body {
     color: #B8B8B8;
 }
 .msg-content {
-    margin-right: 50px;
+    margin-right: 60px;
     padding: 7px 20px 4px 68px;
 }
 .msg-author {
@@ -253,6 +253,18 @@ body {
 .msg-text {
     margin: 0 0 4px;
     word-wrap: break-word;
+}
+
+/* Private message */
+.private .msg-content {
+    border: 1px solid #EDE8DA;
+    border-radius: 3px;
+    padding: 6px 19px 3px 67px;
+    background: #F0ECE1;
+}
+.msg-recipient {
+    color: #B3ACA1;
+    cursor: pointer;
 }
 
 /* Message from the same author */
