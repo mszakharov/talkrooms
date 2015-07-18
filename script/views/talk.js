@@ -4,7 +4,8 @@
     var day = 24 * 60 * 60 * 1000;
     var months = ' января, февраля, марта, апреля, мая, июня, июля, августа, сентября, октября, ноября, декабря'.split(',');
     var recent = ['сегодня', 'вчера', 'позавчера'];
-    var tonight;
+    var tonight = 0;
+    var timer;
 
     Date.prototype.toHumanTime = function() {
         var m = this.getMinutes();
@@ -21,10 +22,18 @@
     };
 
     function update() {
-        tonight = (new Date).setHours(24, 0, 0, 0);
-        $window.trigger('date.changed');
-        setTimeout(update, tonight + 1000 - (new Date));
+        var now = new Date();
+        if (now > tonight) {
+            tonight = now.setHours(24, 0, 0, 0);
+            $window.trigger('date.changed');
+        }
+        var dayRest = tonight - new Date();
+        clearTimeout(timer);
+        timer = setTimeout(update, dayRest + 1000);
     }
+
+    // Reset timer after sleep mode
+    Room.on('connected', update);
 
     update();
 
