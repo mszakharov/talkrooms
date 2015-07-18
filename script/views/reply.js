@@ -3,14 +3,13 @@
     var form = $('#talk .talk-reply');
     var field = form.find('textarea');
     var wrapper = form.find('.reply-wrapper');
+    var recipient;
 
     if (!(window.WebSocket && WebSocket.CLOSED === 3)) {
         form.hide();
         Room.replyTo = $.noop;
         return;
     }
-
-    var recipient;
 
     function send() {
         var content = field.val().trim();
@@ -31,6 +30,9 @@
                 cancelPrivate();
             }
             field.focus();
+        }
+        if (expanded) {
+            collapseField();
         }
     }
 
@@ -63,6 +65,29 @@
         }
         if (event.which === 8 && recipient && !this.value) {
             cancelPrivate();
+        }
+    });
+
+    var expanded;
+    function collapseField() {
+        var height = field.height();
+        var container = field.parent();
+        container.height(height);
+        field.height('');
+        container.animate({
+            height: field.height()
+        }, Math.round(height / 2) + 50, function() {
+            container.height('');
+        });
+        expanded = false;
+    }
+
+    field.on('input', function(event) {
+        if (this.scrollHeight > this.offsetHeight) {
+            field.height(this.scrollHeight);
+            expanded = true;
+        } else if (expanded && !this.value) {
+            collapseField();
         }
     });
 
