@@ -208,6 +208,7 @@ body {
     background: transparent;
     resize: none;
     outline: none;
+    -webkit-font-smoothing: inherit;
 }
 .reply-private textarea {
     height: 22px;
