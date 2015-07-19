@@ -7,8 +7,21 @@
         this.path = path.replace(/\/$/, '');
     }
 
-    function request(method, url, data) {
-        return $.ajax(url, {
+    function isPrimitive(value) {
+        return typeof value === 'string' || typeof value === 'number';
+    }
+
+    function request(method, path, params) {
+        var url = [path], data;
+        for (var i = 0; i < params.length; i++) {
+            var param = params[i];
+            if (isPrimitive(param)) {
+                url.push(param)
+            } else {
+                data = param;
+            }
+        }
+        return $.ajax(url.join('/'), {
             method: method,
             data: data && JSON.stringify(data)
         });
@@ -16,9 +29,7 @@
 
     $.each(actions, function(action, method) {
         Rest.prototype[action] = function(name, data) {
-    		return typeof name === 'object' ?
-                request(method, this.path, name) :
-                request(method, name ? this.path + '/' + name : this.path, data);
+            return request(method, this.path, arguments);
         };
     });
 

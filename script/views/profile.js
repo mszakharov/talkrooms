@@ -27,7 +27,7 @@
         popup.show();
         if (socket.user_id && !socket.socket_id) {
             Rest.roles
-                .get(Room.data.room_id + '/' + socket.user_id)
+                .get(Room.data.room_id, socket.user_id)
                 .done(function(data) {
                     $.extend(socket, data);
                     preloadPhoto(socket);
