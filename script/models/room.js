@@ -14,6 +14,7 @@ var Room = new Events;
 (function() {
 
     function admit(data) {
+        Room.id = data.room_id;
         Room.data = data;
         Rest.sockets.create({hash: data.hash}).done(ready);
     }
@@ -31,17 +32,18 @@ var Room = new Events;
         Room.trigger('lost');
     }
 
-    function getRole(socket) {
-        return Rest.roles.get(Room.data.room_id + '/' + socket.user_id);
-    }
-
     Room.enter = function(hash) {
+        Room.hash = hash;
         Rest.rooms.get(hash).done(admit).fail(stop);
     };
 
     Room.leave = function() {
-        Rest.sockets.destroy(Room.socket.socket_id);
         Room.trigger('leave');
+        Rest.sockets.destroy(Room.socket.socket_id);
+        Room.socket = null;
+        Room.data = null;
+        Room.hash = null;
+        Room.id = null;
     };
 
     $window.on('beforeunload', function(event) {
