@@ -5,13 +5,8 @@
         this.fadeIn(120);
     });
 
-    function isMySocket(socket) {
-        var uid = Room.socket.user_id;
-        return uid ? (socket.user_id === uid) : (Room.socket.session_id === socket.session_id);
-    }
-
     function show(socket, target, edit) {
-        var me = isMySocket(socket);
+        var me = Room.isMy(socket);
         popup.find('.section').hide();
         Profile.socket = socket;
         Profile.target = target && $(target);

@@ -52,6 +52,15 @@ var Room = new Events;
 
 })();
 
+// Compare user, session and socket id with my socket
+Room.isMy = function(data) {
+    var my = this.socket;
+    return my &&
+        my.socket_id === data.socket_id ||
+        my.session_id === data.session_id ||
+        my.user_id && my.user_id === data.user_id;
+};
+
 // Socket
 (function() {
 
