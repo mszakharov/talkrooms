@@ -129,16 +129,16 @@
     margin-left: 56px;
 }
 
-/* Ignore */
-#profile-ignore .button {
+/* Moderate */
+#profile-moderate .button {
     text-align: center;
 }
-.ignore-off .button {
+.moder-ignore {
     padding: 7px 13px;
     font-size: 16px;
     line-height: 18px;
 }
-.ignored {
+.moder-ignored {
     position: relative;
     padding: 8px 14px;
     border-radius: 3px;
@@ -147,7 +147,7 @@
     font-size: 16px;
     line-height: 18px;
 }
-.ignore-cancel {
+.moder-release {
     position: absolute;
     top: 2px;
     right: 2px;
@@ -156,12 +156,12 @@
     background: url('cancel.svg') no-repeat 9px 9px;
     cursor: pointer;
 }
-.ignore-clear {
+.moder-erase {
     margin-top: 12px;
     padding: 7px 13px;
     font-size: 14px;
     line-height: 16px;
 }
-.ignore-denied {
+.moder-safe {
     color: #808080;
 }

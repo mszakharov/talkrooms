@@ -165,11 +165,11 @@
 
 })();
 
-/* Ignore */
+/* Moderate */
 (function() {
 
     var options = {
-        url: '/script/views/ignore.js',
+        url: '/script/views/moderate.js',
         dataType: 'script',
         cache: false
     };
