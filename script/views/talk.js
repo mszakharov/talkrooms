@@ -513,25 +513,6 @@
 
 })();
 
-// Ignore sound
-(function() {
-
-    var whip = new Audio('/script/sound/whip.mp3');
-    whip.volume = 0.15;
-
-    Room.on('enter', function(socket) {
-        if (socket.level && socket.level >= 50) whip.volume = 0.5;
-    });
-
-    Room.on('session.ignore.updated', function(session) {
-        if (session.ignore && !Room.socket.ignore) {
-            whip.currentTime = 0;
-            whip.play();
-        }
-    });
-
-})();
-
 // Talkrooms vesrion
 (function() {
 

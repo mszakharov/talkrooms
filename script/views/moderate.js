@@ -61,8 +61,18 @@
         }
     }
 
+    var skipWhip;
     function onUpdated(session) {
-        if (isCurrent(session)) toggleControls(session);
+        if (isCurrent(session)) {
+            toggleControls(session);
+        }
+        if (session.ignore) {
+            if (session.session_id === skipWhip) {
+                skipWhip = null;
+            } else {
+                playWhip(0.3);
+            }
+        }
     }
 
     function setIgnore(value) {
@@ -72,7 +82,16 @@
         });
     }
 
+    var whip = new Audio('/script/sound/whip.mp3');
+    function playWhip(volume) {
+        whip.volume = volume || 0.5;
+        whip.currentTime = 0;
+        whip.play();
+    }
+
     decent.find('.moder-ignore').on('click', function() {
+        skipWhip = Profile.socket.session_id;
+        playWhip(0.5);
         setIgnore(true).done(showConvict);
     });
 
