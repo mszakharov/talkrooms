@@ -14,6 +14,17 @@ body {
     text-shadow: 0 1px 0 #F0F0F0;
 }
 
+/* Entry overlay */
+.room-entry {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 8;
+    background: #F6F6F6;
+}
+
 /* Left column */
 #side {
     position: fixed;

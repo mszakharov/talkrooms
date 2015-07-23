@@ -39,13 +39,28 @@
 
 })();
 
-// Topic
+// Entry overlay
 (function() {
 
-    var elem = $('#room .topic');
+    var overlay = $('.room-entry');
+
+    Room.on('ready', function() {
+        overlay.fadeOut(150);
+    });
+
+    Room.on('leave', function() {
+        overlay.show();
+    });
+
+})();
+
+// Header
+(function() {
+
+    var topic = $('#room .topic');
 
     Room.on('enter', function() {
-        elem.html(Room.data.topic);
+        topic.html(Room.data.topic);
     });
 
 })();
