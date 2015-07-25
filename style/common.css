@@ -6,26 +6,51 @@ html, body {
 
 body {
     background: #EBE9E6;
-    color: #404040;
-}
-
-body,
-input,
-button,
-textarea {
     font: 17px/21px 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #404040;
-}
-
-input,
-button,
-textarea {
-    margin: 0;
 }
 
 /* Links */
 a {
     color: #1270b2;
+    background-color: transparent;
+}
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* Forms */
+button,
+input,
+select,
+textarea {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+}
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+input {
+    line-height: normal;
+}
+button {
+    cursor: pointer;
+}
+button[disabled] {
+    cursor: default;
+}
+textarea {
+    overflow: auto;
+    resize: vertical;
 }
 
 /* Popup */
