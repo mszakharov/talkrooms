@@ -1,0 +1,74 @@
+.topic {
+    margin: 0 42px 0 9px;
+    padding: 12px 0 0;
+    font-size: 28px;
+    line-height: 30px;
+}
+
+.room-controls {
+    right: 4px;
+    top: 18px;
+}
+
+.talk-previous {
+    margin-left: 9px;
+    margin-right: 9px;
+}
+
+.message {
+    margin-right: 10px;
+    margin-left: 6px;
+}
+.msg-content {
+    margin-right: 35px;
+    padding-left: 58px;
+    padding-right: 5px;
+}
+.private .msg-content {
+    padding-left: 57px;
+}
+.msg-author > .userpic {
+    left: 8px;
+}
+.idem::before {
+    left: 30px;
+}
+
+.talk-reply {
+    height: 66px;
+}
+.talk-reply .content {
+    padding: 4px 0;
+}
+.reply-wrapper {
+    margin-right: 6px;
+    margin-left: 6px;
+    padding-right: 10px;
+    padding-left: 57px;
+}
+.reply-wrapper .userpic {
+    left: 7px;
+}
+.reply-send {
+    display: none;
+}
+
+#profile {
+    margin-left: -10px;
+    width: 300px;
+}
+.details-photo {
+    width: 300px;
+}
+
+#room-settings {
+    top: 10px;
+    right: 10px;
+    width: 300px;
+}
+
+.updated-text {
+    padding: 10px 14px;
+    font-size: 16px;
+    line-height: 19px;
+}
