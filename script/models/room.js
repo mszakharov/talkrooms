@@ -112,6 +112,19 @@ Room.isMy = function(data) {
 
 })();
 
+// Update room
+(function() {
+
+    function patch(data) {
+        $.extend(Room.data, data);
+    }
+
+    Room.on('room.topic.updated', patch);
+    Room.on('room.hash.updated', patch);
+    Room.on('room.searchable.updated', patch);
+
+})();
+
 // Ignore
 Room.on('session.ignore.updated', function(session) {
     if (Room.socket.session_id === session.session_id) Room.socket.ignore = session.ignore;
