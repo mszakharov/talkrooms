@@ -98,6 +98,7 @@ input.invalid ~ .hint {
 
 /* Checkbox */
 .checkbox {
+    margin: 14px 0;
     position: relative;
     padding-left: 20px;
     line-height: 19px;
@@ -106,9 +107,9 @@ input.invalid ~ .hint {
     padding-left: 20px;
     margin-left: -20px;
 }
-.checkbox input {
+.checkbox-input {
     position: absolute;
-    top: 2px;
+    top: -1px;
     left: 0;
 }
 

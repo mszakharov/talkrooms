@@ -428,9 +428,12 @@ body {
     top: 25px;
     right: 35px;
     width: 380px;
-    padding: 2px 20px;
     overflow: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
+}
+#room-settings .section {
+    padding: 2px 20px;
+    border-bottom: 1px solid #E0E0E0;
 }
 #room-settings .textfield {
     margin-right: 16px;
@@ -442,10 +445,8 @@ body {
     font-size: 24px;
 }
 #room-settings .submit {
-    margin: 16px -20px 0;
-    border-top: 1px solid #E0E0E0;
     background: #F8F8F8;
-    padding: 12px 20px 10px;
+    padding: 12px 20px;
     text-align: right;
 }
 #room-settings button {

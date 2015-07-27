@@ -119,18 +119,23 @@
 </div>
 
 <form id="room-settings" class="popup" novalidate>
-    <div class="textfield">
-        <label for="edit-room-topic">Название комнаты</label>
-        <input type="text" id="edit-room-topic" maxlength="64">
+    <div class="section">
+        <div class="textfield">
+            <label for="edit-room-topic">Название комнаты</label>
+            <input type="text" id="edit-room-topic" maxlength="64">
+        </div>
+        <div class="textfield">
+            <label for="edit-room-hash">Адрес комнаты</label>
+            <input type="text" id="edit-room-hash" maxlength="32" pattern="[a-zA-Z\d]">
+            <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
+        </div>
     </div>
-    <div class="textfield">
-        <label for="edit-room-hash">Адрес комнаты</label>
-        <input type="text" id="edit-room-hash" maxlength="32" pattern="[a-zA-Z\d]">
-        <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
-    </div>
-    <div class="checkbox">
-        <input type="checkbox" id="edit-room-searchable">
-        <label for="edit-room-searchable">Впускать ищущих случайную комнату</label>
+    <div class="section">
+        <div class="checkbox">
+            <span class="checkbox-input"><input type="checkbox" id="edit-room-searchable"></span>
+            <label for="edit-room-searchable">Случайные гости</label>
+            <p class="hint">Когда комната не&nbsp;пуста, в&nbsp;неё через поиск комнат будут приходить случайные собеседники.</p>
+        </div>
     </div>
     <div class="submit">
         <button type="submit">Готово</button>
