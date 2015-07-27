@@ -51,7 +51,6 @@
     }
 
     function onReady(data) {
-        console.log(data.level, myLevel);
         if (section.is(':hidden')) return;
         if (data.level && data.level >= myLevel) {
             section.find('.moder-safe').show();
