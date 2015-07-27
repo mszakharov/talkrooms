@@ -59,8 +59,12 @@ body {
 }
 
 /* Header */
+.talk-header .content,
 .talk-header .placeholder {
-    height: 82px;
+    margin: 0 10px 0 25%;
+}
+.talk-header .placeholder {
+    padding-bottom: 16px;
 }
 .talk-header .sticky {
     position: fixed;
@@ -71,17 +75,19 @@ body {
 .talk-header .content {
     position: relative;
     left: 5px;
-    margin: 0 10px 0 25%;
     background: #F6F6F6;
     box-shadow: 0 1px 0 rgba(0,0,0,0.16);
 }
 .topic {
-    margin: 0 35px;
-    padding: 20px 0 4px;
+    margin: 0 115px 0 35px;
+    padding: 21px 0 5px;
     font-weight: normal;
     font-size: 36px;
-    line-height: 42px;
+    line-height: 40px;
     -webkit-font-smoothing: subpixel-antialiased;
+}
+.placeholder .topic {
+    visibility: hidden;
 }
 
 /* Room controls */
@@ -92,7 +98,7 @@ body {
 }
 .room-controls .control {
     float: right;
-    margin-left: 20px;
+    margin-left: 15px;
     color: #A3A3A3;
     cursor: pointer;
 }
@@ -427,7 +433,7 @@ body {
     position: fixed;
     top: 25px;
     right: 35px;
-    width: 380px;
+    width: 400px;
     overflow: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -512,8 +518,13 @@ body {
 
     .talk-messages,
     .talk-header .content,
+    .talk-header .placeholder,
     .talk-reply .content {
         margin-left: 0;
+    }
+
+    .topic {
+        margin-right: 65px;
     }
 
     .notifications {
@@ -530,14 +541,21 @@ body {
 @media (max-width: 500px) {
 
     .topic {
-        margin: 0 14px;
+        margin: 0 45px 0 14px;
         padding: 12px 0 0;
         font-size: 28px;
         line-height: 30px;
     }
 
-    .talk-header .placeholder {
-        height: 56px;
+    .room-controls {
+        right: 8px;
+        top: 18px;
+    }
+
+    #room-settings {
+        top: 10px;
+        right: 10px;
+        width: 300px;
     }
 
     .message {
