@@ -59,9 +59,12 @@
 
     var topic = $('#room .topic');
 
-    Room.on('enter', function() {
+    function showTopic() {
         topic.html(Room.data.topic);
-    });
+    }
+
+    Room.on('enter', showTopic);
+    Room.on('room.topic.updated', showTopic);
 
 })();
 
@@ -485,11 +488,32 @@
         if (Room.data) document.title = Room.data.topic;
     });
 
+    Room.on('room.topic.updated', function() {
+        if (!Room.idle) document.title = Room.data.topic;
+    });
+
     Room.on('talk.updated', function() {
         if (Room.idle) {
             document.title = '+ ' + Room.data.topic;
         }
     });
+
+})();
+
+// Settings
+(function() {
+
+    function checkLevel(socket) {
+        if (socket.level && socket.level >= 70) {
+            $.getScript('/script/views/settings.js').done(loaded);
+        }
+    }
+
+    function loaded() {
+        Room.off('enter', checkLevel);
+    }
+
+    Room.on('enter', checkLevel);
 
 })();
 

@@ -87,7 +87,7 @@ body {
 /* Room controls */
 .room-controls {
     position: absolute;
-    top: 33px;
+    top: 32px;
     right: 32px;
 }
 .room-controls .control {
@@ -98,6 +98,13 @@ body {
 }
 .room-controls .control:hover {
     color: #808080;
+}
+
+/* Settings icon */
+.room-settings-icon {
+    display: none;
+    margin-top: -1px;
+    margin-right: 4px;
 }
 
 /* Notifications icon */
@@ -413,6 +420,36 @@ body {
 }
 .users-ignored .user {
     border-top: 1px solid #F3F1F0;
+}
+
+/* Room settings */
+#room-settings {
+    position: fixed;
+    top: 25px;
+    right: 35px;
+    width: 380px;
+    padding: 2px 20px;
+    overflow: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+#room-settings .textfield {
+    margin-right: 16px;
+}
+#room-settings .textfield input {
+    width: 100%;
+}
+#edit-room-topic {
+    font-size: 24px;
+}
+#room-settings .submit {
+    margin: 16px -20px 0;
+    border-top: 1px solid #E0E0E0;
+    background: #F8F8F8;
+    padding: 12px 20px 10px;
+    text-align: right;
+}
+#room-settings button {
+    padding: 5px 25px;
 }
 
 /* Talkrooms update */

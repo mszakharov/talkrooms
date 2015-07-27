@@ -28,6 +28,12 @@
             <div class="content">
                 <div class="room-controls">
 
+                    <div class="control room-settings-icon" title="Настройка комнаты">
+                    <svg width="24" height="24">
+                        <path fill-rule="evenodd" fill="currentColor" d="M24,12.89 L24,11.11 L20.19,9.57 L19.51,7.92 L21.12,4.15 L19.85,2.88 L16.08,4.49 L14.43,3.81 L12.89,0 L11.11,0 L9.57,3.81 L7.92,4.49 L4.15,2.88 L2.88,4.15 L4.49,7.92 L3.81,9.57 L0,11.11 L0,12.89 L3.81,14.43 L4.49,16.08 L2.88,19.85 L4.15,21.12 L7.92,19.51 L9.57,20.19 L11.11,24 L12.89,24 L14.43,20.19 L16.08,19.51 L19.85,21.12 L21.12,19.85 L19.51,16.08 L20.19,14.43 z M7.5,12 a4.5,4.5 0 1 0 9,0 a4.5,4.5 0 1 0 -9,0"/>
+                    </svg>
+                    </div>
+
                     <div class="control notifications" title="Звук нового сообщения в неактивном окне">
                     <svg width="35" height="24">
                         <path d="M10,18 C12,16,12.5,13,12.5,9.25 C12.5,3,22.5,3,22.5,9.25 C22.5,13,23,16,25,18 z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -111,6 +117,26 @@
         <a href="/api/logout">Выйти</a>
     </div>
 </div>
+
+<form id="room-settings" class="popup" novalidate>
+    <div class="textfield">
+        <label for="edit-room-topic">Название комнаты</label>
+        <input type="text" id="edit-room-topic" maxlength="64">
+    </div>
+    <div class="textfield">
+        <label for="edit-room-hash">Адрес комнаты</label>
+        <input type="text" id="edit-room-hash" maxlength="32" pattern="[a-zA-Z\d]">
+        <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
+    </div>
+    <div class="checkbox">
+        <input type="checkbox" id="edit-room-searchable">
+        <label for="edit-room-searchable">Впускать ищущих случайную комнату</label>
+    </div>
+    <div class="submit">
+        <button type="submit">Готово</button>
+    </div>
+</form>
+
 </div>
 
 <script type="text/html" id="message-template">
