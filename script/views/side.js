@@ -30,6 +30,14 @@
         list.find('.user[data-socket="' + Room.socket.socket_id + '"]').addClass('me');
     });
 
+    Room.on('ready', function() {
+        list.fadeIn(150);
+    });
+
+    Room.on('leave', function() {
+        list.hide();
+    });
+
     list.on('click', '.me, .userpic', function(event) {
         event.stopPropagation();
         var elem = $(this).closest('.user');

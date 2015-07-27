@@ -375,6 +375,7 @@ body {
 
 /* Users */
 .room-users {
+    display: none;
     margin: 0 0 15px 70px;
     padding-top: 10px;
     border-bottom: 1px solid #F3F1F0;
