@@ -439,7 +439,11 @@
         var active = dates.length > 1;
         headerHeight = header.height();
         dates = container.find('.date').map(getDate);
-        toggle(window.pageYOffset);
+        if (dates.length) {
+            toggle(window.pageYOffset);
+        } else {
+            value.text('сегодня');
+        }
         if (dates.length < 2 && active) {
             window.removeEventListener('scroll', check, false);
             window.removeEventListener('resize', update);
