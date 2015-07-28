@@ -314,6 +314,7 @@
                 lastMessage = recent[recent.length - 1];
                 container.append(nodes);
                 container.find('.date').first().hide();
+                container.show();
                 $window.scrollTop($document.height() - $window.height() - 1);
                 Room.trigger('dates.changed');
                 counter = recent.length;
@@ -362,6 +363,10 @@
 
     Room.on('enter', function() {
         Room.promises.push(loadRecent());
+    });
+
+    Room.on('leave', function() {
+        container.hide();
     });
 
     Room.on('message.created', function(message) {
