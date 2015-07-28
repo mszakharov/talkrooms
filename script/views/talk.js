@@ -310,9 +310,14 @@
                 } else {
                     previous.hide();
                 }
-                var nodes = renderMessages(recent.reverse());
-                lastMessage = recent[recent.length - 1];
-                container.append(nodes);
+                if (recent.length) {
+                    var nodes = renderMessages(recent.reverse());
+                    lastMessage = recent[recent.length - 1];
+                    container.append(nodes);
+                } else {
+                    lastMessage = {message_id: 0, date: 'сегодня'};
+                    container.append(renderDate('сегодня'));
+                }
                 container.find('.date').first().hide();
                 container.show();
                 $window.scrollTop($document.height() - $window.height() - 1);
@@ -414,8 +419,10 @@
         container.find('.date').each(function() {
             var elem = $(this);
             var time = elem.next('.message').find('time').attr('datetime');
-            date = (new Date(time)).toSmartDate();
-            elem.find('.date-text').text(date);
+            if (time) {
+                date = (new Date(time)).toSmartDate();
+                elem.find('.date-text').text(date);
+            }
         });
         Room.trigger('dates.changed');
         lastMessage.date = date;
@@ -439,11 +446,7 @@
         var active = dates.length > 1;
         headerHeight = header.height();
         dates = container.find('.date').map(getDate);
-        if (dates.length) {
-            toggle(window.pageYOffset);
-        } else {
-            value.text('сегодня');
-        }
+        toggle(window.pageYOffset);
         if (dates.length < 2 && active) {
             window.removeEventListener('scroll', check, false);
             window.removeEventListener('resize', update);
