@@ -23,7 +23,6 @@
     font-size: 16px;
     line-height: 21px;
 }
-#profile  button,
 #profile .button {
 	border: 1px solid #C7C7C7;
 	border-radius: 3px;
@@ -45,7 +44,6 @@
     margin-top: 8px;
     font-size: 14px;
     line-height: 17px;
-    color: #666;
 }
 
 /* Login links */
@@ -60,20 +58,15 @@
 }
 
 /* Edit profile */
-#profile-edit label {
-    display: block;
-    margin: 0 0 8px;
-    font-size: 14px;
-    line-height: 16px;
+#profile-edit .textfield {
+    margin-top: 0;
+    margin-right: 16px;
 }
 #profile-edit .submit {
     margin-top: 10px;
 }
 #my-nickname {
-    width: 264px;
-    border: 1px solid #B8B8B8;
-    border-radius: 3px;
-    padding: 3px 7px;
+    width: 100%;
 }
 
 /* Details */

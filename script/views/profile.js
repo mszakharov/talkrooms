@@ -92,7 +92,9 @@
     form.on('submit', function(event) {
         event.preventDefault();
         var value = $.trim(field.val());
-        if (value) {
+        if (value === Profile.socket.nickname) {
+            Profile.hide();
+        } else if (value) {
             Rest.sockets.update(Room.socket.socket_id, {nickname: value}).done(Profile.hide);
         }
     });
@@ -139,7 +141,7 @@
         section.addClass('no-photo');
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);
-        section.find('.details-link').html(socket.user_id ? 'Профиль…' : 'Без авторизации');
+        section.find('.details-link').html(socket.user_id ? 'загрузка профиля…' : 'без профиля');
         section.find('.details-photo').remove();
         section.show();
     });

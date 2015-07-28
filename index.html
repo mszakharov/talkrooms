@@ -83,10 +83,12 @@
 
 <div class="popup" id="profile">
     <form class="section" id="profile-edit">
-        <label for="my-nickname">Имя</label>
-        <input type="text" id="my-nickname" maxlength="32">
+        <div class="textfield">
+            <label for="my-nickname">Имя в этой комнате</label>
+            <input type="text" id="my-nickname" maxlength="32">
+        </div>
         <div class="submit">
-            <button type="submit">Сохранить</button>
+            <button type="submit">Готово</button>
         </div>
     </form>
     <div class="section" id="profile-details">
@@ -116,7 +118,7 @@
             <a class="login-vk" href="/api/login/vk">Вконтакте</a> или
             <a class="login-ok" href="/api/login/ok">Одноклассники</a>
         </p>
-        <p class="hint">чтобы загрузить оттуда фотографию и зарезервировать имя</p>
+        <p class="hint">чтобы загрузить оттуда фотографию, общаться с нескольких устройств и создавать свои комнаты</p>
     </div>
     <div class="section" id="profile-logout">
         <a href="/api/logout">Выйти</a>
