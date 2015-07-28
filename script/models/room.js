@@ -119,6 +119,10 @@ Room.isMy = function(data) {
         $.extend(Room.data, data);
     }
 
+    Room.on('room.hash.updated', function(data) {
+        Room.hash = data.hash;
+    });
+
     Room.on('room.topic.updated', patch);
     Room.on('room.hash.updated', patch);
     Room.on('room.searchable.updated', patch);
@@ -148,6 +152,39 @@ Room.on('socket.nickname.updated', function(socket) {
     $window.on('focus', function() {
         Room.idle = false;
     });
+
+})();
+
+// Router
+(function() {
+
+    var history = window.history;
+    var defaultHash = 'chat30';
+
+    function checkUrl() {
+        var hash = location.hash.replace(/^#/, '');
+        if (hash !== Room.hash && Room.socket) {
+            Room.leave();
+        }
+        if (hash) {
+            Room.enter(hash);
+        } else {
+            replaceState(defaultHash);
+            Room.enter(defaultHash);
+        }
+    }
+
+    function replaceState(hash, title) {
+        history.replaceState({}, title || document.title, '#' + hash);
+    }
+
+    Room.on('room.hash.updated', function(data) {
+        replaceState(data.hash, Room.data.topic);
+    });
+
+    $window.on('popstate', checkUrl);
+
+    $(checkUrl);
 
 })();
 
