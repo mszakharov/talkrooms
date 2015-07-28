@@ -480,8 +480,14 @@
 // Window title
 (function() {
 
+    var mainTitle = document.title;
+
     Room.on('enter', function() {
         document.title = Room.data.topic;
+    });
+
+    Room.on('leave', function() {
+        document.title = mainTitle;
     });
 
     $window.on('focus', function() {
