@@ -24,6 +24,21 @@ body {
     z-index: 8;
     background: #F6F6F6;
 }
+.entry-fail {
+    display: none;
+    position: absolute;
+    left: 25%;
+    top: 49%;
+    right: 0;
+    margin-top: -15px;
+    padding: 0 10%;
+    font-size: 28px;
+    line-height: 30px;
+    color: #A0A0A0;
+    text-align: center;
+    word-wrap: break-word;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
 
 /* Left column */
 #side {
@@ -509,6 +524,10 @@ body {
         margin-left: 250px;
     }
 
+    .entry-fail {
+        left: 250px;
+    }
+
 }
 
 @media (max-width: 800px) {
@@ -522,6 +541,10 @@ body {
     .talk-header .placeholder,
     .talk-reply .content {
         margin-left: 0;
+    }
+
+    .entry-fail {
+        left: 0;
     }
 
     .topic {

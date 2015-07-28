@@ -10,6 +10,12 @@
     top: 18px;
 }
 
+.entry-fail {
+    padding: 0 20px;
+    font-size: 22px;
+    line-height: 24px;
+}
+
 .talk-previous {
     margin-left: 9px;
     margin-right: 9px;

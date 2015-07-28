@@ -43,13 +43,19 @@
 (function() {
 
     var overlay = $('.room-entry');
+    var fail = overlay.find('.entry-fail');
 
     Room.on('ready', function() {
         overlay.fadeOut(150);
     });
 
     Room.on('leave', function() {
+        fail.hide().empty();
         overlay.show();
+    });
+
+    Room.on('lost', function() {
+        fail.html('Комната #' + Room.hash + ' не найдена').show();
     });
 
 })();
@@ -500,6 +506,10 @@
 
     Room.on('leave', function() {
         document.title = mainTitle;
+    });
+
+    Room.on('lost', function() {
+        document.title = 'Комната не найдена';
     });
 
     $window.on('focus', function() {
