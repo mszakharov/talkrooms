@@ -2,9 +2,11 @@
 
     var icon = $('.room-settings-icon');
     var form = $.popup('#room-settings', function() {
+        form.find('.error').remove();
         topic.val(Room.data.topic);
         hash.val(Room.data.hash).removeClass('invalid');
         searchable.prop('checked', Room.data.searchable);
+        submit.prop('disabled', false);
         this.fadeIn(120);
     });
 
@@ -33,7 +35,7 @@
 
     var searchable = $('#edit-room-searchable');
 
-    var submit = form.find('button[type="submit"]').prop('disabled', false);
+    var submit = form.find('button[type="submit"]');
 
     icon.on('click', function() {
         form.show();
@@ -77,12 +79,23 @@
             submit.prop('disabled', true);
             Rest.rooms
                 .update(Room.data.hash, data)
-                .then(function() {
+                .always(function() {
                     submit.prop('disabled', false);
                 })
                 .done(function() {
                     form.hide();
-                });
+                })
+                .fail(showError);
+        }
+    }
+
+    function showError(error) {
+        if (error.status === 409) {
+            var context = hash.parent();
+            context.append('<p class="error">Увы, этот адрес уже занят, выберите другой</p>');
+            hash.one('input', function() {
+                context.find('.error').remove();
+            });
         }
     }
 

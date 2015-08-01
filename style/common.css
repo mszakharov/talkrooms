@@ -83,9 +83,13 @@ textarea {
     border-color: #129FEA;
 }
 .textfield .hint {
-    margin-top: 4px;
+    margin: 4px 0 0;
     font-size: 13px;
     line-height: 15px;
+}
+.textfield .error {
+    margin: 8px 0 0;
+    color: #ca3c30;
 }
 
 /* Invalid field */
