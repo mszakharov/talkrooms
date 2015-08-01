@@ -56,3 +56,67 @@
 
 })();
 
+// Find another room
+(function() {
+
+    var overlay = $('.room-entry');
+    var back = overlay.find('.entry-back');
+
+    function changeRoom(data) {
+        Router.navigate(data.hash);
+    }
+
+    function searchRoom() {
+        Rest.rooms
+            .create('search')
+            .done(changeRoom)
+            .fail(searchFailed);
+    }
+
+    function searchFailed() {
+        if (Room.socket) {
+            back.attr('data-hash', Room.data.hash);
+            back.parent().show();
+            Room.leave();
+        } else {
+            back.parent().hide();
+        }
+        overlay.find('.search-failed').show().siblings().hide();
+    }
+
+    $('.actions-search .action-link').on('click', searchRoom);
+
+    overlay.find('.entry-search').on('click', searchRoom);
+
+    back.on('click', function() {
+        back.closest('.entry-text').hide();
+        Room.enter(back.attr('data-hash'));
+    });
+
+})();
+
+// Create room
+(function() {
+
+    var create = $('.actions-create');
+
+    function changeRoom(data) {
+        Router.navigate(data.hash);
+    }
+
+    create.find('.action-link').on('click', function() {
+        Rest.rooms
+            .create()
+            .done(changeRoom);
+    });
+
+    Room.on('enter', function(socket) {
+        if (socket.user_id) {
+            create.slideDown(150);
+        } else {
+            create.hide();
+        }
+    });
+
+})();
+

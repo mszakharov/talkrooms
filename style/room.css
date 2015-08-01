@@ -5,6 +5,8 @@ body {
 
 /* Entry overlay */
 .room-entry {
+	display: flex;
+	align-items: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -12,21 +14,21 @@ body {
     height: 100%;
     z-index: 8;
     background: #F6F6F6;
-}
-.entry-fail {
-    display: none;
-    position: absolute;
-    left: 25%;
-    top: 49%;
-    right: 0;
-    margin-top: -15px;
-    padding: 0 10%;
-    font-size: 28px;
-    line-height: 30px;
-    color: #A0A0A0;
-    text-align: center;
-    word-wrap: break-word;
     -webkit-font-smoothing: subpixel-antialiased;
+}
+.entry-text {
+    display: none;
+    margin: 0 60px 0 25%;
+    padding: 40px 40px 50px;
+}
+.entry-text h6 {
+    margin: 0 0 10px;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 26px;
+}
+.entry-text .hint {
+    font: inherit;
 }
 
 /* Left column */
@@ -40,6 +42,16 @@ body {
     background: #E3E2E1;
     overflow: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
+}
+#side:after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 100%;
+    width: 10px;
+    height: 100%;
+    padding: 20px 0;
+    box-shadow: -1px 0px 0px 0px rgba(0,0,0,0.05), 0px 0px 15px 0px rgba(0,0,0,0.06);
 }
 .side-scrollable {
     position: absolute;
@@ -58,17 +70,38 @@ body {
     background: #7C9EA3;
     color: #FFF;
 }
-
-
-#side:after {
-    content: '';
+.side-actions {
     position: absolute;
-    top: -20px;
-    left: 100%;
-    width: 10px;
-    height: 100%;
-    padding: 20px 0;
-    box-shadow: -1px 0px 0px 0px rgba(0,0,0,0.05), 0px 0px 15px 0px rgba(0,0,0,0.06);
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 2px 0;
+    background: url('side.png') #E3E2E1;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.05);
+}
+.actions-search,
+.actions-create {
+    margin: 0 6px;
+    padding: 12px 20px;
+}
+.actions-create {
+    display: none;
+    border-top: 1px solid #CECCCA;
+    box-shadow: inset 0 1px 0 #F3F1F0;
+}
+.action-link {
+    cursor: pointer;
+    color: #807e7d;
+}
+.action-icon {
+    width: 22px;
+    height: 15px;
+    vertical-align: -2px;
+}
+.action-path {
+    stroke-width: 3px;
+    stroke: currentColor;
+    fill: none;
 }
 
 /* Header */
@@ -511,12 +544,9 @@ body {
 
     .talk-messages,
     .talk-header .content,
-    .talk-reply .content {
+    .talk-reply .content,
+    .entry-text {
         margin-left: 250px;
-    }
-
-    .entry-fail {
-        left: 250px;
     }
 
 }
@@ -530,12 +560,9 @@ body {
     .talk-messages,
     .talk-header .content,
     .talk-header .placeholder,
-    .talk-reply .content {
+    .talk-reply .content,
+    .entry-text {
         margin-left: 0;
-    }
-
-    .entry-fail {
-        left: 0;
     }
 
     .topic {

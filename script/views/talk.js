@@ -43,19 +43,18 @@
 (function() {
 
     var overlay = $('.room-entry');
-    var fail = overlay.find('.entry-fail');
 
     Room.on('ready', function() {
         overlay.fadeOut(150);
     });
 
     Room.on('leave', function() {
-        fail.hide().empty();
+        overlay.children().hide();
         overlay.show();
     });
 
     Room.on('lost', function() {
-        fail.html('Комната #' + Room.hash + ' не найдена').show();
+        overlay.find('.entry-failed').show();
     });
 
 })();

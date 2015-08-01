@@ -186,5 +186,12 @@ Room.on('socket.nickname.updated', function(socket) {
 
     $(checkUrl);
 
+    window.Router = {
+        navigate: function(hash, title) {
+            history.pushState({}, title || '', '#' + hash);
+            checkUrl();
+        }
+    };
+
 })();
 

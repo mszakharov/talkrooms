@@ -14,13 +14,25 @@
 
 <div id="room">
 <div class="room-entry">
-    <div class="entry-fail"></div>
+    <div class="entry-text entry-failed">
+        <h6>Комната не найдена</h6>
+        <p class="hint">Возможно, у комнаты, в которую вы хотите зайти, изменился адрес. Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>.</p>
+    </div>
+    <div class="entry-text search-failed">
+        <h6>Нет подходящей комнаты</h6>
+        <p class="hint">К сожалению, в других комнатах сейчас нет собеседников.</p>
+        <p class="hint"><span class="link entry-back">Вернуться</span></p>
+    </div>
 </div>
 
 <div id="side">
     <div class="side-scrollable">
         <h2 class="talkrooms">Talkrooms</h2>
         <div class="room-users"></div>
+    </div>
+    <div class="side-actions">
+        <div class="actions-search"><span class="action-link"><svg class="action-icon"><g class="action-path"><circle cx="6" cy="6" r="4.5"/><path d="M9,9 l5,5"></svg>Другая комната</span></div>
+        <div class="actions-create"><span class="action-link"><svg class="action-icon"><path class="action-path" d="M7.5,1 V14 M1,7.5 H14"/></svg>Создать комнату</span></div>
     </div>
 </div>
 <div id="talk">

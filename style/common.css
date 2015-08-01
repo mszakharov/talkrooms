@@ -19,6 +19,11 @@ a:active,
 a:hover {
     outline: 0;
 }
+.link {
+    color: #1270b2;
+    text-decoration: underline;
+    cursor: pointer;
+}
 
 /* Forms */
 button,
