@@ -3,17 +3,6 @@ body {
     background: #F6F6F6;
 }
 
-/* Logo */
-.talkrooms {
-    margin: 0 36px;
-    padding: 20px 0;
-    font-weight: normal;
-    font-size: 36px;
-    line-height: 42px;
-    color: #706E6D;
-    text-shadow: 0 1px 0 #F0F0F0;
-}
-
 /* Entry overlay */
 .room-entry {
     position: fixed;
@@ -60,7 +49,16 @@ body {
     height: 100%;
     overflow-x: hidden;
     overflow-y: scroll;
+    background: url('side.png');
 }
+.talkrooms {
+    margin: 0;
+    padding: 12px 26px;
+    font: 26px/30px 'Trebuchet MS', 'Helvetica Neue', sans-serif;
+    background: #7C9EA3;
+    color: #FFF;
+}
+
 
 #side:after {
     content: '';
@@ -391,20 +389,16 @@ body {
 /* Users */
 .room-users {
     display: none;
-    margin: 0 0 15px 70px;
-    padding-top: 10px;
-    border-bottom: 1px solid #F3F1F0;
+    margin: 0 0 15px 60px;
+    padding: 18px 0 50px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .user {
-    border-top: 1px solid #F3F1F0;
     border-bottom: 1px solid #CECCCA;
+    box-shadow: 0 1px 0 #F3F1F0;
     padding: 8px 20px 8px 0;
     line-height: 20px;
     word-wrap: break-word;
-}
-.user:first-child {
-    border-top: none;
 }
 .user > .userpic {
     position: absolute;
@@ -439,9 +433,6 @@ body {
 }
 .users-ignored .nickname {
     color: #B8B8B8;
-}
-.users-ignored .user {
-    border-top: 1px solid #F3F1F0;
 }
 
 /* Room settings */
