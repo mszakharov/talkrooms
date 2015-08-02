@@ -263,10 +263,10 @@
     function replyPrivate(message) {
         var socket = getSocket(message);
         if (Room.isMy(socket)) {
-            Room.replyPrivate(socket);
-        } else {
             var recipient = message.find('.msg-recipient');
             Room.replyPrivate(parseRecipient(recipient));
+        } else {
+            Room.replyPrivate(socket);
         }
     }
 
