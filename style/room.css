@@ -422,8 +422,8 @@ body {
 /* Users */
 .room-users {
     display: none;
-    margin: 0 0 15px 60px;
-    padding: 18px 0 50px;
+    margin-left: 60px;
+    padding: 18px 0 113px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .user {
