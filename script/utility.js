@@ -54,17 +54,44 @@ if (typeof console === 'undefined') {
 }
 
 // Smooth window scrolling
-$scrollWindow = $({}).extend({
-    to: function(pos, dur) {
-        var cur = this[0].winst = $window.scrollTop();
-        return this.animate({winst: pos}, dur || Math.abs(pos - cur) / 4 + 250);
+(function() {
+
+    var scroller = $({});
+    var interrupted;
+
+    function setPosition(value) {
+        if (!interrupted) {
+            window.scrollTo(0, Math.round(value));
+        }
     }
-});
-$.Tween.propHooks.winst = {
-    set: function(tween) {
-        window.scrollTo(0, tween.now);
+
+    function getDuration(a, b) {
+        return 300 + Math.abs(a - b) * 7;
     }
-};
+
+    window.addEventListener('wheel', function() {
+        interrupted = true;
+    });
+
+    $window.scrollTo = function(value, duration) {
+        return this.queue(function(next) {
+            var cur = $window.scrollTop();
+            var pos = typeof value === 'function' ? value(cur) : value;
+            if (pos !== undefined) {
+                interrupted = false;
+                scroller[0].position = cur;
+                scroller.animate({position: pos}, {
+                    complete: next,
+                    duration: duration || getDuration(pos, cur),
+                    step: setPosition
+                });
+            } else {
+                next();
+            }
+        });
+    };
+
+})();
 
 // Popup
 $.popup = function(selector, show, hide) {

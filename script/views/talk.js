@@ -167,24 +167,6 @@
         return $('<div class="date"><span class="date-text">' + date + '</span></div>');
     }
 
-    var scrolledIdle = 0;
-
-    $window.on('focus', function() {
-        scrolledIdle = 0;
-    });
-
-    function scrollDown(offset) {
-        var wh = $window.height();
-        var st = $window.scrollTop();
-        if (scrolledIdle < wh / 2 && offset < st + wh) {
-            var pos = $document.height() - wh;
-            if (Room.idle) {
-                scrolledIdle += pos - st;
-            }
-            $scrollWindow.stop(true).to(pos);
-        }
-    }
-
     function clearOld(next) {
         var messages = container.find('.message');
         var scrolled = $window.scrollTop();
@@ -361,8 +343,7 @@
                 container.find('.date').first().hide();
                 Room.trigger('dates.changed');
                 var pos = oldFirst.next().offset().top - offset;
-                $window.scrollTop(pos);
-                $scrollWindow.delay(150).to(pos - 150);
+                $window.scrollTop(pos).delay(150).scrollTo(pos - 150, 400);
                 counter += messages.length;
                 previous.removeClass('loading');
             })
@@ -385,7 +366,7 @@
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
             container.append(nodes);
-            scrollDown($(nodes).offset().top);
+            scrollDown(nodes[0]);
             if (nodes.length > 1) {
                 Room.trigger('dates.changed');
             }
@@ -395,6 +376,26 @@
             Room.trigger('talk.updated');
         }
     });
+
+    var scrolledIdle = 0;
+
+    $window.on('focus', function() {
+        scrolledIdle = 0;
+    });
+
+    function scrollDown(node) {
+        $window.scrollTo(function(now) {
+            var height = $window.height();
+            var offset = $(node).offset().top;
+            if (scrolledIdle < height / 2 && offset < now + height) {
+                var pos = $document.height() - height;
+                if (Room.idle) {
+                    scrolledIdle += pos - now;
+                }
+                return pos;
+            }
+        });
+    }
 
     var ignoredTimer;
     var ignoredNodes = [];
