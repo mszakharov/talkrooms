@@ -67,6 +67,7 @@
     }
 
     function searchRoom() {
+        back.closest('.entry-text').hide();
         Rest.rooms
             .create('search')
             .done(changeRoom)
@@ -74,19 +75,22 @@
     }
 
     function searchFailed() {
-        if (Room.socket) {
-            back.attr('data-hash', Room.data.hash);
-            back.parent().show();
-            Room.leave();
-        } else {
-            back.parent().hide();
-        }
+        Room.leave();
         overlay.find('.search-failed').show().siblings().hide();
     }
 
     $('.actions-search .action-link').on('click', searchRoom);
 
     overlay.find('.entry-search').on('click', searchRoom);
+
+    Room.on('enter', function() {
+        back.attr('data-hash', Room.data.hash);
+        back.parent().show();
+    });
+
+    Room.on('lost', function() {
+        back.parent().hide();
+    });
 
     back.on('click', function() {
         back.closest('.entry-text').hide();
