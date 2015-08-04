@@ -309,8 +309,8 @@
             .done(function(recent) {
                 previous.detach();
                 container.empty().append(previous);
-                if (recent.length === 80) {
-                    recent = recent.slice(0, 50);
+                if (recent.length === 150) {
+                    recent = recent.slice(0, 100);
                     previous.show();
                 } else {
                     previous.hide();
@@ -343,8 +343,8 @@
                 message_id: {'<': Number(oldFirst.attr('data-id'))}
             })
             .done(function(messages) {
-                if (messages.length === 80) {
-                    messages = messages.slice(0, 50);
+                if (messages.length === 150) {
+                    messages = messages.slice(0, 100);
                     previous.show();
                 } else {
                     previous.hide();
