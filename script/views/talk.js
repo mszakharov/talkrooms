@@ -583,7 +583,7 @@
 (function() {
 
     var notice;
-    var version = 8;
+    var version = 9;
 
     function showNotice() {
         notice = $('<div class="updated-notice"><div class="updated-text">Вышло обновление Talkrooms. Пожалуйста, <span class="updated-reload">обновите страницу</span>, чтобы сбросить кэш браузера.</div></div>')
