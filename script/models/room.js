@@ -16,16 +16,18 @@ var Room = new Events;
     function admit(data) {
         Room.id = data.room_id;
         Room.data = data;
-        Rest.sockets.create({hash: data.hash}).done(ready);
+        Rest.sockets.create({hash: data.hash}).done(enter);
     }
 
-    function ready(socket) {
+    function enter(socket) {
         Room.promises = [];
         Room.socket = socket;
         Room.trigger('enter', socket);
-        $.when.apply($, Room.promises).done(function() {
-            Room.trigger('ready');
-        });
+        $.when.apply($, Room.promises).done(ready);
+    }
+
+    function ready() {
+        Room.trigger('ready');
     }
 
     function stop(xhr) {
@@ -33,21 +35,26 @@ var Room = new Events;
     }
 
     Room.enter = function(hash) {
-        Room.hash = hash;
+        if (this.hash && this.hash !== hash) {
+            this.leave();
+        }
+        this.hash = hash;
         Rest.rooms.get(hash).done(admit).fail(stop);
     };
 
     Room.leave = function() {
         Room.trigger('leave');
-        Rest.sockets.destroy(Room.socket.socket_id);
-        Room.socket = null;
+        if (Room.socket) {
+            Rest.sockets.destroy(Room.socket.socket_id);
+            Room.socket = null;
+        }
         Room.data = null;
         Room.hash = null;
         Room.id = null;
     };
 
     $window.on('beforeunload', function(event) {
-        if (Room.socket) Room.leave();
+        Room.leave();
     });
 
 })();
@@ -64,17 +71,74 @@ Room.isMy = function(data) {
 // Socket
 (function() {
 
+    var stream;
     var path = String.mix('wss://$1/sockets/', window.location.host);
 
+    var timer,
+        reconnectEvery = 10000,
+        reconnectCount = 0,
+        reconnectAfter = 0;
+
+    var closedCount = 0;
+
+    function connect() {
+        reconnectEvery = 10000;
+        reconnectCount = 0;
+        stream = new WebSocket(path + Room.socket.token);
+        stream.addEventListener('open', onOpen);
+        stream.addEventListener('message', onMessage);
+        stream.addEventListener('close', onClose);
+    }
+
+    function disconnect() {
+        clearTimeout(timer);
+        if (stream) {
+            stream.removeEventListener('open', onOpen);
+            stream.removeEventListener('message', onMessage);
+            stream.removeEventListener('close', onClose);
+            stream.close();
+        }
+        stream = null;
+    }
+
+    function reconnect() {
+        clearTimeout(timer);
+        if (reconnectCount++ > 5) {
+            reconnectEvery = 60000;
+        }
+        Rest.sockets
+            .get(Room.socket.socket_id)
+            .done(connect)
+            .fail(reconnectFailed);
+    }
+
+    function reconnectFailed(xhr) {
+        if (xhr.status == 404) {
+            Room.socket = null;
+            Room.enter(Room.data.hash);
+        } else {
+            deferReconnect();
+        }
+    }
+
+    function deferReconnect() {
+        var now = (new Date).getTime();
+        var delay = Math.max(0, reconnectAfter - now);
+        reconnectAfter = now + delay + reconnectEvery;
+        timer = setTimeout(reconnect, delay);
+    }
+
     function onOpen() {
+        closeCount = 0;
         Room.trigger('connected');
     }
 
     function onClose(event) {
-        console.log('Close socket', event.code);
         Room.trigger('disconnected');
-        if (event.code !== 1000 && Room.socket) {
-            setTimeout(reconnect, 1000);
+        if (closedCount++ > 3) {
+            disconnect();
+        } else if (event.code !== 1000 && Room.socket) {
+            deferReconnect();
         }
     }
 
@@ -84,30 +148,9 @@ Room.isMy = function(data) {
         Room.trigger(event[0], event[1]);
     }
 
-    function reconnect() {
-        Rest.sockets
-            .get(Room.socket.socket_id)
-            .done(connect)
-            .fail(reconnectFailed);
-    }
-
-    function reconnectFailed(xhr) {
-        if (xhr.status == 404) {
-            Room.enter(Room.data.hash);
-        } else {
-            setTimeout(reconnect, 10000);
-        }
-    }
-
-    function connect() {
-        var ws = new WebSocket(path + Room.socket.token);
-        ws.addEventListener('open', onOpen);
-        ws.addEventListener('message', onMessage);
-        ws.addEventListener('close', onClose);
-    }
-
     if (window.WebSocket && WebSocket.CLOSED === 3) {
         Room.on('ready', connect);
+        Room.on('leave', disconnect);
     }
 
 })();
@@ -163,14 +206,12 @@ Room.on('socket.nickname.updated', function(socket) {
 
     function checkUrl() {
         var hash = location.hash.replace(/^#/, '');
-        if (hash !== Room.hash && Room.socket) {
-            Room.leave();
+        if (!hash) {
+            hash = defaultHash;
+            replaceState(hash);
         }
-        if (hash) {
+        if (hash !== Room.hash) {
             Room.enter(hash);
-        } else {
-            replaceState(defaultHash);
-            Room.enter(defaultHash);
         }
     }
 
