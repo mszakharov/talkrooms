@@ -383,16 +383,32 @@
         scrolledIdle = 0;
     });
 
+    var iOS = /ip(od|ad|hone)/i.test(navigator.platform);
+    function isKeyboardOpened(dh) {
+        var st = $window.scrollTop();
+        var wh = $window.height();
+        return st + wh - dh > 10;
+    }
+
     function scrollDown(node) {
+        if (iOS) {
+            var dh = $document.height();
+            if (isKeyboardOpened(dh)) {
+                $window.scrollTop(dh);
+                return false;
+            }
+        }
         $window.scrollTo(function(now) {
             var height = $window.height();
             var offset = $(node).offset().top;
             if (scrolledIdle < height / 2 && offset < now + height) {
                 var pos = $document.height() - height;
-                if (Room.idle) {
-                    scrolledIdle += pos - now;
+                if (pos > now) {
+                    if (Room.idle) {
+                        scrolledIdle += pos - now;
+                    }
+                    return pos;
                 }
-                return pos;
             }
         });
     }
