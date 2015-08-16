@@ -281,6 +281,7 @@ body {
     position: relative;
 }
 .reply-field textarea {
+    display: block;
     width: 100%;
     height: 42px;
     margin: 0;
