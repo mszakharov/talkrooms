@@ -130,6 +130,22 @@
             .html('&rarr; <span class="recipient-nickname">' + nickname + '</span>');
     }
 
+    var myNickname;
+
+    function updateNickname() {
+        var nickname = Room.socket.nickname;
+        myNickname = new RegExp('(?:^|, )' + nickname + ', ');
+    }
+
+    function isForMe(message) {
+        return message.recipient_nickname ||
+            Room.isMy(message) ||
+            myNickname.test(message.content);
+    }
+
+    Room.on('enter', updateNickname);
+    Room.on('my.nickname.updated', updateNickname);
+
     function renderMessage(data, last) {
         extendMessage(data);
         var nodes = [];
@@ -143,6 +159,9 @@
         if (data.recipient_nickname) {
             elem.find('.msg-author').append(renderRecipient(data));
             elem.addClass('private');
+        }
+        if (isForMe(data)) {
+            elem.addClass('for-me');
         }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
@@ -360,6 +379,17 @@
         container.hide();
     });
 
+    var forMeOnly;
+    var forMeIcon = $('#talk .toggle-for-me');
+    forMeIcon.on('click', function() {
+        forMeOnly = !forMeOnly;
+        var scrollRatio = $window.scrollTop() / ($document.height() - $window.height());
+        forMeIcon.toggleClass('enabled', forMeOnly);
+        container.toggleClass('for-me-only', forMeOnly);
+        $window.scrollTop(scrollRatio * ($document.height() - $window.height()));
+    });
+
+
     Room.on('message.created', function(message) {
         if (message.ignore && !Room.socket.ignore) return false;
         if (message.message_id > lastMessage.message_id) {
@@ -370,10 +400,12 @@
             if (nodes.length > 1) {
                 Room.trigger('dates.changed');
             }
-            if (counter++ > 1000) {
-                $window.queue(clearOld);
+            if (!forMeOnly || !nodes.last().hasClass('for-me')) {
+                if (counter++ > 1000) {
+                    $window.queue(clearOld);
+                }
+                Room.trigger('talk.updated');
             }
-            Room.trigger('talk.updated');
         }
     });
 
@@ -575,10 +607,10 @@
     function toggleSound(enabled) {
         soundEnabled = Boolean(enabled);
         if (soundEnabled) {
-            icon[0].classList.add('enabled');
+            icon.addClass('enabled');
             localStorage.setItem('sound_in_' + Room.data.room_id, 1);
         } else {
-            icon[0].classList.remove('enabled');
+            icon.removeClass('enabled');
             localStorage.removeItem('sound_in_' + Room.data.room_id);
         }
     }

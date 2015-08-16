@@ -141,47 +141,46 @@ body {
     visibility: hidden;
 }
 
-/* Room controls */
-.room-controls {
+/* Talk controls */
+.talk-controls {
     position: absolute;
-    top: 32px;
-    right: 32px;
+    top: 100%;
+    right: 34px;
+    margin-top: 20px;
+    border-radius: 20px;
+    background: #FFF;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+    overflow: hidden;
 }
-.room-controls .control {
-    float: right;
-    margin-left: 15px;
+.talk-controls .control {
+    height: 24px;
+    padding: 12px 8px;
     color: #A3A3A3;
     cursor: pointer;
 }
-.room-controls .control:hover {
-    color: #808080;
+.talk-controls .control.enabled {
+    color: #398fe5;
+}
+.talk-controls .contour {
+    fill: none;
+}
+.talk-controls .enabled .contour {
+    fill: currentColor;
+}
+.talk-controls .toggle-for-me.enabled {
+    background: #398fe5;
+    color: #FFF;
 }
 
 /* Settings icon */
 .room-settings-icon {
     display: none;
-    margin-top: -1px;
-    margin-right: 4px;
-}
-
-/* Notifications icon */
-.bell-sound-1,
-.bell-sound-2 {
-    opacity: 0;
-    transition: opacity 0.1s;
-}
-.bell-sound-1 {
-    transition-delay: 0.1s;
-}
-.bell-sound-2 {
-    transition-delay: 0.2s;
-}
-.notifications.enabled {
-    color: #1278B3 !important;
-}
-.enabled .bell-sound-1,
-.enabled .bell-sound-2 {
-    opacity: 1;
+    position: absolute;
+    top: 24px;
+    right: 34px;
+    padding: 8px;
+    color: #A3A3A3;
+    cursor: pointer;
 }
 
 /* Userpic */
@@ -422,6 +421,14 @@ body {
 .msg-recipient {
     color: #B3ACA1;
     cursor: pointer;
+}
+
+/* Talk for me */
+.for-me-only .message {
+    display: none;
+}
+.for-me-only .for-me {
+    display: block;
 }
 
 /* Users */
