@@ -384,7 +384,7 @@
         container.hide();
     });
 
-    var forMeOnly, forMeFirst;
+    var forMeOnly, forMeFirst, latentDate;
     var forMeIcon = $('#talk .toggle-for-me');
     forMeIcon.on('click', function() {
         forMeOnly = !forMeOnly;
@@ -399,6 +399,7 @@
             setForMeIdems();
             hideEmptyDates();
         } else {
+            latentDate = null;
             container.find('.latent-date')
                 .removeClass('latent-date');
             container.find('.date:hidden').slice(1).show();
@@ -421,10 +422,14 @@
         dates.not(latent).eq(0).hide();
     }
 
+    function isFirstForMe(message) {
+        return message.prevUntil(':not(.idem)').prev().andSelf().filter('.for-me').length === 0;
+    }
+
     function setForMeIdems() {
         container.find('.message:not(.for-me) + .idem.for-me')
             .filter(function() {
-                return $(this).prevUntil(':not(.idem)').prev().andSelf().filter('.for-me').length === 0;
+                return isFirstForMe($(this));
             })
             .addClass('latent-idem')
             .removeClass('idem');
@@ -436,11 +441,27 @@
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
             container.append(nodes);
-            scrollDown(nodes[0]);
-            if (nodes.length > 1) {
-                Room.trigger('dates.changed');
+            var visible = !forMeOnly;
+            if (forMeOnly) {
+                var message = $(nodes).last();
+                if (message.hasClass('for-me')) {
+                    visible = true;
+                    if (message.hasClass('idem') && isFirstForMe(message)) {
+                        message.addClass('latent-idem').removeClass('idem');
+                    }
+                    if (latentDate) {
+                        latentDate.removeClass('latent-date');
+                        latentDate = null;
+                    }
+                } else if (nodes.length > 1) {
+                    latentDate = $(nodes[0]).addClass('latent-date');
+                }
             }
-            if (!forMeOnly || !nodes.last().hasClass('for-me')) {
+            if (visible) {
+                if (nodes.length > 1) {
+                    Room.trigger('dates.changed');
+                }
+                scrollDown(nodes[0]);
                 if (counter++ > 1000) {
                     $window.queue(clearOld);
                 }
