@@ -229,6 +229,7 @@
             waste = waste.add(dates.last());
         }
         if (waste.length) {
+            dates.not(waste).eq(0).hide();
             waste.remove();
             Room.trigger('dates.changed');
         }
@@ -341,7 +342,8 @@
             .get({
                 room_id: Room.data.room_id,
                 order_by: {'-desc': 'message_id'},
-                message_id: {'<': Number(oldFirst.attr('data-id'))}
+                message_id: {'<': Number(oldFirst.attr('data-id'))},
+                for_me: forMeOnly ? 1 : 0
             })
             .done(function(messages) {
                 if (messages.length === 150) {
@@ -357,6 +359,9 @@
                     prevDates.eq(0).remove();
                 } else {
                     prevDates.eq(0).show();
+                }
+                if (forMeOnly && !forMeFirst) {
+                    forMeFirst = oldFirst;
                 }
                 toggleIdem(oldFirst);
                 container.find('.date').first().hide();
@@ -379,16 +384,51 @@
         container.hide();
     });
 
-    var forMeOnly;
+    var forMeOnly, forMeFirst;
     var forMeIcon = $('#talk .toggle-for-me');
     forMeIcon.on('click', function() {
         forMeOnly = !forMeOnly;
         var scrollRatio = $window.scrollTop() / ($document.height() - $window.height());
+        if (forMeFirst) {
+            forMeFirst.prevAll('.message').remove();
+            forMeFirst.removeClass('idem');
+            forMeFirst = null;
+            clearDates();
+        }
+        if (forMeOnly) {
+            setForMeIdems();
+            hideEmptyDates();
+        } else {
+            container.find('.latent-date')
+                .removeClass('latent-date');
+            container.find('.date:hidden').slice(1).show();
+            container.find('.latent-idem')
+                .removeClass('latent-idem')
+                .addClass('idem');
+        }
         forMeIcon.toggleClass('enabled', forMeOnly);
         container.toggleClass('for-me-only', forMeOnly);
+        Room.trigger('dates.changed');
         $window.scrollTop(scrollRatio * ($document.height() - $window.height()));
     });
 
+    function hideEmptyDates() {
+        var dates = container.find('.date');
+        var latent = dates.filter(function() {
+            return $(this).nextUntil('.date', '.message.for-me').length === 0;
+        })
+        latent.addClass('latent-date');
+        dates.not(latent).eq(0).hide();
+    }
+
+    function setForMeIdems() {
+        container.find('.message:not(.for-me) + .idem.for-me')
+            .filter(function() {
+                return $(this).prevUntil(':not(.idem)').prev().andSelf().filter('.for-me').length === 0;
+            })
+            .addClass('latent-idem')
+            .removeClass('idem');
+    }
 
     Room.on('message.created', function(message) {
         if (message.ignore && !Room.socket.ignore) return false;
@@ -499,7 +539,7 @@
     function update() {
         var active = dates.length > 1;
         headerHeight = header.height();
-        dates = container.find('.date').map(getDate);
+        dates = container.find('.date:not(.latent-date)').map(getDate);
         toggle(window.pageYOffset);
         if (dates.length < 2 && active) {
             window.removeEventListener('scroll', check, false);
