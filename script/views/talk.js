@@ -137,12 +137,6 @@
         myNickname = new RegExp('(?:^|, )' + nickname + ', ');
     }
 
-    function isForMe(message) {
-        return message.recipient_nickname ||
-            Room.isMy(message) ||
-            myNickname.test(message.content);
-    }
-
     Room.on('enter', updateNickname);
     Room.on('my.nickname.updated', updateNickname);
 
@@ -160,8 +154,10 @@
             elem.find('.msg-author').append(renderRecipient(data));
             elem.addClass('private');
         }
-        if (isForMe(data)) {
+        if (data.recipient_nickname || Room.isMy(data)) {
             elem.addClass('for-me');
+        } else if (myNickname.test(data.content)) {
+            elem.addClass('for-me with-ny-name');
         }
         if (data.date !== last.date) {
             nodes.push(renderDate(data.date)[0]);
