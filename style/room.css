@@ -145,31 +145,39 @@ body {
 .talk-controls {
     position: absolute;
     top: 100%;
-    right: 34px;
-    margin-top: 20px;
-    border-radius: 20px;
+    right: 35px;
+    margin-top: 22px;
+    border-radius: 6px;
     background: #FFF;
     box-shadow: 0 1px 3px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
     overflow: hidden;
 }
 .talk-controls .control {
-    height: 24px;
-    padding: 12px 8px;
-    color: #A3A3A3;
+    padding: 10px 7px;
     cursor: pointer;
 }
-.talk-controls .control.enabled {
+.talk-controls svg {
+    display: block;
+}
+.toggle-for-me {
+    color: #ffefc8;
+}
+.toggle-for-me.enabled {
+    background: #fed676;
+    color: #FFF;
+}
+.notifications {
+    border-top: 1px solid #E0E0E0;
+    color: #A3A3A3;
+}
+.notifications.enabled {
     color: #398fe5;
 }
-.talk-controls .contour {
+.notifications .contour {
     fill: none;
 }
-.talk-controls .enabled .contour {
+.notifications.enabled .contour {
     fill: currentColor;
-}
-.talk-controls .toggle-for-me.enabled {
-    background: #398fe5;
-    color: #FFF;
 }
 
 /* Settings icon */
@@ -440,12 +448,10 @@ body {
     content: '';
     position: absolute;
     top: 35px;
-    left: -14px;
-    width: 9px;
-    height: 9px;
-    border: 1px solid #e0b95b;
-    border-radius: 6px;
-    background: #fed676;
+    left: -15px;
+    width: 14px;
+    height: 11px;
+    background: url('tome.svg') no-repeat;
 }
 .idem.with-ny-name::after {
     top: 6px;
