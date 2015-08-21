@@ -1,13 +1,21 @@
+.talk-header .content {
+    left: 0;
+    margin-right: 0;
+}
 .topic {
-    margin: 0 42px 0 9px;
+    margin: 0 42px 0 14px;
     padding: 12px 0 0;
     font-size: 28px;
     line-height: 30px;
 }
 
-.room-controls {
-    right: 4px;
-    top: 18px;
+.room-settings-icon {
+    right: 5px;
+    top: 9px;
+}
+.talk-controls {
+    margin-top: 18px;
+    right: 6px;
 }
 
 .entry-text {
@@ -37,6 +45,10 @@
 }
 .idem::before {
     left: 30px;
+}
+
+.with-ny-name::after {
+    left: -12px;
 }
 
 .talk-reply {
