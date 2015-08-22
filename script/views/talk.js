@@ -689,20 +689,22 @@
 (function() {
 
     var notice;
-    var version = 9;
+    var version = 10;
 
-    function showNotice() {
-        notice = $('<div class="updated-notice"><div class="updated-text">Вышло обновление Talkrooms. Пожалуйста, <span class="updated-reload">обновите страницу</span>, чтобы сбросить кэш браузера.</div></div>')
+    function showNotice(description) {
+        notice = $('<div class="updated-notice"></div>')
+            .append('<div class="updated-title">Вышло обновление Talkrooms. Пожалуйста, <span class="updated-reload">обновите страницу</span>, чтобы сбросить кэш браузера.</div>')
+            .append('<div class="updated-text">' + description + '</div>');
         notice.find('.updated-reload').on('click', function() {
             location.reload(true);
         });
         notice.appendTo('body')
-            .css('top', -notice.height() - 20)
+            .css('top', -notice.outerHeight() - 20)
             .animate({top: 0}, 300);
     }
 
     Room.on('talkrooms', function(data) {
-        if (data.version > version && !notice) showNotice();
+        if (data.version > version && !notice) showNotice(data.whatsnew);
     });
 
 })();

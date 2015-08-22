@@ -84,8 +84,10 @@
     width: 300px;
 }
 
-.updated-text {
-    padding: 10px 14px;
+.updated-notice {
+    padding: 12px 0;
+}
+.updated-title {
     font-size: 16px;
     line-height: 19px;
 }
