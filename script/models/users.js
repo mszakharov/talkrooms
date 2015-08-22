@@ -3,7 +3,7 @@ Room.users = (function() {
 
     var sockets = new Collection({
         index: 'socket_id',
-        order: 'nickname'
+        order: 'normal_nickname'
     });
 
     var showIgnored;
@@ -44,6 +44,7 @@ Room.users = (function() {
     function reset(data) {
         sockets.raw = data;
         sockets.raw.forEach(setUserpicUrl);
+        sockets.raw.forEach(normalizeNickname);
         sockets.sort();
         apply();
     }
@@ -52,10 +53,17 @@ Room.users = (function() {
         socket.userpicUrl = Userpics.getUrl(socket);
     }
 
+    function normalizeNickname(socket) {
+        var lower = socket.nickname.toLowerCase();
+        var pure = lower.replace(/[^\wа-яё]/g, '');
+        socket.normal_nickname = lower === pure ? lower : pure + socket.nickname;
+    }
+
     function addSocket(socket) {
         if (!sockets.get(socket.socket_id)) {
-            sockets.add(socket);
+            normalizeNickname(socket);
             setUserpicUrl(socket);
+            sockets.add(socket);
             apply();
         }
     }
@@ -104,6 +112,7 @@ Room.users = (function() {
     Room.on('socket.nickname.updated', function(data) {
         var socket = sockets.get(data.socket_id);
         socket.nickname = data.nickname;
+        normalizeNickname(socket);
         sockets.sort();
         if (!socket.userpic) {
             setUserpicUrl(socket);
