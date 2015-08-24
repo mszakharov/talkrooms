@@ -689,7 +689,7 @@
 (function() {
 
     var notice;
-    var version = 10;
+    var version = 11;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
