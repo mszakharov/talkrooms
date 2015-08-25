@@ -246,6 +246,7 @@ body {
 .talk-reply .sticky {
     position: fixed;
     bottom: 0;
+    z-index: 1;
     width: 100%;
     -webkit-font-smoothing: subpixel-antialiased;
 }
@@ -662,6 +663,14 @@ body {
     }
 
     .notifications {
+        display: none;
+    }
+
+}
+
+@media (max-height: 320px) {
+
+    .talk-controls {
         display: none;
     }
 
