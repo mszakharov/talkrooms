@@ -141,6 +141,19 @@ body {
     visibility: hidden;
 }
 
+/* Toggle side icon */
+.toggle-side {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: -5px;
+    padding: 35px 10px 20px 40px;
+    color: #a3a3a3;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-tap-highlight-color: transparent;
+}
+
 /* Talk controls */
 .talk-controls {
     position: absolute;
@@ -618,8 +631,32 @@ body {
         margin-left: 0;
     }
 
+    .with-side #side {
+        display: block;
+    }
+    .with-side #talk {
+        overflow-x: hidden;
+    }
+    .with-side .talk-messages {
+        position: relative;
+        left: 250px;
+    }
+    .with-side .talk-header .sticky,
+    .with-side .talk-reply .sticky {
+        left: 250px;
+    }
+
+    .with-side .talk-controls {
+        display: none;
+    }
+
     .topic {
+        margin-left: 75px;
         margin-right: 65px;
+    }
+
+    .toggle-side {
+        display: block;
     }
 
     .notifications {

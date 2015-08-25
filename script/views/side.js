@@ -124,3 +124,34 @@
 
 })();
 
+// Toggle side
+(function() {
+
+    var room = $('#room');
+    var talk = $('#talk');
+    var reply = $('.talk-reply textarea');
+
+    var tapEvent = 'touchstart' in window ? 'touchend' : 'click';
+
+    function showSide() {
+        room.addClass('with-side');
+        talk.on(tapEvent, hideSide);
+        reply.on('focus', hideSide);
+    }
+
+    function hideSide() {
+        room.removeClass('with-side');
+        talk.off(tapEvent, hideSide);
+        reply.off('focus', hideSide);
+    }
+
+    $('.toggle-side').on(tapEvent, function(event) {
+        event.stopPropagation();
+        if (room.hasClass('with-side')) {
+            hideSide();
+        } else {
+            showSide();
+        }
+    });
+
+})();
