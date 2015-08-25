@@ -134,7 +134,7 @@
 
     function updateNickname() {
         var nickname = Room.socket.nickname;
-        myNickname = new RegExp('(?:^|, )' + nickname + ', ');
+        myNickname = new RegExp('(?:^|, )' + nickname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ', ');
     }
 
     Room.on('enter', updateNickname);
