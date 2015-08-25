@@ -8,6 +8,9 @@
     font-size: 26px;
     line-height: 28px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    text-overflow: ".";
 }
 .toggle-side {
     left: 0;
