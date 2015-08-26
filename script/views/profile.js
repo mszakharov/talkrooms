@@ -141,14 +141,18 @@
         section.addClass('no-photo');
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);
-        section.find('.details-link').html(socket.user_id ? 'загрузка профиля…' : 'без профиля');
+        var profileText;
+        if (Room.socket.user_id) {
+            profileText = socket.user_id ? 'загрузка профиля…' : 'без профиля';
+        }
+        section.find('.details-link').html(profileText || '&nbsp;');
         section.find('.details-photo').remove();
         section.show();
     });
 
     Profile.on('ready', function(data, photo) {
         if (section.is(':visible')) {
-            if (data.profile_url) {
+            if (data.profile_url && Room.socket.profile_url) {
                 section.find('.details-link').html(renderLink(data.profile_url));
             }
             if (photo) {
