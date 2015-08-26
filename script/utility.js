@@ -53,6 +53,32 @@ if (typeof console === 'undefined') {
     console = {log: $.noop, error: $.noop};
 }
 
+// Readable duration
+(function() {
+
+    var minute = 1000 * 60,
+        hour = minute * 60,
+        day = hour * 24,
+        month = day * 365.25 / 12;
+
+    function decline(value, limit, one, two, many) {
+        var round = Math.round(value);
+        if (round <= limit) {
+            return String.decline(round, one, two, many);
+        }
+    }
+
+    Date.prototype.toHumanAgo = function() {
+        var ago = Date.now() - this.getTime();
+        return ago < minute ? 'меньше минуты' :
+            decline(ago / minute, 59, '%d минуту', '%d минуты', '%d минут') ||
+            decline(ago / hour, 23, '%d час', '%d часа', '%d часов') ||
+            decline(ago / day, 29, '%d день', '%d дня', '%d дней') ||
+            decline(ago / month, 12, '%d месяц', '%d месяца', '%d месяцев') || 'больше года';
+    };
+
+})();
+
 // Smooth window scrolling
 (function() {
 
