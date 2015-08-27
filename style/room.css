@@ -598,17 +598,17 @@ body {
 
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
 
     #side {
-        width: 250px;
+        width: 256px;
     }
 
     .talk-messages,
     .talk-header .content,
     .talk-reply .content,
     .entry-text {
-        margin-left: 250px;
+        margin-left: 256px;
     }
 
     .updated-title,
@@ -642,11 +642,11 @@ body {
     }
     .with-side .talk-messages {
         position: relative;
-        left: 250px;
+        left: 256px;
     }
     .with-side .talk-header .sticky,
     .with-side .talk-reply .sticky {
-        left: 250px;
+        left: 256px;
     }
 
     .with-side .talk-controls {
