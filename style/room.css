@@ -618,6 +618,10 @@ body {
         margin-left: 40px;
     }
 
+    .notifications {
+        display: none;
+    }
+
 }
 
 @media (max-width: 800px) {
@@ -660,10 +664,6 @@ body {
 
     .toggle-side {
         display: block;
-    }
-
-    .notifications {
-        display: none;
     }
 
 }
