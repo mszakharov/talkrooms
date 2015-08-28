@@ -173,8 +173,8 @@ Room.isMy = function(data) {
 })();
 
 // Ignore
-Room.on('session.ignore.updated', function(session) {
-    if (Room.socket.session_id === session.session_id) Room.socket.ignore = session.ignore;
+Room.on('session.ignored.updated', function(session) {
+    if (Room.socket.session_id === session.session_id) Room.socket.ignored = session.ignored;
 });
 
 // Update my nickname

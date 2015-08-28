@@ -26,7 +26,7 @@ Room.users = (function() {
     }
 
     function notIgnored(socket) {
-        var ignored = socket.ignore && !Room.socket.ignore;
+        var ignored = socket.ignored && !Room.socket.ignored;
         if (ignored && showIgnored) this.push(socket);
         return !ignored;
     }
@@ -81,10 +81,10 @@ Room.users = (function() {
     Room.on('socket.created', addSocket);
     Room.on('socket.deleted', removeSocket);
 
-    Room.on('session.ignore.updated', function(session) {
+    Room.on('session.ignored.updated', function(session) {
         var sid = session.session_id;
         sockets.raw.forEach(function(socket) {
-            if (socket.session_id === sid) socket.ignore = session.ignore;
+            if (socket.session_id === sid) socket.ignored = session.ignored;
         });
         apply();
     });

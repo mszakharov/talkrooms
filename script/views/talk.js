@@ -432,7 +432,7 @@
     }
 
     Room.on('message.created', function(message) {
-        if (message.ignore && !Room.socket.ignore) return false;
+        if (message.ignore && !Room.socket.ignored) return false;
         if (message.message_id > lastMessage.message_id) {
             var nodes = renderMessage(message, lastMessage);
             lastMessage = message;
@@ -514,7 +514,7 @@
     }
 
     Room.on('message.ignore.updated', function(data) {
-        if (data.ignore && !Room.socket.ignore) {
+        if (data.ignore && !Room.socket.ignored) {
             clearTimeout(ignoredTimer);
             var selector = '.message[data-id="' + data.message_id + '"]';
             var message = container.find(selector);

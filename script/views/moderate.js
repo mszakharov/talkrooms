@@ -11,7 +11,7 @@
     var selectedMessage;
 
     function toggleControls(socket) {
-        if (socket.ignore) showConvict(); else showDecent();
+        if (socket.ignored) showConvict(socket.ignored); else showDecent();
     }
 
     function toggleErase(message) {
@@ -24,15 +24,27 @@
         }
     }
 
-    function showConvict() {
+    function showConvict(ignored) {
         toggleErase(selectedMessage);
         decent.hide();
         convict.show();
         Profile.fit();
+        if (ignored) {
+            showIgnored(ignored);
+        }
+    }
+
+    function showIgnored(ignored) {
+        var date = new Date(ignored);
+        convict.find('.moder-ago')
+            .attr('datetime', ignored)
+            .attr('title', String.mix('Правосудие свершилось $1 в $2', date.toSmartDate(), date.toHumanTime()))
+            .text(date.toHumanAgo());
     }
 
     function showDecent() {
         convict.hide();
+        convict.find('.moder-ago').empty();
         decent.show();
         Profile.fit();
     }
@@ -65,7 +77,7 @@
         if (isCurrent(session)) {
             toggleControls(session);
         }
-        if (session.ignore) {
+        if (session.ignored) {
             if (session.session_id === skipWhip) {
                 skipWhip = null;
             } else {
@@ -121,7 +133,7 @@
     function toggleEvents(mode) {
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
-        Room[mode]('session.ignore.updated', onUpdated);
+        Room[mode]('session.ignored.updated', onUpdated);
     }
 
     Room.on('enter', checkLevel);
