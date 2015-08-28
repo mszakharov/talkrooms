@@ -16,7 +16,7 @@ var Room = new Events;
     function admit(data) {
         Room.id = data.room_id;
         Room.data = data;
-        Rest.sockets.create({hash: data.hash}).done(enter);
+        Rest.sockets.create({hash: data.hash}).done(enter).fail(stop);
     }
 
     function enter(socket) {
@@ -31,7 +31,9 @@ var Room = new Events;
     }
 
     function stop(xhr) {
-        Room.trigger('lost');
+        if (xhr.status === 404 || xhr.status === 403) {
+            Room.trigger('lost');
+        }
     }
 
     Room.enter = function(hash) {
