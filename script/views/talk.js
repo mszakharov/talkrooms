@@ -85,7 +85,8 @@
     function format(content) {
         return content
             .replace(/\n/g, '<br>')
-            .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>');
+            .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>')
+            .replace(/(^|\W)(\*|_)([^\s*_]|[^\s*_].*?\S)\2($|\W)/g, '$1<em>$3</em>$4');
     }
 
     function extendMessage(data) {

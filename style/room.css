@@ -407,6 +407,9 @@ body {
     margin: 0 0 4px;
     word-wrap: break-word;
 }
+.msg-text em {
+    font-family: 'Garamond', 'Georgia', serif;
+}
 
 /* Message from the same author */
 .idem {
