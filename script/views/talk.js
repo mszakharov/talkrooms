@@ -655,32 +655,49 @@
 (function() {
 
     var sound = $('#notifier').get(0);
+    var soundEnabled;
 
     var icon = $('#talk .notifications');
-    icon.on('click', function() {
-        toggleSound(!soundEnabled);
-    });
 
-    var soundEnabled;
+    function isMobile() {
+        return /android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent);
+    }
+
     function toggleSound(enabled) {
-        soundEnabled = Boolean(enabled);
-        if (soundEnabled) {
+        if (enabled === soundEnabled) return;
+        if (enabled) {
+            Room.on('talk.updated', notify);
             icon.addClass('enabled');
-            localStorage.setItem('sound_in_' + Room.data.room_id, 1);
         } else {
+            Room.off('talk.updated', notify);
             icon.removeClass('enabled');
-            localStorage.removeItem('sound_in_' + Room.data.room_id);
+        }
+        soundEnabled = enabled;
+    }
+
+    function notify() {
+        if (Room.idle) {
+            sound.currentTime = 0;
+            sound.play();
         }
     }
 
+    if (isMobile()) {
+        icon.hide();
+        return false;
+    }
+
     Room.on('ready', function() {
-        toggleSound(localStorage.getItem('sound_in_' + Room.data.room_id))
+        var stored = localStorage.getItem('sound_in_' + Room.data.room_id);
+        toggleSound(Boolean(stored));
     });
 
-    Room.on('talk.updated', function() {
-        if (Room.idle && soundEnabled) {
-            sound.currentTime = 0;
-            sound.play();
+    icon.on('click', function() {
+        toggleSound(!soundEnabled);
+        if (soundEnabled) {
+            localStorage.setItem('sound_in_' + Room.data.room_id, 1);
+        } else {
+            localStorage.removeItem('sound_in_' + Room.data.room_id);
         }
     });
 
