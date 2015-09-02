@@ -125,6 +125,11 @@ Room.users = (function() {
         apply();
     });
 
+    Room.on('socket.status.updated', function(data) {
+        sockets.get(data.socket_id).status = data.status;
+        apply();
+    });
+
     return {
         get: function(socket_id) {
             return sockets.get(socket_id)

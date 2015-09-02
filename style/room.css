@@ -503,6 +503,14 @@ body {
     color: #807E7D;
     cursor: pointer;
 }
+.user em {
+    position: relative;
+    top: 2px;
+    margin-left: 3px;
+    font-size: 14px;
+    font-family: 'Garamond', 'Georgia', serif;
+    vertical-align: 2px;
+}
 .user.me {
     position: relative;
     padding-right: 45px;

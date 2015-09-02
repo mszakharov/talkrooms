@@ -19,15 +19,25 @@
 (function() {
 
     var list = $('#room .room-users');
-    var renderUser = Template($('#user-template').html());
+    var render = $.template('#user-template');
+
+    function renderUser(data) {
+        var user = render(data);
+        if (data.status) {
+            user.find('.nickname').append(' <em>' + data.status +'</em>');
+        }
+        if (data.socket_id === Room.socket.socket_id) {
+            user.addClass('me');
+        }
+        return user[0];
+    }
 
     Room.on('users.updated', function(online, ignore) {
-        var content = online.map(renderUser).join('');
+        list.html('');
+        list.append(online.map(renderUser));
         if (ignore.length) {
-            content += '<div class="users-ignored">' + ignore.map(renderUser).join('') + '</div>';
+            $('<div class="users-ignored"></div>').append(ignore.map(renderUser)).appendTo(list);
         }
-        list.html(content);
-        list.find('.user[data-socket="' + Room.socket.socket_id + '"]').addClass('me');
     });
 
     Room.on('ready', function() {
@@ -38,6 +48,10 @@
         list.hide();
     });
 
+    function getSocket(elem) {
+        return Room.users.get(Number(elem.attr('data-socket')));
+    }
+
     list.on('click', '.me, .userpic', function(event) {
         event.stopPropagation();
         var elem = $(this).closest('.user');
@@ -45,13 +59,13 @@
             Profile.edit(elem);
             $('#my-nickname').select();
         } else {
-            var socket_id = Number(elem.attr('data-socket'));
-            Profile.show(Room.users.get(socket_id), elem);
+            Profile.show(getSocket(elem), elem);
         }
     });
 
     list.on('click', '.user:not(.me) .nickname', function() {
-        Room.replyTo($(this).text());
+        var user = $(this).closest('.user');
+        Room.replyTo(getSocket(user).nickname);
     });
 
 })();
