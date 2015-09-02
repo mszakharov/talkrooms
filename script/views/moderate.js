@@ -81,7 +81,7 @@
             if (session.session_id === skipWhip) {
                 skipWhip = null;
             } else {
-                playWhip(0.3);
+                whip.play(0.3);
             }
         }
     }
@@ -93,16 +93,14 @@
         });
     }
 
-    var whip = new Audio('/script/sound/whip.mp3');
-    function playWhip(volume) {
-        whip.volume = volume || 0.5;
-        whip.currentTime = 0;
-        whip.play();
-    }
+    var whip = new Sound({
+        mp3: '/script/sound/whip.mp3',
+        ogg: '/script/sound/whip.ogg'
+    });
 
     decent.find('.moder-ignore').on('click', function() {
         skipWhip = Profile.socket.session_id;
-        playWhip(0.5);
+        whip.play(0.5);
         setIgnore(true).done(showConvict);
     });
 

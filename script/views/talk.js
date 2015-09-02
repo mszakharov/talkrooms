@@ -654,7 +654,7 @@
 // Notifier
 (function() {
 
-    var sound = $('#notifier').get(0);
+    var sound;
     var soundEnabled;
 
     var icon = $('#talk .notifications');
@@ -666,6 +666,10 @@
     function toggleSound(enabled) {
         if (enabled === soundEnabled) return;
         if (enabled) {
+            if (!sound) sound = new Sound({
+                mp3: '/script/sound/message.mp3',
+                ogg: '/script/sound/message.ogg'
+            });
             Room.on('talk.updated', notify);
             icon.addClass('enabled');
         } else {
@@ -676,10 +680,7 @@
     }
 
     function notify() {
-        if (Room.idle) {
-            sound.currentTime = 0;
-            sound.play();
-        }
+        if (Room.idle) sound.play();
     }
 
     if (isMobile()) {

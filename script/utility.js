@@ -79,6 +79,38 @@ if (typeof console === 'undefined') {
 
 })();
 
+// Sound
+(function() {
+
+    var supported = getSupported();
+
+    function getSupported() {
+        var audio = new Audio();
+        if (audio.canPlayType) {
+            if (canPlay(audio, 'audio/mpeg;')) return 'mp3';
+            if (canPlay(audio, 'audio/ogg; codecs="vorbis"')) return 'ogg';
+        }
+    }
+
+    function canPlay(audio, type) {
+        return Boolean(audio.canPlayType(type).replace('no', ''));
+    }
+
+    function Sound(options) {
+        this.raw = new Audio(supported && options[supported]);
+        this.volume = options.volume || 1;
+    }
+
+    Sound.prototype.play = function(volume) {
+        this.raw.volume = volume || this.volume;
+        this.raw.currentTime = 0;
+        this.raw.play();
+    };
+
+    window.Sound = Sound;
+
+})();
+
 // Smooth window scrolling
 (function() {
 
