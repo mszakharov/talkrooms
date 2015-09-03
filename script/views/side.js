@@ -57,7 +57,7 @@
         var elem = $(this).closest('.user');
         if (elem.hasClass('me')) {
             Profile.edit(elem);
-            $('#my-nickname').select();
+            $('#my-status').select();
         } else {
             Profile.show(getSocket(elem), elem);
         }

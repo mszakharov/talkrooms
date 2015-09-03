@@ -187,6 +187,13 @@ Room.on('socket.nickname.updated', function(socket) {
     }
 });
 
+// Update my status
+Room.on('socket.status.updated', function(socket) {
+    if (Room.socket.socket_id === socket.socket_id) {
+        Room.socket.status = socket.status;
+    }
+});
+
 // Inactive window detection
 (function() {
 

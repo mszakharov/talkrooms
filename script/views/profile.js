@@ -83,24 +83,40 @@
 
 })();
 
-/* Edit nickname */
+/* Edit nickname and status */
 (function() {
 
     var form = $('#profile-edit');
-    var field = $('#my-nickname');
+    var nickname = $('#my-nickname');
+    var status = $('#my-status');
+
+    function getValues() {
+        var values = {};
+        addChanged(values, nickname, 'nickname');
+        addChanged(values, status, 'status');
+        return values;
+    }
+
+    function addChanged(values, field, name) {
+        var value = $.trim(field.val());
+        if (value !== Profile.socket[name]) {
+            if (value || name === 'status') values[name] = value;
+        }
+    }
 
     form.on('submit', function(event) {
         event.preventDefault();
-        var value = $.trim(field.val());
-        if (value === Profile.socket.nickname) {
+        var values = getValues();
+        if ($.isEmptyObject(values)) {
             Profile.hide();
-        } else if (value) {
-            Rest.sockets.update(Room.socket.socket_id, {nickname: value}).done(Profile.hide);
+        } else {
+            Rest.sockets.update(Room.socket.socket_id, values).done(Profile.hide);
         }
     });
 
     Profile.on('edit', function() {
-        field.val(Room.socket.nickname);
+        nickname.val(Room.socket.nickname);
+        status.val(Room.socket.status);
         form.show();
     });
 
