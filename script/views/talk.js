@@ -704,6 +704,24 @@
 
 })();
 
+// Disconnect
+(function() {
+
+    var talk = $('#talk');
+
+    function restore() {
+        talk.removeClass('disconnected');
+    }
+
+    Room.on('disconnected', function() {
+        talk.addClass('disconnected');
+    });
+
+    Room.on('connected', restore);
+    Room.on('enter', restore);
+
+})();
+
 // Talkrooms vesrion
 (function() {
 
