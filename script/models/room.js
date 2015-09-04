@@ -124,20 +124,24 @@ Room.isMy = function(data) {
     }
 
     function deferReconnect() {
+        clearTimeout(timer);
         var now = (new Date).getTime();
         var delay = Math.max(0, reconnectAfter - now);
         reconnectAfter = now + delay + reconnectEvery;
         timer = setTimeout(reconnect, delay);
+        console.log(String.mix('Reconnect in $1s', Math.round(delay / 1000)));
     }
 
     function onOpen() {
-        closeCount = 0;
+        closedCount = 0;
+        console.log('Socket opened');
         Room.trigger('connected');
     }
 
     function onClose(event) {
+        console.log(String.mix('Socket closed with $1, $2 errors', event.code, closedCount));
         Room.trigger('disconnected');
-        if (closedCount++ > 3) {
+        if (closedCount++ > 5) {
             disconnect();
         } else if (event.code !== 1000 && Room.socket) {
             deferReconnect();
