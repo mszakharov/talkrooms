@@ -414,6 +414,7 @@ body {
     word-wrap: break-word;
 }
 .msg-text em {
+    font-style: italic;
     font-family: 'Garamond', 'Georgia', serif;
 }
 
@@ -513,6 +514,7 @@ body {
     position: relative;
     top: 2px;
     margin-left: 3px;
+    font-style: italic;
     font-size: 14px;
     font-family: 'Garamond', 'Georgia', serif;
     vertical-align: 2px;
