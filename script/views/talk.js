@@ -605,6 +605,7 @@
 (function() {
 
     var mainTitle = document.title;
+    var mark = String.fromCharCode(9733);
 
     Room.on('enter', function() {
         document.title = Room.data.topic;
@@ -628,7 +629,7 @@
 
     Room.on('talk.updated', function() {
         if (Room.idle) {
-            document.title = '+ ' + Room.data.topic;
+            document.title = mark + ' ' + Room.data.topic;
         }
     });
 
