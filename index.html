@@ -174,16 +174,19 @@
 
 </div>
 
+<script type="text/html" id="speech-template">
+<div class="speech">
+    <div class="speech-author">
+        <div class="userpic" style="background-image: url({userpicUrl});"></div>
+        <span class="nickname">{nickname}</span>
+    </div>
+</div>
+</script>
+
 <script type="text/html" id="message-template">
 <div class="message" data-id="{message_id}">
     <time class="msg-time" datetime="{created}">{time}</time>
-    <div class="msg-content">
-        <div class="msg-author">
-            <div class="userpic" style="background-image: url({userpicUrl});"></div>
-            <span class="nickname">{nickname}</span>
-        </div>
-        <p class="msg-text">{content}</p>
-    </div>
+    <p class="msg-text">{content}</p>
 </div>
 </script>
 

@@ -37,27 +37,27 @@
     margin-right: 9px;
 }
 
-.message {
-    margin-right: 10px;
+.speech {
+    margin-right: 45px;
     margin-left: 6px;
-}
-.msg-content {
-    margin-right: 35px;
     padding-left: 58px;
     padding-right: 5px;
 }
-.private .msg-content {
+.speech-author > .userpic {
+    left: -50px;
+}
+.speech.personal {
     padding-left: 57px;
+    padding-right: 4px;
 }
-.msg-author > .userpic {
-    left: 8px;
+.message:before {
+    left: -28px;
 }
-.idem::before {
-    left: 30px;
+.msg-time {
+    right: -40px;
 }
-
 .with-ny-name::after {
-    left: -12px;
+    left: -70px;
 }
 
 .talk-reply {

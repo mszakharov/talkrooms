@@ -55,7 +55,7 @@
 
     function onShow(socket, me) {
         if (socket.session_id && !me) {
-            var message = Profile.target && Profile.target.closest('.message');
+            var message = Profile.target && Profile.target.closest('.speech').find('.message').first();
             selectedMessage = (message && message.length) ? message : null;
             section.children().hide();
             section.show();

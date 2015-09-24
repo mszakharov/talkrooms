@@ -73,151 +73,132 @@
 
 })();
 
-// Talk
+var Talk = {
+    container: $('#talk .talk-messages')
+};
+
+// Format content
+Talk.format = function(content) {
+    return content
+        .replace(/\n/g, '<br>')
+        .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>')
+        .replace(/(^|\W)(\*|_)([^\s*_]|[^\s*_].*?\S)\2($|\W)/g, '$1<em>$3</em>$4');
+};
+
+// Find my nickname
 (function() {
 
-    var lastMessage = {};
-    var container = $('#talk .talk-messages');
-    var previous = container.find('.talk-previous');
-    var render = $.template('#message-template');
-    var counter = 0;
+    var myNickname;
 
-    function format(content) {
-        return content
-            .replace(/\n/g, '<br>')
-            .replace(/\b(http[\/#?&%:.\-=+\w]+)/g, '<a href="$1" target="_blank">$1</a>')
-            .replace(/(^|\W)(\*|_)([^\s*_]|[^\s*_].*?\S)\2($|\W)/g, '$1<em>$3</em>$4');
+    function escapeRegExp(string){
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
+
+    function updateNickname() {
+        myNickname = new RegExp('(?:^|, )' + escapeRegExp(Room.socket.nickname) + ', ');
+    }
+
+    Room.on('enter', updateNickname);
+    Room.on('my.nickname.updated', updateNickname);
+
+    Talk.isForMe = function(content) {
+        return myNickname.test(content);
+    };
+
+})();
+
+// Messages composer
+(function() {
+
+    var renderSpeech = $.template('#speech-template');
+    var renderMessage = $.template('#message-template');
 
     function extendMessage(data) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
-        data.content = format(data.content);
-        data.userpicUrl = Userpics.getUrl(data);
+        data.content = Talk.format(data.content);
         return data;
     }
 
-    function sameAuthor(m1, m2) {
-        return m1.nickname === m2.nickname && m1.recipient_nickname === m2.recipient_nickname;
-    }
-
-    function getNicknames(message) {
-        var recipient = message.find('.recipient-nickname');
-        return {
-            nickname: message.find('.nickname').text(),
-            recipient_nickname: recipient.length ? recipient.text() : null
-        };
-    }
-
-    function toggleIdem(elem) {
-        var prev = elem.prev('.message');
-        if (prev) {
-            var m1 = getNicknames(prev);
-            var m2 = getNicknames(elem);
-            elem.toggleClass('idem', sameAuthor(m1, m2));
-        } else {
-            elem.removeClass('idem');
+    function createSpeech(data) {
+        data.userpicUrl = Userpics.getUrl(data);
+        var elem = renderSpeech(data);
+        if (data.session_id) {
+            elem.attr('data-session', data.session_id);
         }
+        if (data.user_id) {
+            elem.attr('data-user', data.user_id);
+        }
+        if (data.recipient_nickname) {
+            elem.addClass('personal');
+            elem.find('.speech-author').append(renderRecipient(data));
+        }
+        elem.append(createMessage(data));
+        return elem;
+    }
+
+    function createMessage(data) {
+        var elem = renderMessage(data);
+        if (!Room.isMy(data) && Talk.isForMe(data.content)) {
+            elem.addClass('with-my-name');
+        }
+        return elem;
     }
 
     function renderRecipient(message) {
         var nickname = message.recipient_nickname;
         if (nickname === Room.socket.nickname) nickname = 'я';
         return $('<span></span>')
-            .addClass('msg-recipient')
+            .addClass('speech-recipient')
             .attr('data-session', message.recipient_session_id)
             .attr('data-user', message.recipient_id)
             .html('&rarr; <span class="recipient-nickname">' + nickname + '</span>');
-    }
-
-    var myNickname;
-
-    function updateNickname() {
-        var nickname = Room.socket.nickname;
-        myNickname = new RegExp('(?:^|, )' + nickname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ', ');
-    }
-
-    Room.on('enter', updateNickname);
-    Room.on('my.nickname.updated', updateNickname);
-
-    function renderMessage(data, last) {
-        extendMessage(data);
-        var nodes = [];
-        var elem = render(data);
-        if (data.session_id) {
-            elem.attr('data-session', data.session_id);
-        }
-        if (data.user_id) {
-            elem.find('.msg-author').attr('data-id', data.user_id);
-        }
-        if (data.recipient_nickname) {
-            elem.find('.msg-author').append(renderRecipient(data));
-            elem.addClass('private');
-        }
-        if (data.recipient_nickname || Room.isMy(data)) {
-            elem.addClass('for-me');
-        } else if (myNickname.test(data.content)) {
-            elem.addClass('for-me with-ny-name');
-        }
-        if (data.date !== last.date) {
-            nodes.push(renderDate(data.date)[0]);
-        } else if (sameAuthor(data, last)) {
-            elem.addClass('idem');
-        }
-        nodes.push(elem[0]);
-        return nodes;
-    }
-
-    function renderMessages(messages) {
-        var last = {};
-        var nodes = [];
-        messages.forEach(function(message) {
-            nodes.push.apply(nodes, renderMessage(message, last));
-            last = message;
-        });
-        return nodes;
     }
 
     function renderDate(date) {
         return $('<div class="date"><span class="date-text">' + date + '</span></div>');
     }
 
-    function clearOld(next) {
-        var messages = container.find('.message');
-        var scrolled = $window.scrollTop();
-        var cut = messages.eq(50);
-        if (cut.position().top < scrolled) {
-            var height = $document.height();
-            var dates = cut.prevAll('.date');
-            messages.slice(0, 50).remove();
-            messages.eq(50).removeClass('idem');
-            dates.slice(1).remove();
-            dates.eq(0).hide();
-            previous.show();
-            $window.scrollTop(scrolled - (height - $document.height()));
-            counter = messages.length - 50;
-        }
-        next();
+    function inRow(m1, m2) {
+        return m1.date === m2.date &&
+            m1.nickname === m2.nickname &&
+            m1.recipient_nickname == m2.recipient_nickname;
     }
 
-    function clearMessages(messages) {
-        var wasLast = messages.last().next().length === 0;
-        var after = messages.next('.message:not(.idem)');
-        messages.remove();
-        after.each(function(i, node) {
-            toggleIdem($(node));
-        });
-        clearDates();
-        if (wasLast) {
-            var last = container.find('.message').last();
-            lastMessage = $.extend(getNicknames(last), {
-                message_id: Number(last.attr('data-id')),
-                socket_id: last.attr('data-socket'),
-                date: container.find('.date-text').last().text()
-            });
-        }
+    function Composer(output) {
+        this.output = output;
     }
+
+    Composer.prototype.push = function(content, date) {
+        if (date !== this.date) {
+            this.output(renderDate(date), true);
+            this.date = date;
+        }
+        this.output(content);
+        return content;
+    };
+
+    Composer.prototype.append = function(message) {
+        extendMessage(message);
+        if (this.speech && inRow(this.last, message)) {
+            this.speech.append(createMessage(message));
+        } else {
+            var speech = createSpeech(message);
+            this.push(speech, message.date);
+            this.speech = speech;
+        }
+        this.last = message;
+    };
+
+    Talk.Composer = Composer;
+
+})();
+
+// Remove messages
+(function() {
+
+    var container = Talk.container;
 
     function clearDates() {
         var dates = container.find('.date');
@@ -232,26 +213,255 @@
         }
     }
 
-    function getSocket(message) {
-        var session_id = Number(message.attr('data-session'));
-        var socket = session_id && Room.users.findSession(session_id)[0];
-        return socket || parseSocket(message);
+    Talk.removeMessages = function(messages) {
+        var speeches = messages.parent();
+        var lastChanged = speeches.last().next().length === 0;
+        messages.remove();
+        speeches.not(':has(.message)').remove();
+        clearDates();
+        if (lastChanged) {
+            Talk.updateLast();
+        }
+    };
+
+})();
+
+// Remove ignored messages
+(function() {
+
+    var container = Talk.container;
+
+    var timer;
+    var nodes = [];
+
+    function clearIgnored() {
+        clearTimeout(timer);
+        $window.queue(function(next) {
+            Talk.removeMessages($(nodes));
+            nodes = [];
+            next();
+        });
     }
 
-    function parseSocket(message) {
+    function removeMessage(id) {
+        var message = container.find('.message[data-id="' + id + '"]');
+        if (message.length) {
+            clearTimeout(timer);
+            nodes.push(message[0]);
+            timer = setTimeout(clearIgnored, 50);
+        }
+    }
+
+    Room.on('message.ignore.updated', function(data) {
+        if (data.ignore && !Room.socket.ignored) {
+            removeMessage(data.message_id);
+        }
+    });
+
+})();
+
+// Load messages
+(function() {
+
+    var container = Talk.container;
+    var previous = container.find('.talk-previous');
+
+    function getMessages(conditions) {
+        var options = {
+            room_id: Room.data.room_id,
+            order_by: {'-desc': 'message_id'},
+            for_me: Talk.forMeOnly ? 1 : 0
+        };
+        if (conditions) {
+            $.extend(options, conditions);
+        }
+        return Rest.messages.get(options);
+    }
+
+    function sliceRecent(messages) {
+        if (messages.length < 150) {
+            previous.hide();
+        } else {
+            previous.show();
+            messages = messages.slice(0, 100);
+        }
+        return messages.reverse();
+    }
+
+    function showRecent(messages) {
+        previous.detach();
+        container.empty().append(previous);
+        if (messages.length) {
+            container.append(renderMessages(messages));
+        }
+        container.find('.date').first().hide();
+        container.show();
+        $window.scrollTop($document.height() - $window.height() - 1);
+        Room.trigger('dates.changed');
+        Talk.updateLast();
+        Talk.length = messages.length;
+    }
+
+    function renderMessages(messages) {
+        var nodes = [];
+        var composer = new Talk.Composer(function(content) {
+            nodes.push(content[0]);
+        });
+        messages.forEach(function(message) {
+            composer.append(message);
+        });
+        return nodes;
+    }
+
+    function mergeDatesBefore(speech) {
+        var dates = speech.prevAll('.date');
+        if (dates[0].innerHTML === dates[1].innerHTML) {
+            dates.eq(0).remove();
+        } else {
+            dates.eq(0).show();
+        }
+        dates.last().hide();
+        Room.trigger('dates.changed');
+    }
+
+    Talk.loadRecent = function() {
+        return getMessages()
+            .then(sliceRecent)
+            .done(showRecent);
+    };
+
+    Room.on('enter', function() {
+        Talk.length = 0;
+        Talk.forMeOnly = false;
+        Room.promises.push(Talk.loadRecent());
+    });
+
+    previous.on('click', function() {
+        if (previous.hasClass('loading')) return;
+        var oldFirst = container.find('.message').eq(0);
+        var offset = oldFirst.offset().top - $window.scrollTop();
+        previous.addClass('loading');
+        getMessages({
+            message_id: {'<': Number(oldFirst.attr('data-id'))},
+        })
+            .then(sliceRecent)
+            .done(function(messages) {
+                previous.after(renderMessages(messages));
+                previous.removeClass('loading');
+                mergeDatesBefore(oldFirst.closest('.speech'));
+                var pos = oldFirst.offset().top - offset;
+                $window.scrollTop(pos).delay(150).scrollTo(pos - 150, 400);
+                Talk.length += messages.length;
+            })
+            .fail(function() {
+                previous.removeClass('loading');
+            });
+    });
+
+    Talk.forMeOnly = true;
+
+})();
+
+// Show created messages
+(function() {
+
+    var container = Talk.container;
+
+    var composer = new Talk.Composer(function(content, isDate) {
+        Talk.container.append(content);
+        if (isDate) {
+            Room.trigger('dates.changed');
+        }
+    });
+
+    function updateLast(message) {
+        var created = message.find('time').attr('datetime');
+        var speech = message.closest('.speech');
+        var last = {
+            message_id: Number(message.attr('data-id')),
+            nickname: speech.find('.nickname').text(),
+            date: (new Date(created)).toSmartDate(),
+            created: created
+        };
+        if (speech.hasClass('.personal')) {
+            last.recipient_nickname = speech.find('.recipient-nickname').text();
+        }
+        composer.speech = speech;
+        composer.date = last.date;
+        composer.last = last;
+    }
+
+    function isForMe(data) {
+        return data.recipient_nickname || Room.isMy(data) || Talk.isForMe(data.content);
+    }
+
+    function removeOld(next) {
+        var messages = container.find('.message');
+        var scrolled = $window.scrollTop();
+        var cut = messages.eq(50);
+        if (cut.position().top < scrolled) {
+            var height = $document.height();
+            Talk.removeMessages(messages.slice(0, 50));
+            Talk.container.find('.talk-previous').show();
+            $window.scrollTop(scrolled - (height - $document.height()));
+            Talk.length = messages.length - 50;
+        }
+        next();
+    }
+
+    Room.on('message.created', function(message) {
+        if (message.ignore && !Room.socket.ignored) return false;
+        if (message.message_id > composer.last.message_id) {
+            if (!Talk.forMeOnly || isForMe(message)) {
+                composer.append(message);
+                Room.trigger('talk.updated');
+                if (Talk.length++ > 1000) {
+                    $window.queue(removeOld);
+                }
+                Talk.scrollDown(composer.speech[0].lastChild);
+            }
+        }
+    });
+
+    $window.on('date.changed', function() {
+        var last = composer.last;
+        if (last && last.created) {
+            last.date = (new Date(last.created)).toSmartDate();
+            composer.date = last.date;
+        }
+    });
+
+    Talk.updateLast = function() {
+        var message = this.container.find('.message').last();
+        if (message.length) {
+            updateLast(message);
+        } else {
+            composer.last = {message_id: 0};
+        }
+    };
+
+})();
+
+// User actions
+(function() {
+
+    var container = Talk.container;
+
+    function parseSocket(speech) {
         var data = {
-            session_id: Number(message.attr('data-session')),
-            nickname: message.find('.nickname').text(),
-            user_id: Number(message.find('.msg-author').attr('data-id'))
+            nickname: speech.find('.nickname').text(),
+            session_id: Number(speech.attr('data-session')),
+            user_id: Number(speech.attr('.data-user'))
         };
         if (data.user_id) {
-            var userpicUrl = message.find('.userpic').css('background-image');
+            var userpicUrl = speech.find('.userpic').css('background-image');
             data.userpic = userpicUrl.match(/\d+\.png(\?\d+)?/)[0];
         }
         return data;
     }
 
-    function parseRecipient(elem) {
+    function parseRecipient(speech) {
+        var elem = speech.find('.speech-recipient');
         return {
             user_id: Number(elem.attr('data-user')),
             session_id: Number(elem.attr('data-session')),
@@ -259,32 +469,34 @@
         };
     }
 
-    function replyPrivate(message) {
-        var socket = getSocket(message);
+    function getSocket(speech) {
+        var session_id = Number(speech.attr('data-session'));
+        var socket = session_id && Room.users.findSession(session_id)[0];
+        return socket || parseSocket(speech);
+    }
+
+    function replyPersonal(speech) {
+        var socket = getSocket(speech);
         if (Room.isMy(socket)) {
-            var recipient = message.find('.msg-recipient');
-            Room.replyPrivate(parseRecipient(recipient));
+            Room.replyPrivate(parseRecipient(speech));
         } else {
             Room.replyPrivate(socket);
         }
     }
 
-    container.on('click', '.msg-recipient', function() {
-        var data = parseRecipient($(this));
-        if (!Room.isMy(data)) {
-            Room.replyPrivate(data);
-        } else {
-            var message = $(this).closest('.message');
-            Room.replyPrivate(getSocket(message));
-        }
+    container.on('click', '.userpic', function(event) {
+        event.stopPropagation();
+        var userpic = $(this);
+        var data = getSocket(userpic.closest('.speech'));
+        Profile.show(data, userpic);
     });
 
     container.on('click', '.nickname', function() {
-        var target = $(this);
-        var nickname = target.text();
-        var message = target.closest('.message');
-        if (message.hasClass('private')) {
-            replyPrivate(message);
+        var elem = $(this);
+        var speech = elem.closest('.speech');
+        var nickname = elem.text();
+        if (speech.hasClass('personal')) {
+            replyPersonal(speech);
         } else if (nickname !== Room.socket.nickname) {
             Room.replyTo(nickname);
         } else {
@@ -292,180 +504,14 @@
         }
     });
 
-    container.on('click', '.userpic', function(event) {
-        event.stopPropagation();
-        var userpic = $(this);
-        var message = userpic.closest('.message');
-        Profile.show(getSocket(message), userpic);
+    container.on('click', '.speech-recipient', function() {
+        replyPersonal($(this).closest('.speech'));
     });
 
-    function loadRecent() {
-        return Rest.messages
-            .get({
-                room_id: Room.data.room_id,
-                order_by: {'-desc': 'message_id'}
-            })
-            .done(function(recent) {
-                previous.detach();
-                container.empty().append(previous);
-                if (recent.length === 150) {
-                    recent = recent.slice(0, 100);
-                    previous.show();
-                } else {
-                    previous.hide();
-                }
-                if (recent.length) {
-                    var nodes = renderMessages(recent.reverse());
-                    lastMessage = recent[recent.length - 1];
-                    container.append(nodes);
-                } else {
-                    lastMessage = {message_id: 0, date: 'сегодня'};
-                    container.append(renderDate('сегодня'));
-                }
-                container.find('.date').first().hide();
-                container.show();
-                $window.scrollTop($document.height() - $window.height() - 1);
-                Room.trigger('dates.changed');
-                counter = recent.length;
-            });
-    };
+})();
 
-    previous.on('click', function() {
-        if (previous.hasClass('loading')) return;
-        var oldFirst = container.find('.message').eq(0);
-        var offset = oldFirst.next().offset().top - $window.scrollTop();
-        previous.addClass('loading');
-        Rest.messages
-            .get({
-                room_id: Room.data.room_id,
-                order_by: {'-desc': 'message_id'},
-                message_id: {'<': Number(oldFirst.attr('data-id'))},
-                for_me: forMeOnly ? 1 : 0
-            })
-            .done(function(messages) {
-                if (messages.length === 150) {
-                    messages = messages.slice(0, 100);
-                    previous.show();
-                } else {
-                    previous.hide();
-                }
-                var nodes = renderMessages(messages.reverse());
-                previous.after(nodes);
-                var prevDates = oldFirst.prevAll('.date');
-                if (prevDates.eq(0).html() === prevDates.eq(1).html()) {
-                    prevDates.eq(0).remove();
-                } else {
-                    prevDates.eq(0).show();
-                }
-                if (forMeOnly && !forMeFirst) {
-                    forMeFirst = oldFirst;
-                }
-                toggleIdem(oldFirst);
-                container.find('.date').first().hide();
-                Room.trigger('dates.changed');
-                var pos = oldFirst.next().offset().top - offset;
-                $window.scrollTop(pos).delay(150).scrollTo(pos - 150, 400);
-                counter += messages.length;
-                previous.removeClass('loading');
-            })
-            .fail(function() {
-                previous.removeClass('loading');
-            });
-    });
-
-    Room.on('enter', function() {
-        Room.promises.push(loadRecent());
-    });
-
-    Room.on('leave', function() {
-        container.hide();
-    });
-
-    var forMeOnly, forMeFirst, latentDate;
-    var forMeIcon = $('#talk .toggle-for-me');
-    forMeIcon.on('click', function() {
-        forMeOnly = !forMeOnly;
-        var scrollRatio = $window.scrollTop() / ($document.height() - $window.height());
-        if (forMeFirst) {
-            forMeFirst.prevAll('.message').remove();
-            forMeFirst.removeClass('idem');
-            forMeFirst = null;
-            clearDates();
-        }
-        if (forMeOnly) {
-            setForMeIdems();
-            hideEmptyDates();
-        } else {
-            latentDate = null;
-            container.find('.latent-date')
-                .removeClass('latent-date');
-            container.find('.date:hidden').slice(1).show();
-            container.find('.latent-idem')
-                .removeClass('latent-idem')
-                .addClass('idem');
-        }
-        forMeIcon.toggleClass('enabled', forMeOnly);
-        container.toggleClass('for-me-only', forMeOnly);
-        Room.trigger('dates.changed');
-        $window.scrollTop(scrollRatio * ($document.height() - $window.height()));
-    });
-
-    function hideEmptyDates() {
-        var dates = container.find('.date');
-        var latent = dates.filter(function() {
-            return $(this).nextUntil('.date', '.message.for-me').length === 0;
-        })
-        latent.addClass('latent-date');
-        dates.not(latent).eq(0).hide();
-    }
-
-    function isFirstForMe(message) {
-        return message.prevUntil(':not(.idem)').prev().andSelf().filter('.for-me').length === 0;
-    }
-
-    function setForMeIdems() {
-        container.find('.message:not(.for-me) + .idem.for-me')
-            .filter(function() {
-                return isFirstForMe($(this));
-            })
-            .addClass('latent-idem')
-            .removeClass('idem');
-    }
-
-    Room.on('message.created', function(message) {
-        if (message.ignore && !Room.socket.ignored) return false;
-        if (message.message_id > lastMessage.message_id) {
-            var nodes = renderMessage(message, lastMessage);
-            lastMessage = message;
-            container.append(nodes);
-            var visible = !forMeOnly;
-            if (forMeOnly) {
-                var message = $(nodes).last();
-                if (message.hasClass('for-me')) {
-                    visible = true;
-                    if (message.hasClass('idem') && isFirstForMe(message)) {
-                        message.addClass('latent-idem').removeClass('idem');
-                    }
-                    if (latentDate) {
-                        latentDate.removeClass('latent-date');
-                        latentDate = null;
-                    }
-                } else if (nodes.length > 1) {
-                    latentDate = $(nodes[0]).addClass('latent-date');
-                }
-            }
-            if (visible) {
-                if (nodes.length > 1) {
-                    Room.trigger('dates.changed');
-                }
-                scrollDown(nodes[0]);
-                if (counter++ > 1000) {
-                    $window.queue(clearOld);
-                }
-                Room.trigger('talk.updated');
-            }
-        }
-    });
+// Scroll talk
+(function() {
 
     var scrolledIdle = 0;
 
@@ -503,50 +549,27 @@
         });
     }
 
-    var ignoredTimer;
-    var ignoredNodes = [];
-
-    function clearIgnored() {
-        $window.queue(function(next) {
-            clearMessages($(ignoredNodes));
-            ignoredNodes = [];
-            next();
-        });
-    }
-
-    Room.on('message.ignore.updated', function(data) {
-        if (data.ignore && !Room.socket.ignored) {
-            clearTimeout(ignoredTimer);
-            var selector = '.message[data-id="' + data.message_id + '"]';
-            var message = container.find(selector);
-            if (message.length) {
-                ignoredNodes.push(container.find(selector)[0]);
-                ignoredTimer = setTimeout(clearIgnored, 50);
-            }
-        }
-    });
-
-    $window.on('date.changed', function() {
-        var date;
-        container.find('.date').each(function() {
-            var elem = $(this);
-            var time = elem.next('.message').find('time').attr('datetime');
-            if (time) {
-                date = (new Date(time)).toSmartDate();
-                elem.find('.date-text').text(date);
-            }
-        });
-        Room.trigger('dates.changed');
-        lastMessage.date = date;
-    });
+    Talk.scrollDown = scrollDown;
 
 })();
 
+// Update dates after midnight
+$window.on('date.changed', function() {
+    Talk.container.find('.date').each(function() {
+        var elem = $(this);
+        var time = elem.next('.speech').find('time').attr('datetime');
+        if (time) {
+            date = (new Date(time)).toSmartDate();
+            elem.find('.date-text').text(date);
+        }
+    });
+    Room.trigger('dates.changed');
+});
 
 // Sticky dates
 (function() {
 
-    var container = $('#talk .talk-messages');
+    var container = Talk.container;
     var header = $('#talk .talk-header');
     var value = header.find('.date-text');
 
@@ -649,6 +672,23 @@
     }
 
     Room.on('enter', checkLevel);
+
+})();
+
+// Filter messages for me
+(function() {
+
+    var control = $('#talk .toggle-for-me');
+
+    Room.on('enter', function() {
+        control.removeClass('enabled');
+    });
+
+    control.on('click', function() {
+        Talk.forMeOnly = !Talk.forMeOnly;
+        control.toggleClass('enabled', Talk.forMeOnly);
+        Talk.loadRecent();
+    });
 
 })();
 
