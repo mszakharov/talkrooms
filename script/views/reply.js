@@ -123,3 +123,61 @@
     };
 
 })();
+
+// Edit message
+(function() {
+
+    var form = $('.talk-edit');
+    var field = form.find('textarea').val('');
+
+    var editing;
+
+    function showForm(message) {
+        var id = message.attr('data-id');
+        Rest.messages.get(id).done(function(data) {
+            message.append(form).addClass('editing');
+            field.focus().val(data.content);
+            field.height(field[0].scrollHeight);
+            editing = data;
+        });
+    }
+
+    function hideForm() {
+        field.val('').height('');
+        form.parent('.message').removeClass('editing');
+        form.detach();
+        editing = null;
+    }
+
+    function send() {
+        var content = field.val().trim();
+        Talk.setContent(form.closest('.message'), content);
+        Rest.messages
+            .update(editing.message_id, {
+                content: content
+            })
+            .done(hideForm);
+    }
+
+    field.on('input', function(event) {
+        var sh = this.scrollHeight;
+        var oh = this.offsetHeight;
+        if (sh > oh) {
+            field.height(sh);
+            $window.scrollTop($window.scrollTop() + sh - oh);
+        }
+    });
+
+    field.on('keypress', function(event) {
+        if (event.which === 13 && !(event.altKey || event.ctrlKey || event.shiftKey)) {
+            event.preventDefault();
+            send();
+        }
+    });
+
+    field.on('blur', hideForm);
+    Room.on('enter', hideForm);
+
+    Room.edit = showForm;
+
+})();

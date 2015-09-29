@@ -117,7 +117,7 @@ Talk.format = function(content) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
-        data.content = Talk.format(data.content);
+        data.content = Talk.format(data.content) || '…';
         return data;
     }
 
@@ -138,9 +138,13 @@ Talk.format = function(content) {
         return elem;
     }
 
+    var edit = $('<span class="msg-edit" title="Редактировать сообщение"></span>')[0];
+
     function createMessage(data) {
         var elem = renderMessage(data);
-        if (!Room.isMy(data) && Talk.isForMe(data.content)) {
+        if (Room.isMy(data)) {
+            elem.find('.msg-text').append(edit.cloneNode(true));
+        } else if (Talk.isForMe(data.content)) {
             elem.addClass('with-my-name');
         }
         return elem;
@@ -442,6 +446,28 @@ Talk.format = function(content) {
 
 })();
 
+// Update message
+(function() {
+
+    function setContent(elem, content) {
+        var edit = elem.find('.msg-edit').detach();
+        var text = elem.find('.msg-text').html(Talk.format(content) || '…');
+        if (edit.length) {
+            text.append(edit);
+        }
+    }
+
+    Room.on('message.content.updated', function(message) {
+        var elem = Talk.container.find('.message[data-id="' + message.message_id + '"]');
+        if (elem.length) {
+            setContent(elem, message.content);
+        }
+    });
+
+    Talk.setContent = setContent;
+
+})();
+
 // User actions
 (function() {
 
@@ -506,6 +532,10 @@ Talk.format = function(content) {
 
     container.on('click', '.speech-recipient', function() {
         replyPersonal($(this).closest('.speech'));
+    });
+
+    container.on('click', '.msg-edit', function() {
+        Room.edit($(this).closest('.message'));
     });
 
 })();
