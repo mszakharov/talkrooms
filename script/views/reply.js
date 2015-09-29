@@ -153,12 +153,16 @@
 
     function send() {
         var content = field.val().trim();
-        Talk.setContent(form.closest('.message'), content);
-        Rest.messages
-            .update(editing.message_id, {
-                content: content
-            })
-            .done(hideForm);
+        if (content !== editing.content) {
+            Talk.setContent(form.closest('.message'), content);
+            Rest.messages
+                .update(editing.message_id, {
+                    content: content
+                })
+                .done(hideForm);
+        } else {
+            hideForm();
+        }
     }
 
     field.on('input', function(event) {
