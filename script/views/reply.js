@@ -135,9 +135,11 @@
     function showForm(message) {
         var id = message.attr('data-id');
         Rest.messages.get(id).done(function(data) {
+            form.height(message.height());
             message.append(form).addClass('editing');
             field.focus().val(data.content);
             field.height(field[0].scrollHeight);
+            form.height('');
             editing = data;
         });
     }
