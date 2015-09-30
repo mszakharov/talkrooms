@@ -143,7 +143,9 @@ Talk.format = function(content) {
     function createMessage(data) {
         var elem = renderMessage(data);
         if (Room.isMy(data)) {
-            elem.find('.msg-text').append(edit.cloneNode(true));
+            if (data.date === 'сегодня' || data.date === 'вчера') {
+                elem.find('.msg-text').append(edit.cloneNode(true));
+            }
         } else if (Talk.isForMe(data.content)) {
             elem.addClass('with-my-name');
         }
@@ -589,11 +591,23 @@ $window.on('date.changed', function() {
         var elem = $(this);
         var time = elem.next('.speech').find('time').attr('datetime');
         if (time) {
-            date = (new Date(time)).toSmartDate();
+            var date = (new Date(time)).toSmartDate();
             elem.find('.date-text').text(date);
         }
     });
     Room.trigger('dates.changed');
+});
+
+// Remove obsolete edit icons
+$window.on('date.changed', function() {
+    Talk.container
+        .find('.msg-edit')
+        .not(function(index, node) {
+            var time = $(node).closest('.message').find('time').attr('datetime');
+            var date = (new Date(time)).toSmartDate();
+            return date === 'вчера' || date === 'сегодня';
+        })
+        .remove();
 });
 
 // Sticky dates
