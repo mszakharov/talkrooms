@@ -465,6 +465,7 @@ body {
 }
 .msg-time {
     position: absolute;
+    top: 5px;
     right: -80px;
     font-size: 12px;
     line-height: 14px;
