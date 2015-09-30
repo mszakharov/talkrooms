@@ -540,6 +540,13 @@ Talk.format = function(content) {
         Room.edit($(this).closest('.message'));
     });
 
+    Room.editLast = function() {
+        var icons = Talk.container.find('.msg-edit');
+        if (icons.length) {
+            Room.edit(icons.last().closest('.message'));
+        }
+    };
+
 })();
 
 // Scroll talk

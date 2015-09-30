@@ -68,6 +68,12 @@
         }
     });
 
+    field.on('keyup', function(event) {
+        if (event.which === 38 && !this.value) {
+            Room.editLast();
+        }
+    });
+
     var expanded;
     function collapseField() {
         var height = field.height();
@@ -104,6 +110,10 @@
         if (!Room.socket.userpic) showUserpic();
     });
 
+    Room.reply = function() {
+        field.focus();
+    };
+
     Room.replyTo = function(nickname) {
         if (!nickname) return field.focus();
         var raw = field.get(0);
@@ -138,7 +148,7 @@
         message.append(form);
         field.focus();
         Rest.messages.get(id).done(function(data) {
-            message.addClass('editing');
+            form.parent('.message').addClass('editing');
             field.val(data.content);
             field.height(field[0].scrollHeight);
             form.height('');
@@ -161,7 +171,8 @@
                 .update(editing.message_id, {
                     content: content
                 })
-                .done(hideForm);
+                .done(hideForm)
+                .done(Room.reply);
         } else {
             hideForm();
         }
@@ -183,12 +194,16 @@
         }
         if (event.which === 27) {
             hideForm();
+            Room.reply();
         }
     });
 
     field.on('blur', hideForm);
     Room.on('enter', hideForm);
 
-    Room.edit = showForm;
+    Room.edit = function(message) {
+        hideForm();
+        showForm(message);
+    };
 
 })();
