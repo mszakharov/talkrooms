@@ -335,7 +335,7 @@ body {
 /* Edit form */
 .talk-edit {
     display: none;
-    position: relative;
+    position: absolute;
     top: -3px;
     margin: 0 -8px 1px;
     border-radius: 3px;
@@ -343,6 +343,7 @@ body {
     overflow: hidden;
     background: #FFF;
     box-shadow: 0 1px 5px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05);
+    opacity: 0;
 }
 .talk-edit textarea {
     display: block;
@@ -361,8 +362,12 @@ body {
 .editing .msg-text {
     display: none;
 }
-.editing .talk-edit {
+.message .talk-edit {
     display: block;
+}
+.editing .talk-edit {
+    position: relative;
+    opacity: 1;
 }
 
 /* Disconnect */
