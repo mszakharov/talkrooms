@@ -76,6 +76,7 @@
 .details-photo {
     margin: -16px -20px 8px;
     width: 320px;
+    height: auto;
 }
 .details-userpic {
     display: none;
