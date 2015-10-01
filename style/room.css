@@ -359,6 +359,9 @@ body {
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: inherit;
 }
+.personal .talk-edit {
+    background: #faf9f5;
+}
 .editing .msg-text {
     display: none;
 }
