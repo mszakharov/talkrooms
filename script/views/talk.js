@@ -389,7 +389,7 @@ Talk.format = function(content) {
             date: (new Date(created)).toSmartDate(),
             created: created
         };
-        if (speech.hasClass('.personal')) {
+        if (speech.hasClass('personal')) {
             last.recipient_nickname = speech.find('.recipient-nickname').text();
         }
         composer.speech = speech;
