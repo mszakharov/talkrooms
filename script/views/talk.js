@@ -117,6 +117,7 @@ Talk.format = function(content) {
         var created = new Date(data.created);
         data.date = created.toSmartDate();
         data.time = created.toHumanTime();
+        data.timestamp = created.getTime();
         data.content = Talk.format(data.content) || '…';
         return data;
     }
@@ -166,10 +167,13 @@ Talk.format = function(content) {
         return $('<div class="date"><span class="date-text">' + date + '</span></div>');
     }
 
+    var interruption = 1000 * 60 * 60 * 3;
+
     function inRow(m1, m2) {
         return m1.date === m2.date &&
             m1.nickname === m2.nickname &&
-            m1.recipient_nickname == m2.recipient_nickname;
+            m1.recipient_nickname == m2.recipient_nickname &&
+            m2.timestamp - m1.timestamp < interruption;
     }
 
     function Composer(output) {
@@ -383,10 +387,12 @@ Talk.format = function(content) {
     function updateLast(message) {
         var created = message.find('time').attr('datetime');
         var speech = message.closest('.speech');
+        var date = new Date(created);
         var last = {
             message_id: Number(message.attr('data-id')),
             nickname: speech.find('.nickname').text(),
-            date: (new Date(created)).toSmartDate(),
+            date: date.toSmartDate(),
+            timestamp: date.getTime(),
             created: created
         };
         if (speech.hasClass('personal')) {
