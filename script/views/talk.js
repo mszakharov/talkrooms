@@ -485,7 +485,7 @@ Talk.format = function(content) {
         var data = {
             nickname: speech.find('.nickname').text(),
             session_id: Number(speech.attr('data-session')),
-            user_id: Number(speech.attr('.data-user'))
+            user_id: Number(speech.attr('data-user'))
         };
         if (data.user_id) {
             var userpicUrl = speech.find('.userpic').css('background-image');
