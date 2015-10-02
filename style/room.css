@@ -499,10 +499,9 @@ body {
     margin-right: -20px;
     padding: 0 10px;
     cursor: pointer;
-    background: url("edit.svg") no-repeat 6px 7px;
-    background-size: 10px 10px;
-    opacity: 0.6;
-    transition: opacity .2s;
+    background: url("edit_message.svg") no-repeat 6px 7px;
+    opacity: 0.5;
+    transition: opacity .15s;
 }
 .msg-edit:hover {
     opacity: 1;
