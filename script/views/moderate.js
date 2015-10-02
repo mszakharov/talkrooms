@@ -11,7 +11,12 @@
     var selectedMessage;
 
     function toggleControls(socket) {
-        if (socket.ignored) showConvict(socket.ignored); else showDecent();
+        if (socket.ignored) {
+            showIgnored(socket.ignored)
+            showConvict();
+        } else {
+            showDecent();
+        }
     }
 
     function toggleErase(message) {
@@ -24,14 +29,11 @@
         }
     }
 
-    function showConvict(ignored) {
+    function showConvict() {
         toggleErase(selectedMessage);
         decent.hide();
         convict.show();
         Profile.fit();
-        if (ignored) {
-            showIgnored(ignored);
-        }
     }
 
     function showIgnored(ignored) {
