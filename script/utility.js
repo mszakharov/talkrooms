@@ -53,6 +53,24 @@ if (typeof console === 'undefined') {
     console = {log: $.noop, error: $.noop};
 }
 
+// Require script
+(function() {
+
+    var loaded = {};
+
+    function loadScript(url) {
+        loaded[url] = false;
+        $.getScript('/script/' + url).done(function() {
+            loaded[url] = true;
+        });
+    }
+
+    $.require = function(url) {
+        if (loaded[url] === undefined) loadScript(url);
+    };
+
+})();
+
 // Readable duration
 (function() {
 

@@ -188,27 +188,7 @@
 })();
 
 /* Moderate */
-(function() {
-
-    var options = {
-        url: '/script/views/moderate.js',
-        dataType: 'script',
-        cache: false
-    };
-
-    function checkLevel(socket) {
-        if (socket.level && socket.level >= 50) {
-            $.ajax(options).done(loaded);
-        }
-    }
-
-    function loaded() {
-        Room.off('enter', checkLevel);
-    }
-
-    Room.on('enter', checkLevel);
-
-})();
+Room.loadForLevel(50, 'views/moderate.js');
 
 /* Login and logout */
 (function() {

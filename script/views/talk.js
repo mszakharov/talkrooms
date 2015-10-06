@@ -718,21 +718,7 @@ $window.on('date.changed', function() {
 })();
 
 // Settings
-(function() {
-
-    function checkLevel(socket) {
-        if (socket.level && socket.level >= 70) {
-            $.getScript('/script/views/settings.js').done(loaded);
-        }
-    }
-
-    function loaded() {
-        Room.off('enter', checkLevel);
-    }
-
-    Room.on('enter', checkLevel);
-
-})();
+Room.loadForLevel(70, 'views/settings.js');
 
 // Filter messages for me
 (function() {

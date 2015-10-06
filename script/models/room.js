@@ -198,6 +198,20 @@ Room.on('socket.status.updated', function(socket) {
     }
 });
 
+// Require scripts depending on level
+Room.loadForLevel = function(level, url) {
+
+    function checkLevel() {
+        var myLevel = Room.socket.level || 0;
+        if (myLevel >= level) {
+            $.require(url);
+        }
+    }
+
+    Room.on('enter', checkLevel);
+
+};
+
 // Inactive window detection
 (function() {
 
