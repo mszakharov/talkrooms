@@ -162,3 +162,33 @@
 .moder-safe {
     color: #808080;
 }
+
+/* Roles */
+#profile-roles {
+    padding: 10px 0 0 !important;
+}
+.roles-current {
+    padding: 16px 20px;
+    cursor: pointer;
+}
+.roles-current.readonly {
+    color: #808080;
+    cursor: default;
+}
+.roles-list {
+    padding: 4px 20px;
+    display: none;
+}
+.expanded .roles-current {
+    display: none;
+}
+.expanded .roles-list {
+    display: block;
+}
+.role {
+    margin: 14px 0;
+}
+#profile-roles .hint {
+    margin-top: 4px;
+    cursor: default;
+}

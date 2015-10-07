@@ -127,6 +127,25 @@
         <div class="details-private">Личное сообщение</div>
         <div class="button details-edit">Редактировать</div>
     </div>
+    <div class="section" id="profile-roles">
+        <div class="roles-current"></div>
+        <form class="roles-list">
+        <div class="role checkbox">
+            <span class="checkbox-input"><input type="radio" name="profile-role" id="role-admin" value="70"></span>
+            <label for="role-admin">Администратор</label>
+            <p class="hint">Может менять название и адрес комнаты и назначать модераторов</p>
+        </div>
+        <div class="role checkbox">
+            <span class="checkbox-input"><input type="radio" name="profile-role" id="role-moderator" value="50"></span>
+            <label for="role-moderator">Модератор</label>
+            <p class="hint">Следит за порядком, отправляя нарушителей в игнор</p>
+        </div>
+        <div class="role checkbox">
+            <span class="checkbox-input"><input type="radio" name="profile-role" id="role-guest" value="10"></span>
+            <label for="role-guest">Посетитель</label>
+        </div>
+        </form>
+    </div>
     <div class="section" id="profile-moderate">
         <div class="moder-decent">
             <div class="button moder-ignore">В игнор!</div>

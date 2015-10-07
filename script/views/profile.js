@@ -187,9 +187,6 @@
 
 })();
 
-/* Moderate */
-Room.loadForLevel(50, 'views/moderate.js');
-
 /* Login and logout */
 (function() {
 
@@ -201,3 +198,9 @@ Room.loadForLevel(50, 'views/moderate.js');
     });
 
 })();
+
+// Moderate
+Room.loadForLevel(50, 'views/moderate.js');
+
+// Roles
+Room.loadForLevel(70, 'views/roles.js');
