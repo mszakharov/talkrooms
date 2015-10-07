@@ -56,7 +56,7 @@
     }
 
     function onShow(socket, me) {
-        if (socket.session_id && !me) {
+        if (socket.session_id && !me && !(socket.level && socket.level >= 50 && myLevel >= 70)) {
             var message = Profile.target && Profile.target.closest('.speech').find('.message').first();
             selectedMessage = (message && message.length) ? message : null;
             section.children().hide();
@@ -66,8 +66,12 @@
 
     function onReady(data) {
         if (section.is(':hidden')) return;
-        if (data.level && data.level >= myLevel) {
-            section.find('.moder-safe').show();
+        if (data.level && data.level >= 50) {
+            if (myLevel >= 70) {
+                section.hide();
+            } else {
+                section.find('.moder-safe').show();
+            }
             Profile.fit();
         } else {
             toggleControls(Profile.socket);
