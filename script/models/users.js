@@ -74,8 +74,16 @@ Room.users = (function() {
     }
 
     Room.on('enter', function(socket) {
-        showIgnored = socket.level ? socket.level >= 50 : false;
+        sockets.raw = [];
+        showIgnored = Room.moderator;
         this.promises.push(getSockets());
+    });
+
+    Room.on('moderator.changed', function() {
+        showIgnored = Room.moderator;
+        if (sockets.raw.length) {
+            apply();
+        }
     });
 
     Room.on('socket.created', addSocket);
