@@ -1,9 +1,6 @@
 // Roles
 (function() {
 
-    var myLevel,
-        isActive;
-
     var section = $('#profile-roles'),
         current = section.find('.roles-current'),
         inputs = section.find('input');
@@ -24,28 +21,17 @@
 
     function onReady(data) {
         if (section.is(':hidden')) return;
-        if (data.level < myLevel) {
+        if (Room.isSubordinate(data)) {
             inputs.filter('[value="' + data.level + '"]').prop('checked', true);
+            current.removeClass('readonly');
+        } else {
+            current.addClass('readonly');
         }
         showLevel(data.level);
     }
 
-    function checkLevel(socket) {
-        myLevel = socket.level || 0;
-        var active = myLevel >= 70;
-        if (active !== isActive) {
-            isActive = active;
-            toggleEvents(active ? 'on' : 'off');
-        }
-    }
-
-    function toggleEvents(mode) {
-        Profile[mode]('show', onShow);
-        Profile[mode]('ready', onReady);
-    }
-
     function showLevel(level) {
-        current.html(titles[level]).toggleClass('readonly', level >= myLevel);
+        current.html(titles[level]);
     }
 
     function setLevel(level) {
@@ -59,10 +45,6 @@
     function collapse() {
         section.removeClass('expanded');
         Profile.fit();
-    }
-
-    function isCurrent(user) {
-        return Profile.socket && user.user_id === Profile.socket.user_id;
     }
 
     current.on('click', function() {
@@ -80,17 +62,25 @@
         }
     });
 
-    Room.on('enter', checkLevel);
+    function toggleEvents(on) {
+        var mode = on ? 'on' : 'off';
+        Profile[mode]('show', onShow);
+        Profile[mode]('ready', onReady);
+        Profile[mode]('level.updated', onReady);
+    }
 
-    Room.on('user.level.updated', function(data) {
-        if (isCurrent(data) && data.level !== Profile.socket.level) {
-            Profile.socket.level = data.level;
-            onReady(Profile.socket);
-        }
+    function toggleAdminRole() {
+        $('#role-admin').closest('.role').toggle(Room.socket.level === 80);
+    }
+
+    Room.on('enter', toggleAdminRole);
+
+    Room.on('admin.changed', function(on) {
+        toggleEvents(on);
     });
 
-    checkLevel(Room.socket || {});
-
+    toggleEvents(Room.admin);
+    toggleAdminRole();
 
 })();
 

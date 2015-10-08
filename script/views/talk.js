@@ -717,9 +717,6 @@ $window.on('date.changed', function() {
 
 })();
 
-// Settings
-Room.loadForLevel(70, 'views/settings.js');
-
 // Filter messages for me
 (function() {
 

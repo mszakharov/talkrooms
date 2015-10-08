@@ -99,12 +99,12 @@
         }
     }
 
-    function checkLevel(socket) {
-        icon.toggle(socket.level ? socket.level >= 70 : false);
+    function toggle() {
+        icon.toggle(Room.admin === true);
     }
 
-    Room.on('enter', checkLevel);
+    Room.on('admin.changed', toggle);
 
-    checkLevel(Room.socket || {});
+    toggle();
 
 })();

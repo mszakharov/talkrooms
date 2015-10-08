@@ -47,7 +47,6 @@
     function hide() {
         Profile.target = null;
         Profile.socket = null;
-        Profile.tole = null;
         popup.hide();
     }
 
@@ -61,6 +60,7 @@
     updateIndexes();
 
     window.Profile = Events.mixin({
+
         fit: function() {
             var wh = $window.height();
             var ph = popup.height();
@@ -69,6 +69,7 @@
                 left: this.position.left
             });
         },
+
         edit: function(target) {
             if (target) {
                 this.show(Room.socket, target, true);
@@ -77,8 +78,10 @@
                 this.trigger('edit', Room.socket, true);
             }
         },
+
         show: show,
         hide: hide
+
     });
 
 })();
@@ -198,9 +201,3 @@
     });
 
 })();
-
-// Moderate
-Room.loadForLevel(50, 'views/moderate.js');
-
-// Roles
-Room.loadForLevel(70, 'views/roles.js');

@@ -198,19 +198,40 @@ Room.on('socket.status.updated', function(socket) {
     }
 });
 
-// Require scripts depending on level
-Room.loadForLevel = function(level, url) {
+// Check permissions
+(function() {
 
     function checkLevel() {
-        var myLevel = Room.socket.level || 0;
-        if (myLevel >= level) {
-            $.require(url);
-        }
+        var level = Room.socket.level || 0;
+        setModer(level >= 50);
+        setAdmin(level >= 70);
     }
+
+    function setModer(on) {
+        if (Room.moderator === on) return;
+        if (Room.moderator = on) {
+            $.require('views/moderate.js');
+        }
+        Room.trigger('moderator.changed', on);
+    }
+
+    function setAdmin(on) {
+        if (Room.admin === on) return;
+        if (Room.admin = on) {
+            $.require('views/settings.js');
+            $.require('views/roles.js');
+        }
+        Room.trigger('admin.changed', on);
+    }
+
+    Room.isSubordinate = function(user) {
+        var myLevel = Room.socket.level;
+        return Boolean(myLevel && (!user.level || myLevel > user.level));
+    };
 
     Room.on('enter', checkLevel);
 
-};
+})();
 
 // Inactive window detection
 (function() {

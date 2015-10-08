@@ -1,7 +1,15 @@
-/* Ignore */
+// Update level
+Room.on('user.level.updated', function(data) {
+    var opened = Profile.socket;
+    if (opened && opened.user_id === data.user_id) {
+        opened.level = data.level;
+        Profile.trigger('level.updated', opened);
+    }
+});
+
+// Moderate section
 (function() {
 
-    var myLevel;
     var section = $('#profile-moderate');
 
     var convict = section.find('.moder-convict'),
@@ -55,8 +63,12 @@
         return Profile.socket && session.session_id === Profile.socket.session_id;
     }
 
+    function isCivilian(user) {
+        return !(user.level && user.level >= 50);
+    }
+
     function onShow(socket, me) {
-        if (socket.session_id && !me && !(socket.level && socket.level >= 50 && myLevel >= 70)) {
+        if (socket.session_id && !me && (isCivilian(socket) || !Room.admin)) {
             var message = Profile.target && Profile.target.closest('.speech').find('.message').first();
             selectedMessage = (message && message.length) ? message : null;
             section.children().hide();
@@ -66,15 +78,15 @@
 
     function onReady(data) {
         if (section.is(':hidden')) return;
-        if (data.level && data.level >= 50) {
-            if (myLevel >= 70) {
+        if (isCivilian(data)) {
+            toggleControls(Profile.socket);
+        } else {
+            if (Room.admin) {
                 section.hide();
             } else {
                 section.find('.moder-safe').show();
             }
             Profile.fit();
-        } else {
-            toggleControls(Profile.socket);
         }
     }
 
@@ -124,24 +136,24 @@
         }
     });
 
-    var isActive;
-    function checkLevel(socket) {
-        myLevel = socket.level || 0;
-        var active = myLevel >= 50;
-        if (active !== isActive) {
-            isActive = active;
-            toggleEvents(active ? 'on' : 'off');
-        }
+    function onLevelUpdated() {
+        section.show();
+        section.children().hide();
+        onReady(Profile.socket);
     }
 
-    function toggleEvents(mode) {
+    function toggleEvents(on) {
+        var mode = on ? 'on' : 'off';
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
+        Profile[mode]('level.updated', onLevelUpdated);
         Room[mode]('session.ignored.updated', onUpdated);
     }
 
-    Room.on('enter', checkLevel);
+    Room.on('moderator.changed', function(on) {
+        toggleEvents(on);
+    });
 
-    checkLevel(Room.socket || {});
+    toggleEvents(Room.moderator);
 
 })();
