@@ -103,7 +103,12 @@
         icon.toggle(Room.admin === true);
     }
 
-    Room.on('admin.changed', toggle);
+    Room.on('admin.changed', function() {
+        toggle();
+        if (!Room.admin && form.is(':visible')) {
+            form.hide();
+        }
+    });
 
     toggle();
 

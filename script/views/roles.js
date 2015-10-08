@@ -73,13 +73,24 @@
         $('#role-admin').closest('.role').toggle(Room.socket.level === 80);
     }
 
+    function toggleSection(on) {
+        toggleEvents(on);
+        if (Profile.socket) {
+            if (on) {
+                onShow(Profile.socket, Room.isMy(Profile.socket));
+                onReady(Profile.socket);
+            } else {
+                section.hide();
+            }
+            Profile.fit();
+        }
+    }
+
     Room.on('enter', toggleAdminRole);
 
-    Room.on('admin.changed', function(on) {
-        toggleEvents(on);
-    });
+    Room.on('admin.changed', toggleSection);
 
-    toggleEvents(Room.admin);
+    toggleSection(Room.admin);
     toggleAdminRole();
 
 })();

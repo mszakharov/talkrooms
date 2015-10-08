@@ -150,10 +150,34 @@ Room.on('user.level.updated', function(data) {
         Room[mode]('session.ignored.updated', onUpdated);
     }
 
-    Room.on('moderator.changed', function(on) {
+    function toggleSection(on) {
         toggleEvents(on);
+        if (Profile.socket) {
+            if (on) {
+                onShow(Profile.socket, Room.isMy(Profile.socket));
+                onReady(Profile.socket);
+            } else {
+                section.hide();
+            }
+            Profile.fit();
+        }
+    }
+
+    Room.on('moderator.changed', toggleSection);
+
+    Room.on('admin.changed', function(on) {
+        if (Profile.socket && !isCivilian(Profile.socket)) {
+            if (Room.admin) {
+                section.hide();
+            } else {
+                section.children().hide();
+                section.find('.moder-safe').show();
+                section.show();
+            }
+            Profile.fit();
+        }
     });
 
-    toggleEvents(Room.moderator);
+    toggleSection(Room.moderator);
 
 })();
