@@ -224,11 +224,6 @@ Room.on('socket.status.updated', function(socket) {
         Room.trigger('admin.changed', on);
     }
 
-    Room.isSubordinate = function(user) {
-        var myLevel = Room.socket.level;
-        return Boolean(myLevel && (!user.level || myLevel > user.level));
-    };
-
     Room.on('user.level.updated', function(data) {
         if (Room.socket.user_id === data.user_id) {
             Room.socket.level = data.level;

@@ -159,9 +159,6 @@
     font-size: 14px;
     line-height: 16px;
 }
-.moder-safe {
-    color: #808080;
-}
 
 /* Roles */
 #profile-roles {
@@ -169,13 +166,14 @@
 }
 .roles-current {
     padding: 16px 20px;
-    cursor: pointer;
-    background: url('profile/select.svg') no-repeat 100% 23px;
-}
-.roles-current.readonly {
     color: #808080;
+    background: url('profile/select.svg') no-repeat 0 -20px;
     cursor: default;
-    background-position: 0 -20px;
+}
+.roles-current.editable {
+    color: inherit;
+    background-position: 100% 23px;
+    cursor: pointer;
 }
 .roles-list {
     padding: 4px 20px;

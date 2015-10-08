@@ -7,6 +7,68 @@ Room.on('user.level.updated', function(data) {
     }
 });
 
+// Check level
+Profile.isCivilian = function() {
+    var socket = this.socket;
+    if (socket) {
+        return !(socket.level && socket.level >= 50);
+    }
+};
+
+// Roles section
+(function() {
+
+    var section = $('#profile-roles'),
+        current = section.find('.roles-current');
+
+    var roles = {
+        10: 'Посетитель',
+        50: 'Модератор',
+        70: 'Администратор',
+        80: 'Создатель комнаты'
+    };
+
+    function onShow(socket, me) {
+        if (socket.user_id && !me) {
+            current.html(roles[socket.level || 10]);
+            section.removeClass('expanded').show();
+        }
+    }
+
+    function onReady(data) {
+        if (data.user_id && (Room.admin || !Profile.isCivilian())) {
+            current.html(roles[data.level]);
+        } else {
+            section.hide();
+        }
+    }
+
+    function toggleEvents(on) {
+        var mode = on ? 'on' : 'off';
+        Profile[mode]('show', onShow);
+        Profile[mode]('ready', onReady);
+        Profile[mode]('level.updated', onReady);
+    }
+
+    function toggleSection(on) {
+        toggleEvents(on);
+        if (Profile.socket) {
+            if (on) {
+                onShow(Profile.socket, Room.isMy(Profile.socket));
+                onReady(Profile.socket);
+            } else {
+                section.hide();
+            }
+            Profile.fit();
+        }
+    }
+
+    Room.on('moderator.changed', toggleSection);
+
+    toggleSection(Room.moderator);
+
+})();
+
 // Moderate section
 (function() {
 
@@ -63,14 +125,16 @@ Room.on('user.level.updated', function(data) {
         return Profile.socket && session.session_id === Profile.socket.session_id;
     }
 
-    function isCivilian(user) {
-        return !(user.level && user.level >= 50);
+    function getMessage(target) {
+        var speech = target.closest('.speech');
+        if (speech.length) {
+            return speech.find('.message').first();
+        }
     }
 
     function onShow(socket, me) {
-        if (socket.session_id && !me && (isCivilian(socket) || !Room.admin)) {
-            var message = Profile.target && Profile.target.closest('.speech').find('.message').first();
-            selectedMessage = (message && message.length) ? message : null;
+        if (socket.session_id && !me) {
+            selectedMessage = Profile.target && getMessage(Profile.target);
             section.children().hide();
             section.show();
         }
@@ -78,15 +142,11 @@ Room.on('user.level.updated', function(data) {
 
     function onReady(data) {
         if (section.is(':hidden')) return;
-        if (isCivilian(data)) {
+        if (Profile.isCivilian()) {
             toggleControls(Profile.socket);
+            section.show();
         } else {
-            if (Room.admin) {
-                section.hide();
-            } else {
-                section.find('.moder-safe').show();
-            }
-            Profile.fit();
+            section.hide();
         }
     }
 
@@ -164,19 +224,6 @@ Room.on('user.level.updated', function(data) {
     }
 
     Room.on('moderator.changed', toggleSection);
-
-    Room.on('admin.changed', function(on) {
-        if (Profile.socket && !isCivilian(Profile.socket)) {
-            if (Room.admin) {
-                section.hide();
-            } else {
-                section.children().hide();
-                section.find('.moder-safe').show();
-                section.show();
-            }
-            Profile.fit();
-        }
-    });
 
     toggleSection(Room.moderator);
 

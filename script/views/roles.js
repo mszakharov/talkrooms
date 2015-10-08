@@ -5,33 +5,20 @@
         current = section.find('.roles-current'),
         inputs = section.find('input');
 
-    var titles = {
-        10: 'Посетитель',
-        50: 'Модератор',
-        70: 'Администратор',
-        80: 'Создатель комнаты'
-    };
-
-    function onShow(socket, me) {
-        if (socket.user_id && !me) {
-            current.html(titles[10]);
-            section.removeClass('expanded').show();
-        }
+    function isSubordinate(user) {
+        var myLevel = Room.socket.level;
+        return Boolean(myLevel && (!user.level || myLevel > user.level));
     }
 
     function onReady(data) {
-        if (section.is(':hidden')) return;
-        if (Room.isSubordinate(data)) {
+        if (isSubordinate(data)) {
             inputs.filter('[value="' + data.level + '"]').prop('checked', true);
-            current.removeClass('readonly');
+            current.addClass('editable');
         } else {
-            current.addClass('readonly');
+            current.removeClass('editable');
+            section.removeClass('expanded');
+            Profile.fit();
         }
-        showLevel(data.level);
-    }
-
-    function showLevel(level) {
-        current.html(titles[level]);
     }
 
     function setLevel(level) {
@@ -48,7 +35,7 @@
     }
 
     current.on('click', function() {
-        if (!current.hasClass('readonly')) {
+        if (current.hasClass('editable')) {
             section.addClass('expanded');
             Profile.fit();
         }
@@ -57,14 +44,14 @@
     inputs.on('click', function() {
         var level = Number(this.value);
         if (level !== Profile.socket.level) {
-            showLevel(level);
+            var label = $(this).closest('.role').find('label');
+            current.html(label.text());
             setLevel(level);
         }
     });
 
     function toggleEvents(on) {
         var mode = on ? 'on' : 'off';
-        Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onReady);
     }
@@ -76,13 +63,7 @@
     function toggleSection(on) {
         toggleEvents(on);
         if (Profile.socket) {
-            if (on) {
-                onShow(Profile.socket, Room.isMy(Profile.socket));
-                onReady(Profile.socket);
-            } else {
-                section.hide();
-            }
-            Profile.fit();
+            onReady(Profile.socket);
         }
     }
 
