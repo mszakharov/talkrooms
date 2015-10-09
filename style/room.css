@@ -1,3 +1,11 @@
+/* Italic font */
+@font-face {
+    font-family: 'PT Serif';
+    font-style: italic;
+    font-weight: 400;
+    src: local('PT Serif Italic'), local('PTSerif-Italic'), url(https://fonts.gstatic.com/s/ptserif/v8/3Nwg9VzlwLXPq3fNKwVRMAzyDMXhdD8sAj6OAJTFsBI.woff2) format('woff2');
+}
+
 /* Override page background */
 body {
     background: #F6F6F6;
@@ -480,7 +488,7 @@ body {
 }
 .msg-text em {
     font-style: italic;
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: 'PT Serif', 'Georgia', serif;
 }
 
 /* Nickname marker */
@@ -548,7 +556,7 @@ body {
     margin-left: 3px;
     font-style: italic;
     font-size: 14px;
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: 'PT Serif', 'Georgia', serif;
     vertical-align: 2px;
 }
 .user.me {
