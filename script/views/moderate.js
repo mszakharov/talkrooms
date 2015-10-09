@@ -7,6 +7,15 @@ Room.on('user.level.updated', function(data) {
     }
 });
 
+// Update ignored
+Room.on('session.ignored.updated', function(data) {
+    var opened = Profile.socket;
+    if (opened && opened.session_id === data.session_id) {
+        opened.ignored = data.ignored;
+        Profile.trigger('ignored.updated', opened);
+    }
+});
+
 // Check level
 Profile.isCivilian = function() {
     var socket = this.socket;
@@ -29,7 +38,7 @@ Profile.isCivilian = function() {
     };
 
     function onShow(socket, me) {
-        if (socket.user_id && !me) {
+        if (socket.user_id && !me && !socket.ignored) {
             var preview = Profile.isCivilian() === false;
             current.html(preview ? roles[socket.level] : '');
             section.removeClass('expanded').show();
@@ -49,24 +58,33 @@ Profile.isCivilian = function() {
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onReady);
+        Profile[mode]('ignored.updated', onIgnored);
+    }
+
+    function onIgnored(session) {
+        toggleSection(!session.ignored);
     }
 
     function toggleSection(on) {
+        if (on) {
+            onShow(Profile.socket, Room.isMy(Profile.socket));
+            onReady(Profile.socket);
+        } else {
+            section.hide();
+        }
+        Profile.fit();
+    }
+
+    function toggle(on) {
         toggleEvents(on);
         if (Profile.socket) {
-            if (on) {
-                onShow(Profile.socket, Room.isMy(Profile.socket));
-                onReady(Profile.socket);
-            } else {
-                section.hide();
-            }
-            Profile.fit();
+            toggleSection(on);
         }
     }
 
-    Room.on('moderator.changed', toggleSection);
+    Room.on('moderator.changed', toggle);
 
-    toggleSection(Room.moderator);
+    toggle(Room.moderator);
 
 })();
 
@@ -152,10 +170,7 @@ Profile.isCivilian = function() {
     }
 
     var skipWhip;
-    function onUpdated(session) {
-        if (isCurrent(session)) {
-            toggleControls(session);
-        }
+    function playWhip(session) {
         if (session.ignored) {
             if (session.session_id === skipWhip) {
                 skipWhip = null;
@@ -208,7 +223,8 @@ Profile.isCivilian = function() {
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onLevelUpdated);
-        Room[mode]('session.ignored.updated', onUpdated);
+        Profile[mode]('ignored.updated', toggleControls);
+        Room[mode]('session.ignored.updated', playWhip);
     }
 
     function toggleSection(on) {
