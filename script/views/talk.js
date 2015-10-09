@@ -584,7 +584,7 @@ Talk.format = function(content) {
         $window.scrollTo(function(now) {
             var height = $window.height();
             var offset = $(node).offset().top;
-            if (scrolledIdle < height / 2 && offset < now + height) {
+            if (scrolledIdle < height / 2 && offset < now + height + 20) {
                 var pos = $document.height() - height;
                 if (pos > now) {
                     if (Room.idle) {
