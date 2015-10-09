@@ -30,13 +30,14 @@ Profile.isCivilian = function() {
 
     function onShow(socket, me) {
         if (socket.user_id && !me) {
-            current.html(roles[socket.level || 10]);
+            var preview = Profile.isCivilian() === false;
+            current.html(preview ? roles[socket.level] : '');
             section.removeClass('expanded').show();
         }
     }
 
     function onReady(data) {
-        if (data.user_id && (Room.admin || !Profile.isCivilian())) {
+        if (section.is(':visible') && (Room.admin || !Profile.isCivilian())) {
             current.html(roles[data.level]);
         } else {
             section.hide();
@@ -133,7 +134,7 @@ Profile.isCivilian = function() {
     }
 
     function onShow(socket, me) {
-        if (socket.session_id && !me) {
+        if (socket.session_id && !me && Profile.isCivilian() !== false) {
             selectedMessage = Profile.target && getMessage(Profile.target);
             section.children().hide();
             section.show();
