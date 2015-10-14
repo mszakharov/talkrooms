@@ -526,10 +526,29 @@ body {
 /* Users */
 .room-users {
     display: none;
-    margin-left: 60px;
-    padding: 18px 0 113px;
+    margin-left: 26px;
+    padding: 0 0 95px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+.users-group {
+    margin: 18px 0 20px;
+}
+.users-title {
+    margin: 0 0 10px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    color: #858482;
+}
+.users-amount {
+    margin-left: 3px;
+    color: #B3B1AF;
+}
+.users-list {
+    margin-left: 34px;
+}
+
+/* User */
 .user {
     border-bottom: 1px solid #CECCCA;
     box-shadow: 0 1px 0 #F3F1F0;

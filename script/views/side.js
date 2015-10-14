@@ -18,7 +18,7 @@
 // Users list
 (function() {
 
-    var list = $('#room .room-users');
+    var container = $('#room .room-users');
     var render = $.template('#user-template');
 
     function renderUser(data) {
@@ -32,27 +32,44 @@
         return user[0];
     }
 
-    Room.on('users.updated', function(online, ignore) {
-        list.html('');
-        list.append(online.map(renderUser));
-        if (ignore.length) {
-            $('<div class="users-ignored"></div>').append(ignore.map(renderUser)).appendTo(list);
+    function Group(selector) {
+        this.elem = container.find(selector);
+        this.list = this.elem.find('.users-list');
+        this.amount = this.elem.find('.users-amount');
+    }
+
+    Group.prototype.show = function(users) {
+        this.list.html('');
+        if (users.length) {
+            this.amount.html(users.length);
+            this.list.append(users.map(renderUser));
+            this.elem.show();
+        } else {
+            this.elem.hide();
         }
+    };
+
+    var onlineGroup = new Group('.users-online');
+    var ignoreGroup = new Group('.users-ignored');
+
+    Room.on('users.updated', function(online, ignore) {
+        onlineGroup.show(online);
+        ignoreGroup.show(ignore);
     });
 
     Room.on('ready', function() {
-        list.fadeIn(150);
+        container.fadeIn(150);
     });
 
     Room.on('leave', function() {
-        list.hide();
+        container.hide();
     });
 
     function getSocket(elem) {
         return Room.users.get(Number(elem.attr('data-socket')));
     }
 
-    list.on('click', '.me, .userpic', function(event) {
+    container.on('click', '.me, .userpic', function(event) {
         event.stopPropagation();
         var elem = $(this).closest('.user');
         if (elem.hasClass('me')) {
@@ -63,7 +80,7 @@
         }
     });
 
-    list.on('click', '.user:not(.me) .nickname', function() {
+    container.on('click', '.user:not(.me) .nickname', function() {
         var user = $(this).closest('.user');
         Room.replyTo(getSocket(user).nickname);
     });
