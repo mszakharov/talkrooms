@@ -43,10 +43,15 @@ Room.users = (function() {
 
     function reset(data) {
         sockets.raw = data;
+        sockets.raw.forEach(setAnnoying);
         sockets.raw.forEach(setUserpicUrl);
         sockets.raw.forEach(normalizeNickname);
         sockets.sort();
         apply();
+    }
+
+    function setAnnoying(socket) {
+        socket.annoying = Room.ignores && Room.ignores(socket);
     }
 
     function setUserpicUrl(socket) {
@@ -61,6 +66,7 @@ Room.users = (function() {
 
     function addSocket(socket) {
         if (!sockets.get(socket.socket_id)) {
+            setAnnoying(socket);
             normalizeNickname(socket);
             setUserpicUrl(socket);
             sockets.add(socket);

@@ -593,9 +593,11 @@ body {
     background: url('edit.svg') no-repeat;
     cursor: pointer;
 }
+.user.annoying .userpic,
 .users-ignored .userpic {
     opacity: 0.3;
 }
+.user.annoying .nickname,
 .users-ignored .nickname {
     color: #B8B8B8;
 }

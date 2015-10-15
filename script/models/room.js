@@ -1,6 +1,7 @@
 // REST shortcuts
 var Rest = {
     rooms:    $.Rest('/api/rooms'),
+    users:    $.Rest('/api/users'),
     roles:    $.Rest('/api/roles'),
     sockets:  $.Rest('/api/sockets'),
     sessions: $.Rest('/api/sessions'),
@@ -178,11 +179,6 @@ Room.isMy = function(data) {
 
 })();
 
-// Ignore
-Room.on('session.ignored.updated', function(session) {
-    if (Room.socket.session_id === session.session_id) Room.socket.ignored = session.ignored;
-});
-
 // Update my nickname
 Room.on('socket.nickname.updated', function(socket) {
     if (Room.socket.socket_id === socket.socket_id) {
@@ -197,6 +193,40 @@ Room.on('socket.status.updated', function(socket) {
         Room.socket.status = socket.status;
     }
 });
+
+// Ignored
+Room.on('session.ignored.updated', function(session) {
+    if (Room.socket.session_id === session.session_id) {
+        Room.socket.ignored = session.ignored;
+    }
+});
+
+// Ignores
+(function() {
+
+    function isEmpty(ignores) {
+        return $.isEmptyObject(ignores[0]) && $.isEmptyObject(ignores[1]);
+    }
+
+    function isActive(ignores) {
+        return ignores && !Room.moderator && !isEmpty(ignores);
+    }
+
+    function inIgnores(data) {
+        var ignores = Room.socket.ignores;
+        return Boolean(data.user_id ?
+            ignores[0][data.user_id] :
+            ignores[0][data.session_id]);
+    }
+
+    function updateIgnores(ignores) {
+        Room.ignores = isActive(Room.socket.ignores) ? inIgnores : false;
+    }
+
+    Room.on('moderator.changed', updateIgnores);
+
+})();
+
 
 // Check permissions
 (function() {

@@ -29,6 +29,9 @@
         if (data.socket_id === Room.socket.socket_id) {
             user.addClass('me');
         }
+        if (data.annoying) {
+            user.addClass('annoying');
+        }
         return user[0];
     }
 
