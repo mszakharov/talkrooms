@@ -219,9 +219,14 @@ Room.on('session.ignored.updated', function(session) {
             ignores[0][data.session_id]);
     }
 
-    function updateIgnores(ignores) {
+    function updateIgnores() {
         Room.ignores = isActive(Room.socket.ignores) ? inIgnores : false;
     }
+
+    Room.on('user.ignores.updated', function(data) {
+        Room.socket.ignores = data.ignores;
+        updateIgnores();
+    });
 
     Room.on('moderator.changed', updateIgnores);
 

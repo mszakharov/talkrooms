@@ -88,8 +88,14 @@ Room.users = (function() {
     Room.on('moderator.changed', function() {
         showIgnored = Room.moderator;
         if (sockets.raw.length) {
+            sockets.raw.forEach(setAnnoying);
             apply();
         }
+    });
+
+    Room.on('user.ignores.updated', function() {
+        sockets.raw.forEach(setAnnoying);
+        apply();
     });
 
     Room.on('socket.created', addSocket);
