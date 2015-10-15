@@ -297,7 +297,14 @@ Talk.format = function(content) {
             previous.show();
             messages = messages.slice(0, 100);
         }
+        if (Room.ignores) {
+            messages = messages.filter(notAnnoying);
+        }
         return messages.reverse();
+    }
+
+    function notAnnoying(message) {
+        return !Room.ignores(message);
     }
 
     function showRecent(messages) {
@@ -425,6 +432,7 @@ Talk.format = function(content) {
 
     Room.on('message.created', function(message) {
         if (message.ignore && !Room.socket.ignored) return false;
+        if (Room.ignores && Room.ignores(message)) return false;
         if (message.message_id > composer.last.message_id) {
             if (!Talk.forMeOnly || isForMe(message)) {
                 composer.append(message);
