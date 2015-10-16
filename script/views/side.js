@@ -41,11 +41,14 @@
         this.amount = this.elem.find('.users-amount');
     }
 
-    Group.prototype.show = function(users) {
+    Group.prototype.show = function(users, sort) {
         this.list.html('');
         if (users.length) {
             this.amount.html(users.length);
             this.list.append(users.map(renderUser));
+            if (sort) {
+                this.list.find('.annoying').appendTo(this.list);
+            }
             this.elem.show();
         } else {
             this.elem.hide();
@@ -56,7 +59,7 @@
     var ignoreGroup = new Group('.users-ignored');
 
     Room.on('users.updated', function(online, ignore) {
-        onlineGroup.show(online);
+        onlineGroup.show(online, Boolean(Room.ignores));
         ignoreGroup.show(ignore);
     });
 
