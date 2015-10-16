@@ -273,6 +273,12 @@
         }
     });
 
+    Room.on('user.ignores.updated', function() {
+        if (Profile.socket && section.is(':visible')) {
+            toggleState(Room.ignores && Room.ignores(Profile.socket));
+        }
+    });
+
     Profile.on('show', onShow);
 
 })();
