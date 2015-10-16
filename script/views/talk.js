@@ -486,6 +486,11 @@ Talk.format = function(content) {
 
 })();
 
+// Apply ignores
+Room.on('user.ignores.updated', function() {
+    Talk.loadRecent();
+});
+
 // User actions
 (function() {
 
