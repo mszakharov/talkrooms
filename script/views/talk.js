@@ -389,6 +389,7 @@ Talk.format = function(content) {
     var composer = new Talk.Composer(function(content, isDate) {
         Talk.container.append(content);
         if (isDate) {
+            if (!composer.last.message_id) content.hide();
             Room.trigger('dates.changed');
         }
     });
@@ -652,8 +653,12 @@ $window.on('date.changed', function() {
     function update() {
         var active = dates.length > 1;
         headerHeight = header.height();
-        dates = container.find('.date:not(.latent-date)').map(getDate);
-        toggle(window.pageYOffset);
+        dates = container.find('.date').map(getDate);
+        if (dates.length) {
+            toggle(window.pageYOffset);
+        } else {
+            value.text('сегодня');
+        }
         if (dates.length < 2 && active) {
             window.removeEventListener('scroll', check, false);
             window.removeEventListener('resize', update);
