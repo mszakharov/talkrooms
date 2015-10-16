@@ -574,12 +574,6 @@ Room.on('user.ignores.updated', function() {
 // Scroll talk
 (function() {
 
-    var scrolledIdle = 0;
-
-    $window.on('focus', function() {
-        scrolledIdle = 0;
-    });
-
     var iOS = /ip(od|ad|hone)/i.test(navigator.platform);
     function isKeyboardOpened(dh) {
         var st = $window.scrollTop();
@@ -598,12 +592,9 @@ Room.on('user.ignores.updated', function() {
         $window.scrollTo(function(now) {
             var height = $window.height();
             var offset = $(node).offset().top;
-            if (scrolledIdle < height / 2 && offset < now + height + 20) {
+            if (offset < now + height + 20) {
                 var pos = $document.height() - height;
                 if (pos > now) {
-                    if (Room.idle) {
-                        scrolledIdle += pos - now;
-                    }
                     return pos;
                 }
             }
