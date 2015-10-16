@@ -216,7 +216,7 @@ Room.on('session.ignored.updated', function(session) {
         var ignores = Room.socket.ignores;
         return Boolean(data.user_id ?
             ignores[0][data.user_id] :
-            ignores[0][data.session_id]);
+            ignores[1][data.session_id]);
     }
 
     function updateIgnores() {

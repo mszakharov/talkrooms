@@ -126,6 +126,40 @@
     margin-left: 56px;
 }
 
+/* Ignores */
+#profile-ignores .button {
+    text-align: center;
+}
+.ignores-normal {
+    padding: 7px 13px;
+    font-size: 16px;
+    line-height: 18px;
+}
+.ignores-apply {
+    margin-top: 12px;
+    padding: 7px 13px;
+    font-size: 14px;
+    line-height: 16px;
+}
+.ignores-annoying {
+    position: relative;
+    padding: 8px 14px;
+    border-radius: 3px;
+    background: #EB6B4B;
+    color: #FFF;
+    font-size: 16px;
+    line-height: 18px;
+}
+.ignores-cancel {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 30px;
+    height: 30px;
+    background: url('profile/cancel.svg') no-repeat 9px 9px;
+    cursor: pointer;
+}
+
 /* Moderate */
 #profile-moderate .button {
     text-align: center;

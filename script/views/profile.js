@@ -190,6 +190,93 @@
 
 })();
 
+// Ignores
+(function() {
+
+    var section = $('#profile-ignores');
+
+    var normal = section.find('.ignores-normal'),
+        riposte = section.find('.ignores-riposte'),
+        annoying = section.find('.ignores-annoying');
+
+    function toggleState(on) {
+        riposte.hide();
+        normal.toggle(!on);
+        annoying.toggle(on);
+    }
+
+    function showNormal() {
+        annoying.hide();
+        normal.show();
+    }
+
+    function showAnnoying() {
+        normal.hide();
+        riposte.hide();
+        annoying.show();
+        Profile.fit();
+    }
+
+    function showRiposte() {
+        normal.hide();
+        riposte.find('.ignores-nickname').html(Profile.socket.nickname);
+        riposte.show();
+        Profile.fit();
+    }
+
+    function getParams(action, data) {
+        var ignores = {};
+        if (data.user_id) {
+            ignores[action + '_user_id'] = data.user_id;
+        } else {
+            ignores[action + '_session_id'] = data.session_id;
+        }
+        return {ignores: ignores};
+    }
+
+    function addToIgnores() {
+        Rest.users
+            .update(Room.socket.user_id, getParams('add', Profile.socket))
+            .done(showAnnoying);
+    }
+
+    function onShow(socket, me) {
+        if (Room.socket.user_id && !me && !Room.moderator) {
+            toggleState(Room.ignores && Room.ignores(socket));
+            section.show();
+        }
+    }
+
+    normal.on('click', function() {
+        if (Profile.socket.user_id) {
+            showRiposte();
+        } else {
+            addToIgnores();
+        }
+    });
+
+    section.find('.ignores-cancel').on('click', function() {
+        Rest.users
+            .update(Room.socket.user_id, getParams('delete', Profile.socket))
+            .done(showNormal);
+    });
+
+    section.find('.ignores-apply').on('click', addToIgnores);
+
+    Room.on('moderator.changed', function(on) {
+        if (Profile.socket) {
+            if (on) {
+                section.hide();
+            } else {
+                onShow(Profile.socket, Room.isMy(Profile.socket));
+            }
+        }
+    });
+
+    Profile.on('show', onShow);
+
+})();
+
 /* Login and logout */
 (function() {
 
