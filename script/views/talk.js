@@ -54,7 +54,11 @@
     });
 
     Room.on('lost', function() {
-        overlay.find('.entry-failed').show();
+        overlay.find('.entry-lost').show();
+    });
+
+    Room.on('locked', function() {
+        overlay.find('.entry-locked').show();
     });
 
 })();

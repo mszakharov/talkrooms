@@ -15,7 +15,7 @@
 
 <div id="room">
 <div class="room-entry">
-    <div class="entry-text entry-failed">
+    <div class="entry-text entry-lost">
         <h6>Комната не найдена</h6>
         <p class="hint">Возможно, у комнаты, в которую вы хотите зайти, изменился адрес. Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>.</p>
     </div>
@@ -23,6 +23,14 @@
         <h6>Нет подходящей комнаты</h6>
         <p class="hint">К сожалению, в других комнатах сейчас нет собеседников.</p>
         <p class="hint"><span class="link entry-back">Вернуться</span></p>
+    </div>
+    <div class="entry-text entry-locked">
+        <h6>Вход в комнату ограничен</h6>
+        <p class="hint">В эту комнату могут войти только авторизованные посетители. Войдите через
+            <a class="login-fb" href="/api/login/facebook">Фейсбук</a>,
+            <a class="login-vk" href="/api/login/vk">Вконтакте</a> или
+            <a class="login-ok" href="/api/login/ok">Одноклассники</a>
+        </p>
     </div>
 </div>
 

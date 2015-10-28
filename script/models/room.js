@@ -32,8 +32,10 @@ var Room = new Events;
     }
 
     function stop(xhr) {
-        if (xhr.status === 404 || xhr.status === 403) {
+        if (xhr.status === 404) {
             Room.trigger('lost');
+        } else if (xhr.status === 403) {
+            Room.trigger('locked');
         }
     }
 
