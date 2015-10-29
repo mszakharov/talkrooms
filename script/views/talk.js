@@ -54,10 +54,12 @@
     });
 
     Room.on('lost', function() {
+        overlay.show();
         overlay.find('.entry-lost').show();
     });
 
     Room.on('locked', function() {
+        overlay.show();
         overlay.find('.entry-locked').show();
     });
 

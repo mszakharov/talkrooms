@@ -67,9 +67,13 @@
         container.fadeIn(150);
     });
 
-    Room.on('leave', function() {
+    Room.on('leave', hideList);
+    Room.on('locked', hideList);
+    Room.on('lost', hideList);
+
+    function hideList() {
         container.hide();
-    });
+    }
 
     function getSocket(elem) {
         return Room.users.get(Number(elem.attr('data-socket')));
@@ -125,7 +129,7 @@
         back.parent().show();
     });
 
-    Room.on('lost', function() {
+    Room.on('leave', function() {
         back.parent().hide();
     });
 
@@ -133,6 +137,8 @@
         back.closest('.entry-text').hide();
         Room.enter(back.attr('data-hash'));
     });
+
+    back.parent().hide();
 
 })();
 
