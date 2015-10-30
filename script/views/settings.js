@@ -6,6 +6,7 @@
         topic.val(Room.data.topic);
         hash.val(Room.data.hash).removeClass('invalid');
         searchable.prop('checked', Room.data.searchable);
+        levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
         submit.prop('disabled', false);
         this.fadeIn(120);
     });
@@ -34,6 +35,8 @@
     });
 
     var searchable = $('#edit-room-searchable');
+
+    var levels = form.find('.room-levels input');
 
     var submit = form.find('button[type="submit"]');
 
@@ -67,7 +70,8 @@
         var data = filterChanged({
             topic: topic.val(),
             hash: hash.val(),
-            searchable: searchable.prop('checked') ? 1 : 0
+            searchable: searchable.prop('checked') ? 1 : 0,
+            level: Number(form[0]['room-level'].value)
         });
         if (!data) {
             form.hide();

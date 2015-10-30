@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style/common.css">
     <link rel="stylesheet" href="/style/room.css">
     <link rel="stylesheet" href="/style/profile.css">
+    <link rel="stylesheet" href="/style/settings.css">
     <link rel="stylesheet" href="/style/mobile.css" media="(max-width: 500px)">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">
@@ -208,11 +209,22 @@
             <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
         </div>
     </div>
+    <div class="section room-levels">
+        <div class="checkbox">
+            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-all" value="0"></span>
+            <label for="room-level-all">Вход для всех</label>
+        </div>
+        <div class="checkbox">
+            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-auth" value="10"></span>
+            <label for="room-level-auth">Нужна авторизация</label>
+            <p class="hint">Все неавторизованные посетители покинут комнату</p>
+        </div>
+    </div>
     <div class="section">
         <div class="checkbox">
             <span class="checkbox-input"><input type="checkbox" id="edit-room-searchable"></span>
             <label for="edit-room-searchable">Случайные гости</label>
-            <p class="hint">Когда комната не&nbsp;пуста, в&nbsp;неё через поиск комнат будут приходить случайные собеседники.</p>
+            <p class="hint">Когда комната не&nbsp;пуста, в&nbsp;неё через поиск комнат будут приходить случайные собеседники</p>
         </div>
     </div>
     <div class="submit">

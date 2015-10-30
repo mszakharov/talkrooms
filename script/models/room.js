@@ -178,6 +178,7 @@ Room.isMy = function(data) {
     Room.on('room.topic.updated', patch);
     Room.on('room.hash.updated', patch);
     Room.on('room.searchable.updated', patch);
+    Room.on('room.level.updated', patch);
 
 })();
 

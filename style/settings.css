@@ -1,0 +1,37 @@
+/* Room settings */
+#room-settings {
+    position: fixed;
+    top: 25px;
+    right: 35px;
+    width: 400px;
+    overflow: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+#room-settings .section {
+    padding: 2px 20px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+/* Controls */
+#room-settings .textfield {
+    margin-right: 16px;
+}
+#room-settings .textfield input {
+    width: 100%;
+}
+#room-settings .checkbox .hint {
+    margin-top: 5px;
+}
+
+/* Fileds */
+#edit-room-topic {
+    font-size: 24px;
+}
+#room-settings .submit {
+    background: #F8F8F8;
+    padding: 12px 20px;
+    text-align: right;
+}
+#room-settings button {
+    padding: 5px 25px;
+}
