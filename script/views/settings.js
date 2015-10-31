@@ -8,6 +8,7 @@
             hash.val(Room.data.hash).removeClass('invalid');
             searchable.prop('checked', Room.data.searchable);
             levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+            toggleAlarm(Room.data.level === 0);
         }
         showAlarm(Boolean(Room.data.min_session_created));
         submit.prop('disabled', false);
@@ -40,6 +41,10 @@
     var searchable = $('#edit-room-searchable');
 
     var levels = form.find('.room-levels input');
+
+    levels.on('click', function() {
+        toggleAlarm(this.value === '0');
+    });
 
     var submit = form.find('button[type="submit"]');
 
@@ -111,6 +116,10 @@
     var alarmOff = form.find('.alarm-off');
     var alarmOn = form.find('.alarm-on');
 
+    function toggleAlarm(visible) {
+        alarmOff.parent().toggle(visible);
+    }
+
     function showAlarm(mode) {
         alarmOff.toggle(!mode);
         alarmOn.toggle(mode);
@@ -136,12 +145,6 @@
 
     alarmOn.find('.alarm-cancel').on('click', function() {
         setAlarm(false).done(showAlarmOff);
-    });
-
-    Room.on('room.min_session_created.updated', function(data) {
-        if (Room.moderator && form.is(':visible')) {
-            showAlarm(Boolean(data.min_session_created));
-        }
     });
 
     function toggle() {
