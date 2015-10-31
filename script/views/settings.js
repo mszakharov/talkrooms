@@ -115,14 +115,22 @@
 
     var alarmOff = form.find('.alarm-off');
     var alarmOn = form.find('.alarm-on');
+    var alarmTime = alarmOn.find('.alarm-time');
 
     function toggleAlarm(visible) {
         alarmOff.parent().toggle(visible);
     }
 
-    function showAlarm(mode) {
-        alarmOff.toggle(!mode);
-        alarmOn.toggle(mode);
+    function getHumanTime(iso) {
+        return iso ? 'с ' + (new Date(iso)).toHumanTime() : '';
+    }
+
+    function showAlarm(on) {
+        alarmOff.toggle(!on);
+        alarmOn.toggle(on);
+        if (on) {
+            alarmOn.find('.alarm-time').text(getHumanTime(Room.data.min_session_created));
+        }
     }
 
     function showAlarmOn() {
@@ -160,6 +168,10 @@
     Room.on('admin.changed', function() {
         toggleAdminSections();
         toggleSettings();
+    });
+
+    Room.on('room.min_session_created.updated', function() {
+        if (Room.moderator) showAlarm(Boolean(Room.data.min_session_created));
     });
 
     Room.on('room.level.updated', function() {
