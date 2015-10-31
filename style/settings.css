@@ -35,3 +35,44 @@
 #room-settings button {
     padding: 5px 25px;
 }
+
+/* Alarm */
+.alarm-on,
+.alarm-off {
+    margin: 14px 0;
+}
+.alarm-on {
+    display: none;
+}
+.alarm-off .button {
+	border: 1px solid #C7C7C7;
+	border-radius: 3px;
+	background: #F8F8F8;
+	background-image: -moz-linear-gradient(top, #FAFAFA, #F5F5F5);
+	background-image: -webkit-linear-gradient(top, #FAFAFA, #F5F5F5);
+	background-image: linear-gradient(top, #FAFAFA, #F5F5F5);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+	cursor: pointer;
+    text-align: center;
+    padding: 7px 13px;
+    font-size: 16px;
+    line-height: 18px;
+}
+.alarm-active {
+    position: relative;
+    padding: 8px 14px;
+    border-radius: 3px;
+    background: #EB6B4B;
+    color: #FFF;
+    font-size: 16px;
+    line-height: 18px;
+}
+.alarm-cancel {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 30px;
+    height: 30px;
+    background: url('profile/cancel.svg') no-repeat 9px 9px;
+    cursor: pointer;
+}

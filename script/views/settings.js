@@ -3,10 +3,13 @@
     var icon = $('.room-settings-icon');
     var form = $.popup('#room-settings', function() {
         form.find('.error').remove();
-        topic.val(Room.data.topic);
-        hash.val(Room.data.hash).removeClass('invalid');
-        searchable.prop('checked', Room.data.searchable);
-        levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+        if (Room.admin) {
+            topic.val(Room.data.topic);
+            hash.val(Room.data.hash).removeClass('invalid');
+            searchable.prop('checked', Room.data.searchable);
+            levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+        }
+        showAlarm(Boolean(Room.data.min_session_created));
         submit.prop('disabled', false);
         this.fadeIn(120);
     });
@@ -46,7 +49,9 @@
 
     form.on('submit', function(event) {
         event.preventDefault();
-        if (!submit.prop('disabled')) {
+        if (!Room.admin) {
+            form.hide();
+        } else if (!submit.prop('disabled')) {
             updateRoom();
         }
     });
@@ -102,6 +107,42 @@
             });
         }
     }
+
+    var alarmOff = form.find('.alarm-off');
+    var alarmOn = form.find('.alarm-on');
+
+    function showAlarm(mode) {
+        alarmOff.toggle(!mode);
+        alarmOn.toggle(mode);
+    }
+
+    function showAlarmOn() {
+        showAlarm(true);
+    }
+
+    function showAlarmOff() {
+        showAlarm(false);
+    }
+
+    function setAlarm(on) {
+        return Rest.rooms.update(Room.data.hash, {
+            min_session_created: on
+        });
+    }
+
+    alarmOff.find('.button').on('click', function() {
+        setAlarm(true).done(showAlarmOn);
+    });
+
+    alarmOn.find('.alarm-cancel').on('click', function() {
+        setAlarm(false).done(showAlarmOff);
+    });
+
+    Room.on('room.min_session_created.updated', function(data) {
+        if (Room.moderator && form.is(':visible')) {
+            showAlarm(Boolean(data.min_session_created));
+        }
+    });
 
     function toggle() {
         icon.toggle(Room.admin === true);
