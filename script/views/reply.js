@@ -1,3 +1,33 @@
+// Sending queue
+(function() {
+
+    var queue = [];
+    var current;
+
+    function next() {
+        if (current = queue.shift()) send();
+    }
+
+    function send() {
+        Rest.messages.create(current).done(next).fail(retry);
+    }
+
+    function retry(xhr) {
+        if (xhr.status === 429) {
+            setTimeout(send, Number(xhr.responseText || 5) * 1000);
+        } else {
+            current = null;
+        }
+    }
+
+    Room.send = function(data) {
+        queue.push(data);
+        if (!current) next();
+    };
+
+})();
+
+// Reply form
 (function() {
 
     var form = $('#talk .talk-reply');
@@ -23,7 +53,7 @@
                 options.recipient_session_id = recipient.session_id;
                 cancelPrivate();
             }
-            Rest.messages.create(options);
+            Room.send(options);
             field.val('').focus();
         } else {
             if (recipient) {
