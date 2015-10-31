@@ -147,17 +147,28 @@
         setAlarm(false).done(showAlarmOff);
     });
 
-    function toggle() {
-        icon.toggle(Room.admin === true);
+    function toggleSettings() {
+        var enabled = Boolean(Room.admin || (Room.moderator && Room.data.level === 0));
+        icon.toggle(enabled);
+        if (!enabled) form.hide();
+    }
+
+    function toggleAdminSections() {
+        form.find('.admin-sections').toggle(Room.admin === true);
     }
 
     Room.on('admin.changed', function() {
-        toggle();
-        if (!Room.admin && form.is(':visible')) {
-            form.hide();
-        }
+        toggleAdminSections();
+        toggleSettings();
     });
 
-    toggle();
+    Room.on('room.level.updated', function() {
+        if (Room.moderator) toggleSettings();
+    });
+
+    Room.on('moderator.changed', toggleSettings);
+
+    toggleAdminSections();
+    toggleSettings();
 
 })();

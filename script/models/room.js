@@ -179,6 +179,7 @@ Room.isMy = function(data) {
     Room.on('room.hash.updated', patch);
     Room.on('room.searchable.updated', patch);
     Room.on('room.level.updated', patch);
+    Room.on('room.min_session_created.updated', patch);
 
 })();
 
@@ -249,6 +250,7 @@ Room.on('session.ignored.updated', function(session) {
         if (Room.moderator === on) return;
         if (Room.moderator = on) {
             $.require('views/moderate.js');
+            $.require('views/settings.js');
         }
         Room.trigger('moderator.changed', on);
     }
@@ -256,7 +258,6 @@ Room.on('session.ignored.updated', function(session) {
     function setAdmin(on) {
         if (Room.admin === on) return;
         if (Room.admin = on) {
-            $.require('views/settings.js');
             $.require('views/roles.js');
         }
         Room.trigger('admin.changed', on);
