@@ -85,14 +85,22 @@ var Talk = {
 
 // Format content
 Talk.format = function(content) {
-    return content
-        .replace(/\n/g, '<br>')
-        .replace(/(^|\s)_(\W|\W+\S)_/g, '$1<em>$2</em>')
-        .replace(/^\*\s*([^*]+)\s*\*$/, '<em>$1</em>')
-        .replace(/(^|\W)\*([^\s*]|[^\s*].*?\S)\*/g, '$1<em>$2</em>')
-        .replace(/\bhttp\S+talkrooms.ru\/(#[\w\-+]+)\b/g, '$1')
-        .replace(/\b(http\S+[^.,)?!\s])/g, '<a href="$1" target="_blank">$1</a>')
-        .replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2" target="_blank">$2</a>');
+    var s = content.replace(/\n/g, '<br>');
+    if (~s.indexOf('*')) {
+        s = s.replace(/^\*\s*([^*]+)\s*\*$/, '<em>$1</em>');
+        s = s.replace(/(^|\W)\*([^\s*]|[^\s*].*?\S)\*/g, '$1<em>$2</em>');
+    }
+    if (~s.indexOf('_')) {
+        s = s.replace(/(^|\s)_(\W|\W+\S)_/g, '$1<em>$2</em>');
+    }
+    if (~s.indexOf('http')) {
+        s = s.replace(/\bhttp\S+talkrooms.ru\/(#[\w\-+]+)\b/g, '$1')
+        s = s.replace(/\b(http\S+[^.,)?!\s])/g, '<a href="$1" target="_blank">$1</a>')
+    }
+    if (~s.indexOf('#')) {
+        s = s.replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2" target="_blank">$2</a>');
+    }
+    return s;
 };
 
 // Find my nickname
