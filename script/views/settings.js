@@ -196,6 +196,10 @@
 
     Room.on('moderator.changed', toggleSettings);
 
+    Room.on('leave', function() {
+        form.hide();
+    });
+
     toggleAdminSections();
     toggleSettings();
 

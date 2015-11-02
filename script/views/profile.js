@@ -92,6 +92,8 @@
 
     });
 
+    Room.on('leave', hide);
+
 })();
 
 /* Edit nickname and status */
