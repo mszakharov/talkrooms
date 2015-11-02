@@ -39,7 +39,7 @@
 
     function formatStatus(status) {
         return ~status.indexOf('#') ?
-            status.replace(roomUrl, '$1<a class="room-link" href="/$2">$2</a>') :
+            status.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>') :
             status;
     }
 
