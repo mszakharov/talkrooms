@@ -1,9 +1,10 @@
 /* Popup */
 #profile {
-    position: fixed;
-    width: 320px;
-    overflow: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
+    width: 360px;
+}
+#profile .popup-content {
+    width: 320px;
 }
 
 /* Sections */

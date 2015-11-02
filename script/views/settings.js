@@ -13,7 +13,23 @@
         showAlarm(Boolean(Room.data.min_session_created));
         submit.prop('disabled', false);
         this.fadeIn(120);
+        fitPopup();
     });
+
+    var scroller = form.find('.popup-scroll');
+    var content = form.find('.popup-content');
+
+    function fitPopup() {
+        var wh = window.innerHeight;
+        var ch = content.height();
+        if (ch > wh - 45) {
+            form.css('top', 15);
+            scroller.height(wh - 20).scrollTop(0);
+        } else {
+            form.css('top', '');
+            scroller.height('');
+        }
+    }
 
     function validateHash(value, full) {
         if (/[^a-zA-Z\d\-+]/.test(value)) return false;

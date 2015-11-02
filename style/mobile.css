@@ -79,18 +79,12 @@
     display: none;
 }
 
-#profile {
-    margin-left: -10px;
-    width: 300px;
-}
-.details-photo {
-    width: 300px;
-}
-
 #room-settings {
-    top: 10px;
-    right: 10px;
-    width: 300px;
+    right: 20px;
+    width: 360px;
+}
+#room-settings .popup-content {
+    width: 320px;
 }
 
 .updated-notice {
@@ -99,4 +93,32 @@
 .updated-title {
     font-size: 16px;
     line-height: 19px;
+}
+
+@media (max-width: 360px) {
+
+    #profile {
+        margin-left: -20px;
+        width: 320px;
+    }
+    #profile .popup-scroll {
+        padding-left: 10px;
+    }
+    #profile .popup-content {
+        width: 300px;
+    }
+    .details-photo {
+        width: 300px;
+    }
+
+    #room-settings {
+        width: 320px;
+    }
+    #room-settings .popup-scroll {
+        padding-left: 10px;
+    }
+    #room-settings .popup-content {
+        width: 300px;
+    }
+
 }

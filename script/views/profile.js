@@ -5,6 +5,9 @@
         this.fadeIn(120);
     });
 
+    var scroller = popup.find('.popup-scroll');
+    var content = popup.find('.popup-content');
+
     function show(socket, target, edit) {
         var me = Room.isMy(socket);
         popup.find('.section').hide();
@@ -17,6 +20,7 @@
                 top: position.top - 16 - $window.scrollTop(),
                 left: position.left > 40 ? position.left - 20 : 20
             };
+            popup.css('left', Profile.position.left);
             Profile.fit();
         }
         popup.show();
@@ -62,12 +66,16 @@
     window.Profile = Events.mixin({
 
         fit: function() {
-            var wh = $window.height();
-            var ph = popup.height();
-            popup.css({
-                top: Math.min(this.position.top, wh - ph - 20),
-                left: this.position.left
-            });
+            var wh = window.innerHeight;
+            var ch = content.height();
+            var top = Math.min(this.position.top, wh - ch - 25);
+            if (top < 15) {
+                popup.css('top', 15);
+                scroller.height(wh - 20).scrollTop(15 - top);
+            } else {
+                popup.css('top', top);
+                scroller.height('');
+            }
         },
 
         edit: function(target) {

@@ -1,11 +1,12 @@
 /* Room settings */
 #room-settings {
-    position: fixed;
+    width: 440px;
     top: 25px;
     right: 35px;
-    width: 400px;
-    overflow: hidden;
     -webkit-font-smoothing: subpixel-antialiased;
+}
+#room-settings .popup-content {
+    width: 400px;
 }
 #room-settings .section {
     padding: 2px 20px;

@@ -172,7 +172,7 @@ if (typeof console === 'undefined') {
 // Popup
 $.popup = function(selector, show, hide) {
     var self = $(selector);
-    var elem = self.get(0);
+    var elem = self.find('.popup-content').get(0) || self.get(0);
     function clickout(event) {
         if (!event.button && elem !== event.target && !$.contains(elem, event.target)) self.hide();
     }
