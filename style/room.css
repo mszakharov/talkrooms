@@ -599,6 +599,18 @@ body {
     color: #B8B8B8;
 }
 
+/* Room links */
+.room-link {
+    text-decoration: none;
+    color: #58838a;
+}
+.room-link:hover {
+    text-decoration: underline;
+}
+.user.annoying .room-link,
+.users-ignored .room-link {
+    color: #B8B8B8;
+}
 
 /* Talkrooms update */
 .updated-notice {

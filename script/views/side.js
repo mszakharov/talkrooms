@@ -24,7 +24,7 @@
     function renderUser(data) {
         var user = render(data);
         if (data.status) {
-            user.find('.nickname').append(' <em>' + data.status +'</em>');
+            user.find('.nickname').append(' <em>' + formatStatus(data.status) + '</em>');
         }
         if (data.socket_id === Room.socket.socket_id) {
             user.addClass('me');
@@ -33,6 +33,14 @@
             user.addClass('annoying');
         }
         return user[0];
+    }
+
+    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
+
+    function formatStatus(status) {
+        return ~status.indexOf('#') ?
+            status.replace(roomUrl, '$1<a class="room-link" href="/$2">$2</a>') :
+            status;
     }
 
     function Group(selector) {
@@ -90,9 +98,11 @@
         }
     });
 
-    container.on('click', '.user:not(.me) .nickname', function() {
-        var user = $(this).closest('.user');
-        Room.replyTo(getSocket(user).nickname);
+    container.on('click', '.user:not(.me) .nickname', function(event) {
+        if (event.target.nodeName !== 'A') {
+            var user = $(this).closest('.user');
+            Room.replyTo(getSocket(user).nickname);
+        }
     });
 
 })();

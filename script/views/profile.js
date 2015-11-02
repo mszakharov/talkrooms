@@ -103,10 +103,15 @@
     var nickname = $('#my-nickname');
     var status = $('#my-status');
 
+    var roomUrl = /http\S+talkrooms.ru\/(#[\w\-+]+)/;
+
     function getValues() {
         var values = {};
         addChanged(values, nickname, 'nickname');
         addChanged(values, status, 'status');
+        if (values.status) {
+            values.status = values.status.replace(roomUrl, '$1');
+        }
         return values;
     }
 
