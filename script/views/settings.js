@@ -97,7 +97,7 @@
             topic: topic.val(),
             hash: hash.val(),
             searchable: searchable.prop('checked') ? 1 : 0,
-            level: Number(form[0]['room-level'].value)
+            level: Number(levels.filter(':checked').attr('value') || Room.data.level)
         });
         if (!data) {
             form.hide();
