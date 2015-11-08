@@ -448,7 +448,7 @@ Talk.format = function(content) {
     }
 
     Room.on('message.created', function(message) {
-        if (message.ignore && !Room.socket.ignored) return false;
+        if (message.ignore && !Room.socket.ignored && !Room.isMy(message)) return false;
         if (Room.ignores && Room.ignores(message)) return false;
         if (message.message_id > composer.last.message_id) {
             if (!Talk.forMeOnly || isForMe(message)) {
