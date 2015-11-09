@@ -191,6 +191,21 @@ Room.on('socket.nickname.updated', function(socket) {
     }
 });
 
+// Update my userpic
+Room.on('user.userpic.updated', function(user) {
+    if (Room.socket.user_id === user.user_id) {
+        Room.socket.userpic = user.userpic;
+        Room.trigger('my.userpic.updated', user);
+    }
+});
+
+// Update my photo
+Room.on('user.photo.updated', function(user) {
+    if (Room.socket.user_id === user.user_id) {
+        Room.socket.photo = user.photo;
+    }
+});
+
 // Update my status
 Room.on('socket.status.updated', function(socket) {
     if (Room.socket.socket_id === socket.socket_id) {
