@@ -103,6 +103,9 @@
     var nickname = $('#my-nickname');
     var status = $('#my-status');
 
+    var photo = form.find('.my-photo');
+    var login = /(facebook|vk|ok)/;
+
     var roomUrl = /http\S+talkrooms.ru\/(#[\w\-+]+)/;
 
     function getValues() {
@@ -133,8 +136,16 @@
     });
 
     Profile.on('edit', function() {
-        nickname.val(Room.socket.nickname);
-        status.val(Room.socket.status);
+        var data = Room.socket;
+        nickname.val(data.nickname);
+        status.val(data.status);
+        if (data.profile_url) {
+            photo.find('a').attr('href', '/api/login/' + data.profile_url.match(login)[1]);
+            photo.css('background-image', data.photo ? String.mix('url("/photos/$1")', data.photo) : '');
+            photo.show();
+        } else {
+            photo.hide();
+        }
         form.show();
     });
 

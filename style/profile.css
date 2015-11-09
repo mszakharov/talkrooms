@@ -72,6 +72,21 @@
 #my-status {
     width: 100%;
 }
+.my-photo {
+    margin: -16px -20px 16px;
+    padding-top: 120px;
+    background-color: #dfe5e5;
+    background-size: cover;
+    background-position: 0 35%;
+}
+.my-photo-update {
+    display: block;
+    padding: 16px;
+    background: rgba(75,75,75,0.6);
+    text-align: center;
+    text-decoration: none;
+    color: #FFF;
+}
 
 /* Details */
 .details-photo {
