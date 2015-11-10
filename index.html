@@ -225,9 +225,14 @@
             <label for="room-level-all">Вход для всех</label>
         </div>
         <div class="checkbox">
-            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-auth" value="10"></span>
-            <label for="room-level-auth">Нужна авторизация</label>
+            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-authorized" value="10"></span>
+            <label for="room-level-authorized">Нужна авторизация</label>
             <p class="hint">Все неавторизованные посетители покинут комнату</p>
+        </div>
+        <div class="checkbox">
+            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-personal" value="20"></span>
+            <label for="room-level-personal">По приглашению</label>
+            <p class="hint">Для авторизованных посетителей индивидуально</p>
         </div>
     </div>
     <div class="section">
