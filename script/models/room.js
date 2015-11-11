@@ -4,12 +4,21 @@ var Rest = {
     users:    $.Rest('/api/users'),
     roles:    $.Rest('/api/roles'),
     sockets:  $.Rest('/api/sockets'),
+    requests: $.Rest('/api/requests'),
     sessions: $.Rest('/api/sessions'),
     messages: $.Rest('/api/messages')
 };
 
+// Me
+var Me = {};
+
 // Room
 var Room = new Events;
+
+// Get my session
+Me.ready = Rest.sessions.create('me').done(function(data) {
+    Me.authorized = Boolean(data.user_id);
+});
 
 // Enter a room
 (function() {
