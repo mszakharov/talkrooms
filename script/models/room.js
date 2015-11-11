@@ -44,7 +44,14 @@ Me.ready = Rest.sessions.create('me').done(function(data) {
         if (xhr.status === 404) {
             Room.trigger('lost');
         } else if (xhr.status === 403) {
-            Room.trigger('locked');
+            Me.ready.done(locked);
+        }
+    }
+
+    function locked() {
+        Room.trigger('locked');
+        if (Me.authorized && Room.data && Room.data.level >= 20) {
+            Room.createRequest();
         }
     }
 
@@ -70,6 +77,46 @@ Me.ready = Rest.sessions.create('me').done(function(data) {
     $window.on('beforeunload', function(event) {
         Room.leave();
     });
+
+})();
+
+// Locked room request
+(function() {
+
+    var timer;
+    var request_id;
+    var counter;
+
+    function getRequest() {
+        clearTimeout(timer);
+        Rest.requests.get(request_id).done(check);
+    }
+
+    function check(request) {
+        if (request.approved) {
+            Room.enter(Room.hash);
+        } else if (request.approved == null) {
+            checkLater();
+        }
+    }
+
+    function checkLater() {
+        timer = setTimeout(getRequest, counter++ > 6 ? 60000 : 15000);
+    }
+
+    function wait(data) {
+        request_id = data.request_id;
+        checkLater();
+    }
+
+    Room.on('leave', function() {
+        clearTimeout(timer);
+    });
+
+    Room.createRequest = function() {
+        counter = 0;
+        Rest.requests.create({hash: Room.hash}).done(wait);
+    };
 
 })();
 
