@@ -58,9 +58,13 @@
         overlay.find('.entry-lost').show();
     });
 
-    Room.on('locked', function() {
+    Room.on('locked', function(wait) {
         overlay.show();
-        overlay.find('.entry-locked').show();
+        if (wait) {
+            overlay.find('.entry-wait').show();
+        } else {
+            overlay.find('.entry-login').show();
+        }
     });
 
 })();

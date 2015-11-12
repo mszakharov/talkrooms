@@ -49,9 +49,11 @@ Me.ready = Rest.sessions.create('me').done(function(data) {
     }
 
     function locked() {
-        Room.trigger('locked');
         if (Me.authorized && Room.data && Room.data.level >= 20) {
+            Room.trigger('locked', true);
             Room.createRequest();
+        } else {
+            Room.trigger('locked');
         }
     }
 
