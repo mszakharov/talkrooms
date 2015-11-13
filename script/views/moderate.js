@@ -38,7 +38,7 @@ Profile.isCivilian = function() {
     };
 
     function onShow(socket, me) {
-        if (socket.user_id && !me && !socket.ignored) {
+        if (socket.user_id && !me && !socket.ignored && !socket.request_id) {
             var preview = Profile.isCivilian() === false;
             current.html(preview ? roles[socket.level] : '');
             section.removeClass('expanded').show();
@@ -243,5 +243,66 @@ Profile.isCivilian = function() {
     Room.on('moderator.changed', toggleSection);
 
     toggleSection(Room.moderator);
+
+})();
+
+// Requests
+(function() {
+
+    var requests = new Collection({
+        index: 'request_id',
+        order: 'nickname'
+    });
+
+    function getRequests() {
+        return Rest.requests.get({room_id: Room.data.room_id}).done(reset);
+    }
+
+    function reset(data) {
+        requests.raw = data;
+        requests.raw.forEach(setUserpicUrl);
+        requests.sort();
+        apply();
+    }
+
+    function setUserpicUrl(request) {
+        request.userpicUrl = Userpics.getUrl(request);
+    }
+
+    function apply() {
+        Room.trigger('requests.updated', requests.raw);
+    }
+
+    function addRequest(request) {
+        if (!requests.get(request.request_id)) {
+            setUserpicUrl(request);
+            requests.add(request);
+            apply();
+        }
+    }
+
+    function removeRequest(request) {
+        requests.remove(request.request_id);
+        apply();
+    }
+
+
+    function toggleList(on) {
+        var mode = on ? 'on' : 'off';
+        Room[mode]('enter', getRequests);
+        Room[mode]('request.created', addRequest);
+        Room[mode]('request.deleted', removeRequest);
+        if (on) {
+            Room.requests = requests;
+            getRequests();
+        } else {
+            Room.requests = null;
+            Room.trigger('requests.updated', []);
+        }
+    }
+
+    Room.on('moderator.changed', toggleList);
+
+    toggleList(Room.moderator);
 
 })();

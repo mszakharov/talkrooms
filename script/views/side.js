@@ -19,10 +19,10 @@
 (function() {
 
     var container = $('#room .room-users');
-    var render = $.template('#user-template');
+    var template = $.template('#user-template');
 
     function renderUser(data) {
-        var user = render(data);
+        var user = template(data);
         if (data.status) {
             user.find('.nickname').append(' <em>' + formatStatus(data.status) + '</em>');
         }
@@ -32,6 +32,13 @@
         if (data.annoying) {
             user.addClass('annoying');
         }
+        user.attr('data-socket', data.socket_id);
+        return user[0];
+    }
+
+    function renderRequest(data) {
+        var user = template(data);
+        user.attr('data-request', data.request_id);
         return user[0];
     }
 
@@ -43,17 +50,18 @@
             status;
     }
 
-    function Group(selector) {
+    function Group(selector, render) {
         this.elem = container.find(selector);
         this.list = this.elem.find('.users-list');
         this.amount = this.elem.find('.users-amount');
+        this.render = render;
     }
 
     Group.prototype.show = function(users, sort) {
         this.list.html('');
         if (users.length) {
             this.amount.html(users.length);
-            this.list.append(users.map(renderUser));
+            this.list.append(users.map(this.render));
             if (sort) {
                 this.list.find('.annoying').appendTo(this.list);
             }
@@ -63,12 +71,18 @@
         }
     };
 
-    var onlineGroup = new Group('.users-online');
-    var ignoreGroup = new Group('.users-ignored');
+    var onlineGroup = new Group('.users-online', renderUser);
+    var ignoreGroup = new Group('.users-ignored', renderUser);
 
     Room.on('users.updated', function(online, ignore) {
         onlineGroup.show(online, Boolean(Room.ignores));
         ignoreGroup.show(ignore);
+    });
+
+    var requestsGroup = new Group('.users-requests', renderRequest);
+
+    Room.on('requests.updated', function(requests) {
+        requestsGroup.show(requests);
     });
 
     Room.on('ready', function() {
@@ -83,8 +97,18 @@
         container.hide();
     }
 
-    function getSocket(elem) {
-        return Room.users.get(Number(elem.attr('data-socket')));
+    function getData(elem) {
+        var sid = elem.attr('data-socket');
+        var rid = elem.attr('data-request');
+        if (sid) {
+            return Room.users.get(Number(sid));
+        } else {
+            return Room.requests.get(Number(rid));
+        }
+    }
+
+    function getRequest(elem) {
+        return Room.requests.get(Number(elem.attr('data-request')));
     }
 
     container.on('click', '.me, .userpic', function(event) {
@@ -94,14 +118,19 @@
             Profile.edit(elem);
             $('#my-status').select();
         } else {
-            Profile.show(getSocket(elem), elem);
+            Profile.show(getData(elem), elem);
         }
     });
 
     container.on('click', '.user:not(.me) .nickname', function(event) {
         if (event.target.nodeName !== 'A') {
             var user = $(this).closest('.user');
-            Room.replyTo(getSocket(user).nickname);
+            var data = getData(user);
+            if (data.request_id) {
+                Profile.show(data, user);
+            } else {
+                Room.replyTo(data.nickname);
+            }
         }
     });
 

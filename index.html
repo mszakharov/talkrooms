@@ -47,6 +47,10 @@
                 <h6 class="users-title">Сейчас в комнате <span class="users-amount"></span></h6>
                 <div class="users-list"></div>
             </div>
+            <div class="users-group users-requests">
+                <h6 class="users-title">Ждут приглашения <span class="users-amount"></span></h6>
+                <div class="users-list"></div>
+            </div>
             <div class="users-group users-ignored">
                 <h6 class="users-title">В игноре <span class="users-amount"></span></h6>
                 <div class="users-list"></div>
@@ -283,7 +287,7 @@
 </script>
 
 <script type="text/html" id="user-template">
-<div class="user" data-socket="{socket_id}">
+<div class="user">
     <div class="userpic" style="background-image: url({userpicUrl});"></div>
     <span class="nickname">{nickname}</span>
 </div>
