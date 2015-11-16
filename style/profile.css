@@ -242,3 +242,25 @@
     margin-top: 4px;
     cursor: default;
 }
+
+/* Request */
+#profile-request {
+    padding-right: 46px !important;
+}
+#profile-request .button {
+    padding: 7px 3px;
+    font-size: 16px;
+    line-height: 18px;
+    text-align: center;
+}
+.request-approve {
+    position: relative;
+    margin-right: -26px;
+    float: right;
+    width: 50%;
+    color: #00801a;
+}
+.request-reject {
+    width: 50%;
+    color: #ca3c30;
+}

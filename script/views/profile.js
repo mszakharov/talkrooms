@@ -182,7 +182,7 @@
 
     Profile.on('show', function(socket, me) {
         edit.toggle(me);
-        sendPrivate.toggle((socket.user_id || socket.session_id) && !me);
+        sendPrivate.toggle((socket.user_id || socket.session_id) && !me && !socket.request_id);
         section.addClass('no-photo');
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);

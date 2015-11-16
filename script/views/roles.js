@@ -56,8 +56,9 @@
         Profile[mode]('level.updated', onReady);
     }
 
-    function toggleAdminRole() {
+    function toggleValues() {
         $('#role-admin').closest('.role').toggle(Room.socket.level === 80);
+        $('#role-guest').attr('value', Room.data.level);
     }
 
     function toggleSection(on) {
@@ -67,12 +68,13 @@
         }
     }
 
-    Room.on('enter', toggleAdminRole);
+    Room.on('enter', toggleValues);
+    Room.on('level.changed', toggleValues);
 
     Room.on('admin.changed', toggleSection);
 
     toggleSection(Room.admin);
-    toggleAdminRole();
+    toggleValues();
 
 })();
 

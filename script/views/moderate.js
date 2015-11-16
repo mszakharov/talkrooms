@@ -32,6 +32,7 @@ Profile.isCivilian = function() {
 
     var roles = {
         10: 'Посетитель',
+        20: 'Посетитель',
         50: 'Модератор',
         70: 'Администратор',
         80: 'Создатель комнаты'
@@ -304,5 +305,51 @@ Profile.isCivilian = function() {
     Room.on('moderator.changed', toggleList);
 
     toggleList(Room.moderator);
+
+})();
+
+// Request section
+(function() {
+
+    var section = $('#profile-request');
+
+    function onShow(socket, me) {
+        if (socket.request_id) {
+            section.show();
+        }
+    }
+
+    function setApproved(value) {
+        return Rest.requests.update(Profile.socket.request_id, {
+            approved: value
+        });
+    }
+
+    function hideCurrent(request) {
+        if (Profile.socket && Profile.socket.request_id === request.request_id) {
+            section.hide();
+        }
+    }
+
+    function toggleSection(on) {
+        var mode = on ? 'on' : 'off';
+        Profile[mode]('show', onShow);
+        Room[mode]('request.deleted', hideCurrent);
+        if (Profile.socket && !on) {
+            section.hide();
+        }
+    }
+
+    section.find('.request-approve').on('click', function() {
+        setApproved(true);
+    });
+
+    section.find('.request-reject').on('click', function() {
+        setApproved(false).done(Profile.hide);
+    });
+
+    Room.on('moderator.changed', toggleSection);
+
+    toggleSection(Room.moderator);
 
 })();
