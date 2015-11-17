@@ -544,6 +544,11 @@ body {
 .users-list {
     margin-left: 34px;
 }
+.users-ignored,
+.users-requests {
+    display: none;
+}
+
 
 /* User */
 .user {
