@@ -43,7 +43,7 @@ Profile.isCivilian = function() {
     }
 
     function onShow(socket, me) {
-        if (socket.user_id && !me && !socket.ignored && canEnter(socket)) {
+        if (socket.user_id && !me && !socket.ignored) {
             var preview = Profile.isCivilian() === false;
             current.html(preview ? roles[socket.level] : '');
             section.removeClass('expanded').show();
@@ -113,9 +113,11 @@ Profile.isCivilian = function() {
         if (Room.data.level >= 20) {
             toggleLevel(socket);
             locked.show();
+            opened.hide();
         } else {
             toggleIgnore(socket);
             opened.show();
+            locked.hide();
         }
         Profile.fit();
     }
@@ -267,7 +269,7 @@ Profile.isCivilian = function() {
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onLevelUpdated);
         Profile[mode]('ignored.updated', toggleIgnore);
-        Room[mode]('level.updated', toggleControls);
+        Room[mode]('room.level.updated', toggleControls);
         Room[mode]('session.ignored.updated', playWhip);
     }
 
