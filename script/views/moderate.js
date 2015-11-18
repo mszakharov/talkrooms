@@ -38,8 +38,12 @@ Profile.isCivilian = function() {
         80: 'Создатель комнаты'
     };
 
+    function canEnter(socket) {
+        return !socket.request_id && socket.level >= Room.data.level;
+    }
+
     function onShow(socket, me) {
-        if (socket.user_id && !me && !socket.ignored && !socket.request_id) {
+        if (socket.user_id && !me && !socket.ignored && canEnter(socket)) {
             var preview = Profile.isCivilian() === false;
             current.html(preview ? roles[socket.level] : '');
             section.removeClass('expanded').show();
@@ -47,7 +51,7 @@ Profile.isCivilian = function() {
     }
 
     function onReady(data) {
-        if (section.is(':visible') && (Room.admin || !Profile.isCivilian())) {
+        if (section.is(':visible') && canEnter(data) && (Room.admin || !Profile.isCivilian())) {
             current.html(roles[data.level]);
         } else {
             section.hide();
@@ -94,24 +98,53 @@ Profile.isCivilian = function() {
 
     var section = $('#profile-moderate');
 
-    var convict = section.find('.moder-convict'),
-        decent = section.find('.moder-decent'),
-        erase = section.find('.moder-erase')
+    var locked = section.find('.moder-locked'),
+        banish = locked.find('.moder-banish'),
+        banished = locked.find('.moder-banished');
 
-    var selectedMessage;
+    var opened = section.find('.moder-opened'),
+        convict = opened.find('.moder-convict'),
+        decent = opened.find('.moder-decent');
+
+    var erase = section.find('.moder-erase'),
+        selectedMessage;
 
     function toggleControls(socket) {
+        if (Room.data.level >= 20) {
+            toggleLevel(socket);
+            locked.show();
+        } else {
+            toggleIgnore(socket);
+            opened.show();
+        }
+        Profile.fit();
+    }
+
+    function toggleIgnore(socket) {
         if (socket.ignored) {
             showIgnored(socket.ignored)
             showConvict();
         } else {
             showDecent();
+            erase.hide();
         }
     }
 
-    function toggleErase(message) {
-        if (message) {
-            var time = message.find('.msg-time').text();
+    function toggleLevel(socket) {
+        if (socket.level && socket.level >= Room.data.level) {
+            banished.hide();
+            banish.show();
+            erase.hide();
+        } else {
+            banished.show();
+            banish.hide();
+            toggleErase();
+        }
+    }
+
+    function toggleErase() {
+        if (selectedMessage) {
+            var time = selectedMessage.find('.msg-time').text();
             erase.find('.erase-from').text(time);
             erase.show();
         } else {
@@ -120,7 +153,7 @@ Profile.isCivilian = function() {
     }
 
     function showConvict() {
-        toggleErase(selectedMessage);
+        toggleErase();
         decent.hide();
         convict.show();
         Profile.fit();
@@ -138,11 +171,8 @@ Profile.isCivilian = function() {
         convict.hide();
         convict.find('.moder-ago').empty();
         decent.show();
+        erase.hide();
         Profile.fit();
-    }
-
-    function isCurrent(session) {
-        return Profile.socket && session.session_id === Profile.socket.session_id;
     }
 
     function getMessage(target) {
@@ -213,10 +243,22 @@ Profile.isCivilian = function() {
         }
     });
 
+    banish.on('click', function() {
+        Rest.roles.update(Room.data.room_id, Profile.socket.user_id, {
+            level: 10
+        });
+    });
+
     function onLevelUpdated() {
         section.show();
         section.children().hide();
         onReady(Profile.socket);
+    }
+
+    function onRoomUpdated() {
+        if (Profile.socket && section.is(':visible')) {
+            toggleControls(Profile.socke);
+        }
     }
 
     function toggleEvents(on) {
@@ -224,7 +266,8 @@ Profile.isCivilian = function() {
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onLevelUpdated);
-        Profile[mode]('ignored.updated', toggleControls);
+        Profile[mode]('ignored.updated', toggleIgnore);
+        Room[mode]('level.updated', toggleControls);
         Room[mode]('session.ignored.updated', playWhip);
     }
 

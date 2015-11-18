@@ -180,10 +180,14 @@
 #profile-moderate .button {
     text-align: center;
 }
-.moder-ignore {
+.moder-ignore,
+.moder-banish {
     padding: 7px 13px;
     font-size: 16px;
     line-height: 18px;
+}
+.moder-banished {
+    margin-top: 0 !important;
 }
 .moder-ignored {
     position: relative;
