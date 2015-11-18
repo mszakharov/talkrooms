@@ -8,6 +8,7 @@
             hash.val(Room.data.hash).removeClass('invalid');
             searchable.prop('checked', Room.data.searchable);
             levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+            toggleSearchable(Room.data.level !== 20);
             toggleAlarm(Room.data.level === 0);
         }
         showAlarm(Boolean(Room.data.min_session_created));
@@ -56,10 +57,15 @@
 
     var searchable = $('#edit-room-searchable');
 
+    function toggleSearchable(visible) {
+        searchable.closest('.section').toggle(visible);
+    }
+
     var levels = form.find('.room-levels input');
 
     levels.on('click', function() {
         toggleAlarm(this.value === '0');
+        toggleSearchable(this.value !== '20');
     });
 
     var submit = form.find('button[type="submit"]');
