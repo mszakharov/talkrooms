@@ -116,9 +116,14 @@
     <form class="talk-reply">
         <div class="sticky">
             <div class="content">
-                <svg class="reply-send" title="Отправить">
-                    <path d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
+                <div class="reply-send" title="Отправить">
+                <svg width="90" height="58">
+                    <path class="send-arrow" d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
+                    <circle class="send-spinner" cx="40" cy="29" r="12" stroke-dasharray="29 18" fill="none" stroke="#CCC" stroke-width="2">
+                        <animateTransform attributeName="transform" type="rotate" from="0 40 29" to="360 40 29" dur="1s" repeatCount="indefinite"/>
+                    </circle>
                 </svg>
+                </div>
                 <div class="reply-wrapper">
                     <div class="userpic"></div>
                     <div class="reply-public" title="Сообщение для всех">&times;</div>

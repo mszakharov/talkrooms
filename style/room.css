@@ -339,6 +339,17 @@ body {
     border-left: 1px dotted #C5C5C5;
     cursor: pointer;
 }
+.send-overflow {
+    cursor: default;
+}
+.send-spinner,
+.send-overflow .send-arrow {
+    visibility: hidden;
+}
+.send-overflow .send-spinner {
+    visibility: inherit;
+}
+
 
 /* Edit form */
 .talk-edit {

@@ -1,11 +1,17 @@
 // Sending queue
 (function() {
 
-    var queue = [];
-    var current;
+    var queue = [],
+        current,
+        overflow;
 
     function next() {
-        if (current = queue.shift()) send();
+        if (current = queue.shift()) {
+            send();
+        } else if (overflow) {
+            Room.trigger('replies.empty');
+            overflow = false;
+        }
     }
 
     function send() {
@@ -14,15 +20,26 @@
 
     function retry(xhr) {
         if (xhr.status === 429) {
-            setTimeout(send, Number(xhr.responseText || 5) * 1000);
+            var delay = Number(xhr.responseText || 5);
+            if (delay > 5) {
+                Room.trigger('replies.overflow');
+                overflow = true;
+            }
+            setTimeout(send, delay * 1000);
         } else {
             current = null;
         }
     }
 
+    Room.on('connected', next);
+
     Room.send = function(data) {
         queue.push(data);
         if (!current) next();
+        if (queue.length > 3) {
+            Room.trigger('replies.overflow');
+            overflow = true;
+        }
     };
 
 })();
@@ -33,6 +50,7 @@
     var form = $('#talk .talk-reply');
     var field = form.find('textarea');
     var wrapper = form.find('.reply-wrapper');
+    var sendButton = form.find('.reply-send');
     var recipient;
 
     if (!(window.WebSocket && WebSocket.CLOSED === 3)) {
@@ -71,7 +89,7 @@
         recipient = null;
     }
 
-    form.find('.reply-send').on('click', function() {
+    sendButton.on('click', function() {
         send();
     });
 
@@ -140,6 +158,18 @@
 
     Room.on('my.nickname.updated', function() {
         if (!Room.socket.userpic) showUserpic();
+    });
+
+    Room.on('replies.overflow', function() {
+        sendButton.addClass('send-overflow');
+    });
+
+    Room.on('replies.empty', function() {
+        sendButton.removeClass('send-overflow');
+    });
+
+    Room.on('leave', function() {
+        sendButton.removeClass('send-overflow');
     });
 
     Room.reply = function() {
