@@ -155,29 +155,20 @@
     }
 
     function searchFailed() {
-        Room.leave();
-        overlay.find('.search-failed').show().siblings().hide();
+        back.parent().toggle(Boolean(Room.data && Room.data.hash));
+        overlay.children().hide();
+        overlay.find('.search-failed').show();
+        overlay.show();
     }
 
     $('.room-shuffle').on('click', searchRoom);
 
     overlay.find('.entry-search').on('click', searchRoom);
 
-    Room.on('enter', function() {
-        back.attr('data-hash', Room.data.hash);
-        back.parent().show();
-    });
-
-    Room.on('leave', function() {
-        back.parent().hide();
-    });
-
     back.on('click', function() {
-        back.closest('.entry-text').hide();
-        Room.enter(back.attr('data-hash'));
+        overlay.hide();
+        overlay.find('.search-failed').hide();
     });
-
-    back.parent().hide();
 
 })();
 
