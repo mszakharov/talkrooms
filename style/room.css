@@ -71,13 +71,29 @@ body {
     overflow-y: scroll;
     background: url('side.png');
 }
+
+/* Side header */
+.side-header {
+    position: relative;
+    background: #7C9EA3;
+}
 .talkrooms {
     margin: 0;
     padding: 12px 26px;
     font: 26px/30px 'Trebuchet MS', 'Helvetica Neue', sans-serif;
-    background: #7C9EA3;
     color: #FFF;
 }
+.room-shuffle {
+    position: absolute;
+    top: 18px;
+    right: 17px;
+    width: 24px;
+    height: 21px;
+    background: url("room/shuffle.svg") no-repeat;
+    cursor: pointer;
+}
+
+/* Create a room */
 .side-actions {
     position: absolute;
     left: 0;
@@ -87,7 +103,6 @@ body {
     background: url('side.png') #E3E2E1;
     box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.05);
 }
-.actions-search,
 .actions-create {
     margin: 0 6px;
     padding: 12px 20px;

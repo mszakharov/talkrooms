@@ -159,7 +159,7 @@
         overlay.find('.search-failed').show().siblings().hide();
     }
 
-    $('.actions-search .action-link').on('click', searchRoom);
+    $('.room-shuffle').on('click', searchRoom);
 
     overlay.find('.entry-search').on('click', searchRoom);
 
