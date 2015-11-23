@@ -94,39 +94,33 @@ body {
 }
 
 /* Create a room */
-.side-actions {
+.room-create {
+    display: none;
     position: absolute;
     left: 0;
     bottom: 0;
     width: 100%;
-    padding: 2px 0;
+    padding: 13px 0 15px;
+    border-top: 1px solid #F3F1F0;
     background: url('side.png') #E3E2E1;
     box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.1), 0 -1px 3px rgba(0, 0, 0, 0.05);
 }
-.actions-create {
-    margin: 0 6px;
-    padding: 12px 20px;
-}
-.actions-create {
-    display: none;
-    border-top: 1px solid #CECCCA;
-    box-shadow: inset 0 1px 0 #F3F1F0;
-}
-.action-link {
+.create-link {
+    margin-left: 26px;
     padding: 5px 0;
-    cursor: pointer;
     color: #807e7d;
+    cursor: pointer;
     transition: color .1s;
 }
-.action-link:hover {
+.create-link:hover {
     color: #605e5d;
 }
-.action-icon {
+.create-icon {
     width: 22px;
     height: 15px;
     vertical-align: -2px;
 }
-.action-path {
+.create-path {
     stroke-width: 3px;
     stroke: currentColor;
     fill: none;
@@ -550,7 +544,7 @@ body {
 .room-users {
     display: none;
     margin-left: 26px;
-    padding: 0 0 95px;
+    padding: 0 0 50px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .users-group {

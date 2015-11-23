@@ -175,13 +175,13 @@
 // Create room
 (function() {
 
-    var create = $('.actions-create');
+    var create = $('.room-create');
 
     function changeRoom(data) {
         Router.navigate(data.hash);
     }
 
-    create.find('.action-link').on('click', function() {
+    create.find('.create-link').on('click', function() {
         Rest.rooms
             .create()
             .done(changeRoom);
