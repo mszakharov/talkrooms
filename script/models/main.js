@@ -12,40 +12,56 @@ var Rest = {
 // Router
 (function() {
 
+    var Router = {};
+    var routes = [];
+
     var history = window.history;
-    var defaultHash = 'chat30';
 
     function checkUrl() {
         var hash = location.hash.replace(/^#/, '');
-        if (!hash) {
-            hash = defaultHash;
-            replaceState(hash);
-        }
-        if (hash !== Room.hash) {
-            Room.enter(hash);
+        if (hash !== Router.hash) {
+            Router.hash = hash;
+            processHash(hash);
         }
     }
 
-    function replaceState(hash, title) {
-        history.replaceState({}, title || document.title, '#' + hash);
+    function processHash(hash) {
+        for (var i = 0; i < routes.length; i++) {
+            var match = routes[i].route.test(hash);
+            if (match) {
+                return routes[i].callback(hash);
+            }
+        }
     }
-
-    Room.on('room.hash.updated', function(data) {
-        replaceState(data.hash, Room.data.topic);
-    });
 
     $window.on('popstate', checkUrl);
 
-    window.Router = {
-        navigate: function(hash, title) {
-            history.pushState({}, title || '', '#' + hash);
-            checkUrl();
-        }
+    Router.on = function(route, callback) {
+        routes.push({route: route, callback: callback});
+    };
+
+    Router.push = function(hash, title) {
+        history.pushState({}, title || '', '#' + hash);
+        checkUrl();
+    };
+
+    Router.replace = function(hash, title) {
+        history.replaceState({}, title || document.title, '#' + hash);
     };
 
     $(checkUrl);
 
+    window.Router = Router;
+
 })();
+
+Router.on(/^$/, function(hash) {
+    console.log('Hall');
+});
+
+Router.on(/^[\w\-+]{3,}$/, function(hash) {
+    Room.enter(hash);
+});
 
 // Me
 var Me = {};

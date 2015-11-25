@@ -212,6 +212,7 @@ Room.isMy = function(data) {
 
     Room.on('room.hash.updated', function(data) {
         Room.hash = data.hash;
+        Router.replace(data.hash, Room.data.topic);
     });
 
     Room.on('room.topic.updated', patch);

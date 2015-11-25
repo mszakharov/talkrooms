@@ -143,7 +143,7 @@
     var back = overlay.find('.entry-back');
 
     function changeRoom(data) {
-        Router.navigate(data.hash);
+        Router.push(data.hash);
     }
 
     function searchRoom() {
@@ -178,7 +178,7 @@
     var create = $('.room-create');
 
     function changeRoom(data) {
-        Router.navigate(data.hash);
+        Router.push(data.hash);
     }
 
     create.find('.create-link').on('click', function() {
