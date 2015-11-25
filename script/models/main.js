@@ -56,11 +56,13 @@ var Rest = {
 })();
 
 Router.on(/^$/, function(hash) {
-    console.log('Hall');
+    Room.toggle(false);
+    Room.leave();
 });
 
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
     Room.enter(hash);
+    Room.toggle(true);
 });
 
 // Me

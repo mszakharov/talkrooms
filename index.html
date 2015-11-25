@@ -5,6 +5,7 @@
     <title>Talkrooms</title>
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width">
     <link rel="stylesheet" href="/style/common.css">
+    <link rel="stylesheet" href="/style/main.css">
     <link rel="stylesheet" href="/style/room.css">
     <link rel="stylesheet" href="/style/profile.css">
     <link rel="stylesheet" href="/style/settings.css">
@@ -13,6 +14,13 @@
     <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">
 </head>
 <body>
+
+<div id="hall">
+    <div class="talk-dummy"></div>
+    <div class="rooms-list">
+
+    </div>
+</div>
 
 <div id="room">
 <div class="room-entry">
@@ -42,7 +50,7 @@
 <div id="side">
     <div class="side-scrollable">
         <div class="side-header">
-            <h2 class="talkrooms">Talkrooms</h2>
+            <h2 class="talkrooms"><a class="hall-link" href="/#">Talkrooms</a></h2>
             <div class="room-shuffle" title="Перейти в случайную комнату"></div>
         </div>
         <div class="room-users">
@@ -321,7 +329,7 @@
 <script src="/script/models/userpics.js"></script>
 <script src="/script/models/main.js"></script>
 
-
+<script src="/script/views/hall.js"></script>
 <script src="/script/views/side.js"></script>
 <script src="/script/views/talk.js"></script>
 <script src="/script/views/reply.js"></script>

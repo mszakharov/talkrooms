@@ -11,7 +11,6 @@ var Room = new Events;
     }
 
     function enter(socket) {
-        Room.promises = [];
         Room.socket = socket;
         Room.trigger('enter', socket);
         $.when.apply($, Room.promises).done(ready);
@@ -43,6 +42,7 @@ var Room = new Events;
             this.leave();
         }
         this.hash = hash;
+        Room.promises = [];
         Rest.rooms.get(hash).done(admit).fail(stop);
     };
 

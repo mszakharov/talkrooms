@@ -1,0 +1,43 @@
+/* Italic font */
+@font-face {
+    font-family: 'PT Serif';
+    font-style: italic;
+    font-weight: 400;
+    src: local('PT Serif Italic'), local('PTSerif-Italic'), url(https://fonts.gstatic.com/s/ptserif/v8/3Nwg9VzlwLXPq3fNKwVRMAzyDMXhdD8sAj6OAJTFsBI.woff2) format('woff2');
+}
+
+body {
+    background: url('side.png') #E3E2E1;
+}
+
+/* Hall */
+#hall {
+    position: relative;
+    height: 100%;
+}
+.talk-dummy {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 75%;
+    background: #F6F6F6;
+    box-shadow: -1px 0px 0px 0px rgba(0,0,0,0.1);
+}
+
+/* Room */
+#room {
+    display: none;
+}
+
+/* Visible room */
+body.in-room {
+    background: #F6F6F6;
+}
+.in-room #hall {
+    display: none;
+}
+.in-room #room {
+    display: block;
+}
