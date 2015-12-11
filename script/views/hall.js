@@ -19,7 +19,7 @@ var Hall = {};
         } else if (visible) {
             Room.promises.push(showRoom());
         } else {
-            Hall.updateList();
+            Hall.updateRooms();
             hideRoom();
         }
         isVisible = visible;
@@ -28,9 +28,9 @@ var Hall = {};
     function showRoom() {
         hall.css('overflow', 'hidden');
         return dummy
-            .css('right', -dummy.width())
+            .css('margin-left', dummy.width())
             .show()
-            .animate({right: 0}, 200)
+            .animate({'margin-left': 0}, 200)
             .queue(function(next) {
                 body.addClass('in-room');
                 next();
@@ -39,12 +39,15 @@ var Hall = {};
     }
 
     function hideRoom() {
-        body.removeClass('in-room');
+        var withSide = room.hasClass('with-side');
+        dummy.css('margin-left', withSide ? 256 : 0).show();
         hall.css('overflow', 'hidden');
+        body.removeClass('in-room');
+        if (withSide) {
+            room.removeClass('with-side');
+        }
         dummy
-            .css('right', 0)
-            .show()
-            .animate({right: -dummy.width()}, 200)
+            .animate({'margin-left': dummy.width()}, 200)
             .queue(function(next) {
                 dummy.hide();
                 hall.css('overflow', '');
@@ -56,13 +59,61 @@ var Hall = {};
 
 })();
 
+// Actions
+(function() {
+
+    var create = $('.hall-create');
+
+    function toggle(data) {
+        var auth = Boolean(data.user_id);
+        create.find('.hall-login').toggle(!auth);
+        create.find('.hall-action').toggle(auth);
+    }
+
+    Me.ready.done(toggle);
+
+})();
+
 // My rooms
 (function() {
 
-    var list = $('#hall .rooms-list');
+    var container = $('.hall-columns');
+    var card = container.find('.hall-rooms .hall-card');
+
+    var renderLink = new Template('<li><a href="/#{hash}">{topic}</a></li>');
+
+    function renderLinks(rooms) {
+        return '<ul>' + rooms.map(renderLink).join('') + '</ul>';
+    }
 
     function updateList(data) {
-        console.log(data);
+        card.find('ul').remove();
+        var rooms = data.recent_rooms || [];
+        if (data.rooms) {
+            rooms = mergeLists(rooms, data.rooms);
+        }
+        if (rooms.length) {
+            card.append(renderLinks(rooms));
+        }
+        toggleRooms(rooms.length === 0);
+    }
+
+    function toggleRooms(empty) {
+        container.toggleClass('no-rooms', empty);
+    }
+
+    function mergeLists(recent, my) {
+        var inRecent = {};
+        for (var i = 0; i < recent.length; i++) {
+            inRecent[recent[i].hash] = true;
+        }
+        var merged = recent.concat();
+        for (var i = 0; i < my.length; i++) {
+            if (!inRecent[my[i].hash]) {
+                merged.push(my[i]);
+            }
+        }
+        return merged;
     }
 
     Hall.updateRooms = function() {
@@ -72,3 +123,7 @@ var Hall = {};
     Me.ready.done(updateList);
 
 })();
+
+Me.ready.done(function() {
+    $('.hall-columns').show();
+});

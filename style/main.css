@@ -15,15 +15,91 @@ body {
     position: relative;
     height: 100%;
 }
+.hall-header {
+    height: 54px;
+    background: #7C9EA3;
+}
 .talk-dummy {
     display: none;
     position: absolute;
     top: 0;
-    right: 0;
+    left: 25%;
+    width: 100%;
     height: 100%;
-    width: 75%;
     background: #F6F6F6;
     box-shadow: -1px 0px 0px 0px rgba(0,0,0,0.1);
+}
+
+/* Hall content */
+.hall-content {
+    width: 924px;
+    margin: 40px auto 50px;
+}
+.hall-content > h1 {
+    margin: 0 0 15px;
+    font-weight: normal;
+    font-size: 40px;
+    line-height: 42px;
+}
+.hall-description {
+    margin: 0 0 35px;
+}
+.hall-description p {
+    line-height: 24px;
+    margin: 0 0 15px;
+}
+
+/* Columns */
+.hall-columns {
+    margin: 0 -10px;
+    display: none;
+}
+.hall-column {
+    margin: 0 0 20px;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+.hall-create,
+.hall-shuffle {
+    float: left;
+    width: 58%;
+}
+.hall-rooms {
+    float: right;
+    width: 42%;
+}
+.hall-card {
+    background: #F6F6F6;
+    border-radius: 4px;
+    padding: 16px 20px 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.hall-card p {
+    margin: 0 0 10px;
+}
+.hall-hint {
+    font-size: 15px;
+    line-height: 21px;
+}
+.hall-action {
+    font-size: 20px;
+}
+
+/* Rooms */
+.hall-rooms ul {
+    margin: 0 0 10px;
+    padding: 0;
+    list-style: none;
+}
+.hall-rooms li {
+    margin: 0 0 10px;
+}
+.no-rooms .hall-column {
+    float: none;
+    width: auto;
+}
+.no-rooms .hall-rooms {
+    display: none;
 }
 
 /* Room */
@@ -40,4 +116,47 @@ body.in-room {
 }
 .in-room #room {
     display: block;
+}
+
+@media (min-width: 1400px) {
+
+    .talk-dummy {
+        left: 350px;
+    }
+
+}
+
+@media (max-width: 1024px) {
+
+    .talk-dummy {
+        left: 256px;
+    }
+
+    .hall-content {
+        width: auto;
+        margin: 40px 50px 50px;
+    }
+
+}
+
+@media (max-width: 800px) {
+
+    .talk-dummy {
+        left: 0;
+    }
+
+}
+
+@media (max-width: 740px) {
+
+    .hall-content > h1 {
+        font-size: 34px;
+        line-height: 36px;
+    }
+
+    .hall-column {
+        width: auto;
+        float: none;
+    }
+
 }
