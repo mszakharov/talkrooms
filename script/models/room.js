@@ -329,6 +329,23 @@ Room.on('session.ignored.updated', function(session) {
 
 })();
 
+// Create and shuffle
+(function() {
+
+    function changeRoom(data) {
+        Router.push(data.hash);
+    }
+
+    Room.create = function() {
+        return Rest.rooms.create().done(changeRoom);
+    };
+
+    Room.shuffle = function() {
+        return Rest.rooms.create('search').done(changeRoom);
+    };
+
+})();
+
 // Inactive window detection
 (function() {
 

@@ -43,29 +43,49 @@
 (function() {
 
     var overlay = $('.room-entry');
+    var sections = overlay.children();
+
+    function showSection(selector) {
+        sections.hide();
+        overlay.find(selector).show();
+        overlay.show();
+    }
 
     Room.on('ready', function() {
         overlay.fadeOut(150);
     });
 
     Room.on('leave', function() {
-        overlay.children().hide();
+        sections.hide();
         overlay.show();
     });
 
     Room.on('lost', function() {
-        overlay.show();
-        overlay.find('.entry-lost').show();
+        showSection('.entry-lost');
     });
 
     Room.on('locked', function(wait) {
-        overlay.show();
-        if (wait) {
-            overlay.find('.entry-wait').show();
-        } else {
-            overlay.find('.entry-login').show();
-        }
+        showSection(wait ? '.entry-wait' : '.entry-login');
     });
+
+    var back = overlay.find('.entry-back');
+
+    function shuffleRoom() {
+        Room.shuffle().fail(shuffleFailed);
+    }
+
+    function shuffleFailed() {
+        back.toggle(Boolean(Room.data && Room.data.hash));
+        showSection('.search-failed');
+    }
+
+    back.find('.link').on('click', function() {
+        overlay.hide();
+    });
+
+    overlay.find('.entry-search').on('click', shuffleRoom);
+
+    $('.room-shuffle').on('click', shuffleRoom);
 
 })();
 

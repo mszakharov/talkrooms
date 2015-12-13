@@ -17,7 +17,11 @@ var Hall = {};
         if (isVisible === undefined) {
             body.toggleClass('in-room', visible);
         } else if (visible) {
-            Room.promises.push(showRoom());
+            if (Room.promises) {
+                Room.promises.push(showRoom());
+            } else {
+                showRoom();
+            }
         } else {
             Hall.updateRooms();
             hideRoom();
@@ -46,6 +50,8 @@ var Hall = {};
         if (withSide) {
             room.removeClass('with-side');
         }
+        hall.find('.hall-failed:visible').hide()
+            .prev('.hall-action').show();
         dummy
             .animate({'margin-left': dummy.width()}, 200)
             .queue(function(next) {
@@ -59,18 +65,38 @@ var Hall = {};
 
 })();
 
-// Actions
+// Create
 (function() {
 
-    var create = $('.hall-create');
+    var section = $('.hall-create');
 
     function toggle(data) {
         var auth = Boolean(data.user_id);
-        create.find('.hall-login').toggle(!auth);
-        create.find('.hall-action').toggle(auth);
+        section.find('.hall-login').toggle(!auth);
+        section.find('.hall-action').toggle(auth);
     }
 
+    section.find('.hall-action .link').on('click', function() {
+        Room.create();
+    });
+
     Me.ready.done(toggle);
+
+})();
+
+// Shuffle
+(function() {
+
+    var section = $('.hall-shuffle');
+
+    function failed() {
+        section.find('.hall-action').hide();
+        section.find('.hall-failed').show();
+    }
+
+    section.find('.hall-action .link').on('click', function() {
+        Room.shuffle().fail(failed);
+    });
 
 })();
 

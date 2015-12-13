@@ -136,55 +136,20 @@
 
 })();
 
-// Find another room
+// Shuffle
 (function() {
 
-    var overlay = $('.room-entry');
-    var back = overlay.find('.entry-back');
 
-    function changeRoom(data) {
-        Router.push(data.hash);
-    }
-
-    function searchRoom() {
-        back.closest('.entry-text').hide();
-        Rest.rooms
-            .create('search')
-            .done(changeRoom)
-            .fail(searchFailed);
-    }
-
-    function searchFailed() {
-        back.parent().toggle(Boolean(Room.data && Room.data.hash));
-        overlay.children().hide();
-        overlay.find('.search-failed').show();
-        overlay.show();
-    }
-
-    $('.room-shuffle').on('click', searchRoom);
-
-    overlay.find('.entry-search').on('click', searchRoom);
-
-    back.on('click', function() {
-        overlay.hide();
-        overlay.find('.search-failed').hide();
-    });
 
 })();
 
-// Create room
+// Create a room
 (function() {
 
     var create = $('.room-create');
 
-    function changeRoom(data) {
-        Router.push(data.hash);
-    }
-
     create.find('.create-link').on('click', function() {
-        Rest.rooms
-            .create()
-            .done(changeRoom);
+        Room.create();
     });
 
     Room.on('enter', function(socket) {

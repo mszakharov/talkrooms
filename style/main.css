@@ -84,6 +84,12 @@ body {
 .hall-action {
     font-size: 20px;
 }
+.hall-failed {
+    display: none;
+    font-size: 15px;
+    line-height: 21px;
+    color: #808080;
+}
 
 /* Rooms */
 .hall-rooms ul {
