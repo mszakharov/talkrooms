@@ -110,6 +110,7 @@ var Hall = {};
 
     var container = $('.hall-columns');
     var card = container.find('.hall-rooms .hall-card');
+    var more = card.find('.hall-more');
 
     var renderLink = new Template('<li><a href="/#{hash}">{topic}</a></li>');
 
@@ -123,10 +124,20 @@ var Hall = {};
         if (data.rooms) {
             rooms = mergeLists(rooms, data.rooms);
         }
-        if (rooms.length) {
+        if (rooms.length > 15) {
+            more.find('.link').text(moreRooms(rooms.length - 10));
+            card.append(renderLinks(rooms.slice(0, 10)));
+            card.append(more.show());
+            card.append($(renderLinks(rooms.slice(10))).hide());
+        } else if (rooms.length) {
             card.append(renderLinks(rooms));
+            more.detach();
         }
         toggleRooms(rooms.length === 0);
+    }
+
+    function moreRooms(amount) {
+        return String.decline(amount, 'Ещё %d комната', 'Ещё %d комнаты', 'Ещё %d комнат');
     }
 
     function toggleRooms(empty) {
@@ -146,6 +157,10 @@ var Hall = {};
         }
         return merged;
     }
+
+    more.find('.link').on('click', function() {
+        more.hide().next('ul').show();
+    });
 
     Hall.updateRooms = function() {
         Rest.sessions.create('me').done(updateList);
