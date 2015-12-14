@@ -76,8 +76,13 @@ var Hall = {};
         section.find('.hall-action').toggle(auth);
     }
 
+    function failed() {
+        section.find('.hall-action').hide();
+        section.find('.hall-failed').show();
+    }
+
     section.find('.hall-action .link').on('click', function() {
-        Room.create();
+        Room.create().fail(failed);
     });
 
     Me.ready.done(toggle);
