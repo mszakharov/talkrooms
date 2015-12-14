@@ -21,9 +21,11 @@
                 left: position.left > 40 ? position.left - 20 : 20
             };
             popup.css('left', Profile.position.left);
-            Profile.fit();
+        } else {
+            Profile.position = null;
         }
         popup.show();
+        Profile.fit();
         if (socket.user_id && !socket.socket_id) {
             Rest.roles
                 .get(Room.data.room_id, socket.user_id)
@@ -66,6 +68,7 @@
     window.Profile = Events.mixin({
 
         fit: function() {
+            if (!this.position) return;
             var wh = window.innerHeight;
             var ch = content.height();
             var top = Math.min(this.position.top, wh - ch - 25);
