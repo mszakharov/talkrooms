@@ -42,10 +42,10 @@ body {
     line-height: 42px;
 }
 .hall-description {
+    line-height: 24px;
     margin: 0 0 35px;
 }
 .hall-description p {
-    line-height: 24px;
     margin: 0 0 15px;
 }
 
