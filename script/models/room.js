@@ -29,7 +29,10 @@ var Room = new Events;
     }
 
     function locked() {
-        if (Me.authorized && Room.data && Room.data.level >= 20) {
+        var level = (Room.data && Room.data.level) || 0;
+        if (level === 80) {
+            Room.trigger('closed');
+        } else if (Me.authorized && level >= 20) {
             Room.trigger('locked', true);
             Room.createRequest();
         } else {

@@ -68,6 +68,10 @@
         showSection(wait ? '.entry-wait' : '.entry-login');
     });
 
+    Room.on('closed', function(wait) {
+        showSection('.entry-closed');
+    });
+
     var back = overlay.find('.entry-back');
 
     function shuffleRoom() {
@@ -75,7 +79,7 @@
     }
 
     function shuffleFailed() {
-        back.toggle(Boolean(Room.data && Room.data.hash));
+        back.toggle(Boolean(Room.socket));
         showSection('.search-failed');
     }
 

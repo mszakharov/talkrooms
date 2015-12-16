@@ -91,6 +91,7 @@
 
     Room.on('leave', hideList);
     Room.on('locked', hideList);
+    Room.on('closed', hideList);
     Room.on('lost', hideList);
 
     function hideList() {

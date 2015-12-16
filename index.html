@@ -56,11 +56,11 @@
 <div class="room-entry">
     <div class="entry-text entry-lost">
         <h6>Комната не найдена</h6>
-        <p class="hint">Возможно, у комнаты, в которую вы хотите зайти, изменился адрес. Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>.</p>
+        <p class="hint">Возможно, у комнаты, в которую вы хотите зайти, изменился адрес. Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату, выбранную случайно</span>.</p>
     </div>
     <div class="entry-text search-failed">
         <h6>Нет подходящей комнаты</h6>
-        <p class="hint">К сожалению, в других комнатах сейчас нет собеседников.</p>
+        <p class="hint">К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
         <p class="hint entry-back"><span class="link">Вернуться</span></p>
     </div>
     <div class="entry-text entry-login">
@@ -74,6 +74,10 @@
     <div class="entry-text entry-wait">
         <h6>Вход в комнату ограничен</h6>
         <p class="hint">Это закрытая комната, для входа нужно приглашение. Как только оно будет получено, вы войдёте в комнату автоматически без обновления страницы.</p>
+    </div>
+    <div class="entry-text entry-closed">
+        <h6>Комната закрыта</h6>
+        <p class="hint">Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>, выбранную случайно.</p>
     </div>
 </div>
 
@@ -296,6 +300,10 @@
             <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-personal" value="20"></span>
             <label for="room-level-personal">По приглашению</label>
             <p class="hint">Для авторизованных посетителей индивидуально</p>
+        </div>
+        <div class="checkbox">
+            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-admin" value="80"></span>
+            <label for="room-level-admin">Только я</label>
         </div>
     </div>
     <div class="section">
