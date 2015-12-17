@@ -3,16 +3,21 @@
 
     var section = $('#profile-roles'),
         current = section.find('.roles-current'),
-        inputs = section.find('input');
+        inputs = section.find('input'),
+        guest = $('#role-guest');
 
     function isSubordinate(user) {
         var myLevel = Room.socket.level;
         return Boolean(myLevel && (!user.level || myLevel > user.level));
     }
 
+    function findInput(level) {
+        return level > 20 ? inputs.filter('[value="' + level + '"]') : guest;
+    }
+
     function onReady(data) {
         if (isSubordinate(data)) {
-            inputs.filter('[value="' + data.level + '"]').prop('checked', true);
+            findInput(data.level).prop('checked', true);
             current.addClass('editable');
         } else {
             current.removeClass('editable');
@@ -42,7 +47,7 @@
     });
 
     inputs.on('click', function() {
-        var level = Number(this.value);
+        var level = this.value ? Number(this.value) : Room.data.level;
         if (level !== Profile.socket.level) {
             var label = $(this).closest('.role').find('label');
             current.html(label.text());
@@ -56,9 +61,8 @@
         Profile[mode]('level.updated', onReady);
     }
 
-    function toggleValues() {
+    function toggleAdmin() {
         $('#role-admin').closest('.role').toggle(Room.socket.level === 80);
-        $('#role-guest').attr('value', Room.data.level);
     }
 
     function toggleSection(on) {
@@ -68,13 +72,12 @@
         }
     }
 
-    Room.on('enter', toggleValues);
-    Room.on('level.changed', toggleValues);
+    Room.on('enter', toggleAdmin);
 
     Room.on('admin.changed', toggleSection);
 
     toggleSection(Room.admin);
-    toggleValues();
+    toggleAdmin();
 
 })();
 
