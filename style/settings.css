@@ -37,6 +37,16 @@
     padding: 5px 25px;
 }
 
+/* Remove */
+#room-settings .room-remove {
+    padding: 14px 20px;
+    text-align: center;
+    background: #f5efdc;
+}
+.room-remove .link {
+    color: #ca3c30;
+}
+
 /* Alarm */
 .alarm-on,
 .alarm-off {

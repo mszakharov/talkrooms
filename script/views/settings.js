@@ -8,6 +8,8 @@
             hash.val(Room.data.hash).removeClass('invalid');
             searchable.prop('checked', Room.data.searchable);
             levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+            closed.toggle(Room.socket.level === 80);
+            toggleRemove(Room.data.level === 80);
             toggleSearchable(Room.data.level < 20);
             toggleAlarm(Room.data.level === 0);
         }
@@ -62,10 +64,13 @@
     }
 
     var levels = form.find('.room-levels input');
+    var closed = levels.filter('[value="80"]').closest('.checkbox');
 
     levels.on('click', function() {
-        toggleAlarm(this.value === '0');
-        toggleSearchable(Number(this.value) < 20);
+        var level = Number(this.value);
+        toggleAlarm(level === 0);
+        toggleSearchable(level < 20);
+        toggleRemove(level === 80);
     });
 
     var submit = form.find('button[type="submit"]');
@@ -176,6 +181,15 @@
     alarmOn.find('.alarm-cancel').on('click', function() {
         setAlarm(false).done(showAlarmOff);
     });
+
+    var remove = content.find('.room-remove');
+    remove.find('.link').on('click', function() {
+        Rest.rooms.update(Room.data.room_id, {deleted: true});
+    });
+
+    function toggleRemove(visible) {
+        remove.toggle(visible && Room.socket.level === 80);
+    }
 
     function toggleSettings() {
         var enabled = Boolean(Room.admin || (Room.moderator && Room.data.level === 0));
