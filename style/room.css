@@ -344,10 +344,10 @@
 }
 .send-spinner,
 .send-overflow .send-arrow {
-    visibility: hidden;
+    display: none;
 }
 .send-overflow .send-spinner {
-    visibility: inherit;
+    display: inherit;
 }
 
 
