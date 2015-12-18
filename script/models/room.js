@@ -228,10 +228,13 @@ Room.isMy = function(data) {
 
 // Delete room
 Room.on('room.deleted.updated', function(data) {
-    var isCreator = Room.socket.level === 80;
-    if (data.deleted) {
+    if (!data.deleted) return;
+    if (Room.socket.level === 80) {
         Room.trigger('leave');
-        Room.trigger(isCreator ? 'deleted' : 'closed');
+        Room.trigger('deleted');
+    } else {
+        Room.leave();
+        Room.trigger('closed');
     }
 })
 
