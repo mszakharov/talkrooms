@@ -231,5 +231,10 @@ $('#room .entry-restore').on('click', function() {
         .update(hash, {deleted: false})
         .done(function() {
             Room.enter(hash);
+        })
+        .fail(function() {
+            Room.leave();
+            Room.trigger('lost');
+            alert('Восстановление уже невозможно');
         });
 });
