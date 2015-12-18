@@ -16,6 +16,7 @@ var Hall = {};
         if (isVisible === visible) return;
         if (isVisible === undefined) {
             body.toggleClass('in-room', visible);
+            hall.css('display', '');
         } else if (visible) {
             if (Room.promises) {
                 Room.promises.push(showRoom());
