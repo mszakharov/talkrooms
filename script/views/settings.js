@@ -184,7 +184,7 @@
 
     var remove = content.find('.room-remove');
     remove.find('.link').on('click', function() {
-        Rest.rooms.update(Room.data.room_id, {deleted: true});
+        Rest.rooms.update(Room.data.hash, {deleted: true});
     });
 
     function toggleRemove(visible) {
@@ -224,3 +224,12 @@
     toggleSettings();
 
 })();
+
+$('#room .entry-restore').on('click', function() {
+    var hash = Room.data.hash;
+    Rest.rooms
+        .update(hash, {deleted: false})
+        .done(function() {
+            Room.enter(hash);
+        });
+});

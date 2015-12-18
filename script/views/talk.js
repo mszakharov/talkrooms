@@ -72,6 +72,11 @@
         showSection('.entry-closed');
     });
 
+    Room.on('deleted', function() {
+        overlay.find('.entry-deleted h6').text('Комната «' + Room.data.topic + '» удалена');
+        showSection('.entry-deleted');
+    });
+
     var back = overlay.find('.entry-back');
 
     function shuffleRoom() {

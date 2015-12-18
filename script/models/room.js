@@ -226,6 +226,15 @@ Room.isMy = function(data) {
 
 })();
 
+// Delete room
+Room.on('room.deleted.updated', function(data) {
+    var isCreator = Room.socket.level === 80;
+    if (data.deleted) {
+        Room.trigger('leave');
+        Room.trigger(isCreator ? 'deleted' : 'closed');
+    }
+})
+
 // Update my nickname
 Room.on('socket.nickname.updated', function(socket) {
     if (Room.socket.socket_id === socket.socket_id) {
