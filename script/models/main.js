@@ -69,6 +69,6 @@ Router.on(/^[\w\-+]{3,}$/, function(hash) {
 var Me = {};
 
 // Get my session
-Me.ready = Rest.sessions.create('me').done(function(data) {
+Me.ready = Rest.sessions.get('me').done(function(data) {
     Me.authorized = Boolean(data.user_id);
 });
