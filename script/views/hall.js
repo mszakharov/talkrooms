@@ -164,7 +164,7 @@ var Hall = {};
     });
 
     Hall.updateRooms = function() {
-        Rest.sessions.create('me').done(updateList);
+        Rest.sessions.get('me').done(updateList);
     };
 
     Me.ready.done(updateList);
