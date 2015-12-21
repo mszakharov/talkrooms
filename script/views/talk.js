@@ -867,7 +867,7 @@ $window.on('date.changed', function() {
 (function() {
 
     var notice;
-    var version = 24;
+    var version = 25;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
