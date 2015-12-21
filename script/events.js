@@ -3,13 +3,17 @@ function Events() {
     var events = {};
 
     this.on = function(type, callback) {
-        (events[type] || (events[type] = [])).unshift(callback);
+        events[type] = [callback].concat(events[type] || []);
     };
 
     this.off = function(type, callback) {
         var list = events[type];
-        for (var i = list && list.length; i--;) {
-            if (list[i] === callback) list.splice(i, 1);
+        if (list) {
+            list = list.concat();
+            for (var i = list.length; i--;) {
+                if (list[i] === callback) list.splice(i, 1);
+            }
+            events[type] = list;
         }
     };
 
