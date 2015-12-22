@@ -47,7 +47,7 @@
     });
 
     inputs.on('click', function() {
-        var level = this.value ? Number(this.value) : Room.data.level;
+        var level = this.value ? Number(this.value) : Math.max(10, Room.data.level);
         if (level !== Profile.socket.level) {
             var label = $(this).closest('.role').find('label');
             current.html(label.text());
