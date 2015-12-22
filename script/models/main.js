@@ -56,6 +56,7 @@ var Rest = {
 })();
 
 Router.on(/^$/, function(hash) {
+    Hall.update();
     Room.toggle(false);
     Room.leave();
 });
@@ -69,6 +70,15 @@ Router.on(/^[\w\-+]{3,}$/, function(hash) {
 var Me = {};
 
 // Get my session
-Me.ready = Rest.sessions.get('me').done(function(data) {
-    Me.authorized = Boolean(data.user_id);
-});
+(function() {
+
+    function update(data) {
+        Me.authorized = Boolean(data.user_id);
+        Me.ignores = data.ignores;
+    }
+
+    Me.load = function() {
+        return Rest.sessions.get('me').done(update);
+    };
+
+})();

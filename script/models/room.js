@@ -12,6 +12,7 @@ var Room = new Events;
 
     function enter(socket) {
         Room.socket = socket;
+        Room.promises.push(Me.load());
         Room.trigger('enter', socket);
         $.when.apply($, Room.promises).done(ready);
     }
@@ -24,7 +25,7 @@ var Room = new Events;
         if (xhr.status === 404) {
             Room.trigger('lost');
         } else if (xhr.status === 403) {
-            Me.ready.done(locked);
+            Me.load().always(locked);
         }
     }
 
@@ -287,22 +288,23 @@ Room.on('session.ignored.updated', function(session) {
     }
 
     function inIgnores(data) {
-        var ignores = Room.socket.ignores;
         return Boolean(data.user_id ?
-            ignores[0][data.user_id] :
-            ignores[1][data.session_id]);
+            Me.ignores[0][data.user_id] :
+            Me.ignores[1][data.session_id]);
     }
 
-    function updateIgnores() {
-        Room.ignores = isActive(Room.socket.ignores) ? inIgnores : false;
+    function updateIgnores(data) {
+        Me.ignores = data.ignores;
+        toggleIgnores();
     }
 
-    Room.on('user.ignores.updated', function(data) {
-        Room.socket.ignores = data.ignores;
-        updateIgnores();
-    });
+    function toggleIgnores() {
+        Room.ignores = isActive(Me.ignores) ? inIgnores : false;
+    }
 
-    Room.on('moderator.changed', updateIgnores);
+    Room.on('user.ignores.updated', updateIgnores);
+    Room.on('moderator.changed', toggleIgnores);
+    Room.on('ready', toggleIgnores);
 
 })();
 

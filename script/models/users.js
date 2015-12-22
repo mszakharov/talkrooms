@@ -43,11 +43,9 @@ Room.users = (function() {
 
     function reset(data) {
         sockets.raw = data;
-        sockets.raw.forEach(setAnnoying);
         sockets.raw.forEach(setUserpicUrl);
         sockets.raw.forEach(normalizeNickname);
         sockets.sort();
-        apply();
     }
 
     function setAnnoying(socket) {
@@ -83,6 +81,11 @@ Room.users = (function() {
         sockets.raw = [];
         showIgnored = Room.moderator;
         this.promises.push(getSockets());
+    });
+
+    Room.on('ready', function() {
+        sockets.raw.forEach(setAnnoying);
+        apply();
     });
 
     Room.on('moderator.changed', function() {

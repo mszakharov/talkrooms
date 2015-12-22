@@ -24,7 +24,6 @@ var Hall = {};
                 showRoom();
             }
         } else {
-            Hall.updateRooms();
             hideRoom();
         }
         isVisible = visible;
@@ -71,12 +70,6 @@ var Hall = {};
 
     var section = $('.hall-create');
 
-    function toggle(data) {
-        var auth = Boolean(data.user_id);
-        section.find('.hall-login').toggle(!auth);
-        section.find('.hall-action').toggle(auth);
-    }
-
     function failed() {
         section.find('.hall-action').hide();
         section.find('.hall-failed').show();
@@ -86,7 +79,10 @@ var Hall = {};
         Room.create().fail(failed);
     });
 
-    Me.ready.done(toggle);
+    Hall.toggleCreate = function(auth) {
+        section.find('.hall-login').toggle(!auth);
+        section.find('.hall-action').toggle(auth);
+    };
 
 })();
 
@@ -119,24 +115,6 @@ var Hall = {};
         return '<ul>' + rooms.map(renderLink).join('') + '</ul>';
     }
 
-    function updateList(data) {
-        card.find('ul').remove();
-        var rooms = data.recent_rooms || [];
-        if (data.rooms) {
-            rooms = mergeLists(rooms, data.rooms);
-        }
-        if (rooms.length > 15) {
-            more.find('.link').text(moreRooms(rooms.length - 10));
-            card.append(renderLinks(rooms.slice(0, 10)));
-            card.append(more.show());
-            card.append($(renderLinks(rooms.slice(10))).hide());
-        } else if (rooms.length) {
-            card.append(renderLinks(rooms));
-            more.detach();
-        }
-        toggleRooms(rooms.length === 0);
-    }
-
     function moreRooms(amount) {
         return String.decline(amount, 'Ещё %d комната', 'Ещё %d комнаты', 'Ещё %d комнат');
     }
@@ -163,14 +141,42 @@ var Hall = {};
         more.hide().next('ul').show();
     });
 
-    Hall.updateRooms = function() {
-        Rest.sessions.get('me').done(updateList);
+    Hall.showRooms = function(data) {
+        card.find('ul').remove();
+        var rooms = data.recent_rooms || [];
+        if (data.rooms) {
+            rooms = mergeLists(rooms, data.rooms);
+        }
+        if (rooms.length > 15) {
+            more.find('.link').text(moreRooms(rooms.length - 10));
+            card.append(renderLinks(rooms.slice(0, 10)));
+            card.append(more.show());
+            card.append($(renderLinks(rooms.slice(10))).hide());
+        } else if (rooms.length) {
+            card.append(renderLinks(rooms));
+            more.detach();
+        }
+        toggleRooms(rooms.length === 0);
     };
-
-    Me.ready.done(updateList);
 
 })();
 
-Me.ready.done(function() {
-    $('.hall-columns').show();
-});
+// Update
+(function() {
+
+    var hidden = true;
+
+    function update(data) {
+        Hall.toggleCreate(Me.authorized);
+        Hall.showRooms(data);
+        if (hidden) {
+            $('.hall-columns').show();
+            hidden = false;
+        }
+    }
+
+    Hall.update = function() {
+        return Me.load().done(update);
+    };
+
+})();
