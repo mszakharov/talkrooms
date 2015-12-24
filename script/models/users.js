@@ -96,7 +96,7 @@ Room.users = (function() {
         }
     });
 
-    Room.on('user.ignores.updated', function() {
+    Room.on('me.ignores.updated', function() {
         sockets.raw.forEach(setAnnoying);
         apply();
     });

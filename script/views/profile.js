@@ -253,44 +253,34 @@
         Profile.fit();
     }
 
-    function getParams(action, data) {
+    function updateIgnores(action, data) {
         var ignores = {};
         if (data.user_id) {
             ignores[action + '_user_id'] = data.user_id;
         } else {
             ignores[action + '_session_id'] = data.session_id;
         }
-        return {ignores: ignores};
-    }
-
-    function addToIgnores() {
-        Rest.users
-            .update(Room.socket.user_id, getParams('add', Profile.socket))
-            .done(showAnnoying);
+        return Rest.sessions.update('me', {ignores: ignores});
     }
 
     function onShow(socket, me) {
-        if (Room.socket.user_id && !me && !Room.moderator) {
+        if (!me && !Room.moderator) {
             toggleState(Room.ignores && Room.ignores(socket));
             section.show();
         }
     }
 
     normal.on('click', function() {
-        if (Profile.socket.user_id) {
-            showRiposte();
-        } else {
-            addToIgnores();
-        }
+        showRiposte();
+    });
+
+    section.find('.ignores-apply').on('click', function() {
+        updateIgnores('add', Profile.socket).done(showAnnoying);
     });
 
     section.find('.ignores-cancel').on('click', function() {
-        Rest.users
-            .update(Room.socket.user_id, getParams('delete', Profile.socket))
-            .done(showNormal);
+        updateIgnores('delete', Profile.socket).done(showNormal);
     });
-
-    section.find('.ignores-apply').on('click', addToIgnores);
 
     Room.on('moderator.changed', function(on) {
         if (Profile.socket) {

@@ -302,7 +302,7 @@ Room.on('session.ignored.updated', function(session) {
         Room.ignores = isActive(Me.ignores) ? inIgnores : false;
     }
 
-    Room.on('user.ignores.updated', updateIgnores);
+    Room.on('me.ignores.updated', updateIgnores);
     Room.on('moderator.changed', toggleIgnores);
     Room.on('ready', toggleIgnores);
 
