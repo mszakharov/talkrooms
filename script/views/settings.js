@@ -4,16 +4,12 @@
     var form = $.popup('#room-settings', function() {
         form.find('.error').remove();
         if (Room.admin) {
-            topic.val(Room.data.topic);
-            hash.val(Room.data.hash).removeClass('invalid');
-            searchable.prop('checked', Room.data.searchable);
-            levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
-            closed.toggle(Room.socket.level === 80);
-            toggleRemove(Room.data.level === 80);
-            toggleSearchable(Room.data.level < 20);
-            toggleAlarm(Room.data.level === 0);
+            setAdminValues();
         }
+        toggleAlarm(Room.data.level === 0);
         showAlarm(Boolean(Room.data.min_session_created));
+        toggleRemove(Room.data.level === 80);
+        closed.toggle(Room.socket.level === 80);
         submit.prop('disabled', false);
         this.fadeIn(120);
         fitPopup();
@@ -32,6 +28,14 @@
             form.css('top', '');
             scroller.height('');
         }
+    }
+
+    function setAdminValues() {
+        topic.val(Room.data.topic);
+        hash.val(Room.data.hash).removeClass('invalid');
+        searchable.prop('checked', Room.data.searchable);
+        levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
+        toggleSearchable(Room.data.level < 20);
     }
 
     function validateHash(value, full) {
@@ -199,6 +203,9 @@
 
     function toggleAdminSections() {
         form.find('.admin-sections').toggle(Room.admin === true);
+        if (Room.admin) {
+            setAdminValues();
+        }
     }
 
     Room.on('admin.changed', function() {
@@ -225,6 +232,7 @@
 
 })();
 
+// Restore deleted room
 $('#room .entry-restore').on('click', function() {
     var hash = Room.data.hash;
     Rest.rooms
