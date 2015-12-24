@@ -223,9 +223,12 @@
 
     Room.on('moderator.changed', toggleSettings);
 
-    Room.on('leave', function() {
+    function hide() {
         form.hide();
-    });
+    }
+
+    Room.on('leave', hide);
+    Room.on('closed', hide);
 
     toggleAdminSections();
     toggleSettings();
