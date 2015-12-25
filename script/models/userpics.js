@@ -110,9 +110,9 @@
         ctx.stroke();
     }
 
-    function createUserpic(name) {
+    function createUserpic(id) {
 
-        var hash = new Hash(name);
+        var hash = new Hash((id + id * Math.PI % 1).toString(36));
         var colors = getColors(hash);
 
         ctx.fillStyle = colors[0];
@@ -146,8 +146,8 @@
 
         getUrl: function(data) {
             if (data.userpic) return '/userpics/' + data.userpic;
-            if (data.nickname) {
-                return cached[data.nickname] || (cached[data.nickname] = createUserpic(data.nickname));
+            if (data.session_id) {
+                return cached[data.session_id] || (cached[data.session_id] = createUserpic(data.session_id));
             }
         }
 
