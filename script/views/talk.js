@@ -224,6 +224,7 @@ Talk.format = function(content) {
         return m1.date === m2.date &&
             m1.nickname === m2.nickname &&
             m1.recipient_nickname == m2.recipient_nickname &&
+            (m1.user_id ? m1.user_id === m2.user_id : m1.session_id === m2.session_id) &&
             m2.timestamp - m1.timestamp < interruption;
     }
 
