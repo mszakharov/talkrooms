@@ -118,7 +118,7 @@ var Talk = {
 
 // Format content
 Talk.format = function(content) {
-    var s = content.replace(/\n/g, '<br>');
+    var s = content;
     if (~s.indexOf('*')) {
         s = s.replace(/^\*\s*([^*]+)\s*\*$/, '<em>$1</em>');
         s = s.replace(/(^|\W)\*([^\s*]|[^\s*].*?\S)\*/g, '$1<em>$2</em>');
@@ -133,7 +133,7 @@ Talk.format = function(content) {
     if (~s.indexOf('#')) {
         s = s.replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2" target="_blank">$2</a>');
     }
-    return s;
+    return s.replace(/\n/g, '<br>');
 };
 
 // Find my nickname
