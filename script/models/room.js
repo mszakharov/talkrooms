@@ -12,20 +12,25 @@ var Room = new Events;
 
     function enter(socket) {
         Room.socket = socket;
-        Room.promises.push(Me.load());
         Room.trigger('enter', socket);
-        $.when.apply($, Room.promises).done(ready);
+        $.when.apply($, Room.promises).done(ready).fail(error);
     }
 
     function ready() {
         Room.trigger('ready');
     }
 
+    function error() {
+        Room.trigger('error');
+    }
+
     function stop(xhr) {
-        if (xhr.status === 404) {
-            Room.trigger('lost');
-        } else if (xhr.status === 403) {
-            Me.load().always(locked);
+        switch (xhr.status) {
+            case 406: Room.trigger('error', 'Пожалуйста, включите куки в вашем браузере.'); break;
+            case 402: Room.trigger('error', 'Слишком много одновременных соединений.'); break;
+            case 404: Room.trigger('lost'); break;
+            case 403: locked(); break;
+            default: error();
         }
     }
 
@@ -41,13 +46,17 @@ var Room = new Events;
         }
     }
 
+    function getRoom() {
+        Rest.rooms.get(Room.hash).done(admit).fail(stop);
+    }
+
     Room.enter = function(hash) {
         if (this.hash && this.hash !== hash) {
             this.leave();
         }
         this.hash = hash;
         Room.promises = [];
-        Rest.rooms.get(hash).done(admit).fail(stop);
+        Me.load().done(getRoom).fail(error);
     };
 
     Room.leave = function() {

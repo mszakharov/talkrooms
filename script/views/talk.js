@@ -77,6 +77,16 @@
         showSection('.entry-deleted');
     });
 
+    Room.on('error', function(text) {
+        var hint = overlay.find('.entry-error .hint');
+        if (text) {
+            hint.html(text).show();
+        } else {
+            hint.empty().hide();
+        }
+        showSection('.entry-error');
+    });
+
     var back = overlay.find('.entry-back');
 
     function shuffleRoom() {
