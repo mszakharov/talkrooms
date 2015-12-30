@@ -26,13 +26,13 @@
         if (data.status) {
             user.find('.nickname').append(' <em>' + formatStatus(data.status) + '</em>');
         }
-        if (data.socket_id === Room.socket.socket_id) {
+        if (data.role_id === Room.socket.role_id) {
             user.addClass('me');
         }
         if (data.annoying) {
             user.addClass('annoying');
         }
-        user.attr('data-socket', data.socket_id);
+        user.attr('data-role', data.role_id);
         return user[0];
     }
 
@@ -99,12 +99,12 @@
     }
 
     function getData(elem) {
-        var sid = elem.attr('data-socket');
-        var rid = elem.attr('data-request');
-        if (sid) {
-            return Room.users.get(Number(sid));
+        var role = elem.attr('data-role');
+        if (role) {
+            return Room.users.get(Number(role));
         } else {
-            return Room.requests.get(Number(rid));
+            var request = elem.attr('data-request');
+            return Room.requests.get(Number(request));
         }
     }
 

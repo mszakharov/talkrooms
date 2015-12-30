@@ -1,161 +1,137 @@
 /* Users cache */
 Room.users = (function() {
 
-    var sockets = new Collection({
-        index: 'socket_id',
+    var roles = new Collection({
+        index: 'role_id',
         order: 'normal_nickname'
     });
 
     var showIgnored;
 
-    function groupOnline(sockets, mySocketId) {
-        var grouped = [];
-        var indexes = {};
-        for (var i = 0; i < sockets.length; i++) {
-            var socket = sockets[i];
-            if (socket.online) {
-                var digest = socket.user_id || socket.nickname;
-                if (indexes[digest] === undefined) {
-                    indexes[digest] = grouped.push(socket) - 1;
-                } else if (socket.socket_id === mySocketId) {
-                    grouped[indexes[digest]] = socket;
-                }
-            }
-        }
-        return grouped;
-    }
-
-    function notIgnored(socket) {
-        var ignored = socket.ignored && !Room.socket.ignored;
-        if (ignored && showIgnored) this.push(socket);
+    function notIgnored(role) {
+        var ignored = role.ignored && !Room.socket.ignored;
+        if (ignored && showIgnored) this.push(role);
         return !ignored;
     }
 
     function apply() {
         var ignore = [];
-        var online = groupOnline(sockets.raw, Room.socket.socket_id);
-        Room.trigger('users.updated', online.filter(notIgnored, ignore), ignore);
+        Room.trigger('users.updated', roles.raw.filter(notIgnored, ignore), ignore);
     }
 
-    function getSockets() {
-        return Rest.sockets.get({room_id: Room.data.room_id}).done(reset);
+    function getRoles() {
+        return Rest.roles
+            .get({
+                room_id: Room.data.room_id,
+                num_online_sockets: {'>': 0}
+            })
+            .done(reset);
     }
 
     function reset(data) {
-        sockets.raw = data;
-        sockets.raw.forEach(setUserpicUrl);
-        sockets.raw.forEach(normalizeNickname);
-        sockets.sort();
+        roles.raw = data;
+        roles.raw.forEach(setUserpicUrl);
+        roles.raw.forEach(normalizeNickname);
+        roles.sort();
     }
 
-    function setAnnoying(socket) {
-        socket.annoying = Room.ignores && Room.ignores(socket);
+    function setAnnoying(role) {
+        role.annoying = Room.ignores && Room.ignores(role);
     }
 
-    function setUserpicUrl(socket) {
-        socket.userpicUrl = Userpics.getUrl(socket);
+    function setUserpicUrl(role) {
+        role.userpicUrl = Userpics.getUrl(role);
     }
 
-    function normalizeNickname(socket) {
-        var lower = socket.nickname.toLowerCase();
+    function normalizeNickname(role) {
+        var lower = role.nickname.toLowerCase();
         var pure = lower.replace(/[^\wа-яё]/g, '');
-        socket.normal_nickname = lower === pure ? lower : pure + socket.nickname;
+        role.normal_nickname = lower === pure ? lower : pure + role.nickname;
     }
 
-    function addSocket(socket) {
-        if (!sockets.get(socket.socket_id)) {
-            setAnnoying(socket);
-            normalizeNickname(socket);
-            setUserpicUrl(socket);
-            sockets.add(socket);
+    function addRole(role) {
+        if (!roles.get(role.role_id)) {
+            setAnnoying(role);
+            normalizeNickname(role);
+            setUserpicUrl(role);
+            roles.add(role);
             apply();
         }
     }
 
-    function removeSocket(socket) {
-        sockets.remove(socket.socket_id);
+    function removeRole(role) {
+        roles.remove(role.role_id);
         apply();
     }
 
     Room.on('enter', function(socket) {
-        sockets.raw = [];
+        roles.raw = [];
         showIgnored = Room.moderator;
-        this.promises.push(getSockets());
+        this.promises.push(getRoles());
     });
 
     Room.on('ready', function() {
-        sockets.raw.forEach(setAnnoying);
+        roles.raw.forEach(setAnnoying);
         apply();
     });
 
     Room.on('moderator.changed', function() {
         showIgnored = Room.moderator;
-        if (sockets.raw.length) {
-            sockets.raw.forEach(setAnnoying);
+        if (roles.raw.length) {
+            roles.raw.forEach(setAnnoying);
             apply();
         }
     });
 
     Room.on('me.ignores.updated', function() {
-        sockets.raw.forEach(setAnnoying);
+        roles.raw.forEach(setAnnoying);
         apply();
     });
 
-    Room.on('socket.created', addSocket);
-    Room.on('socket.deleted', removeSocket);
+    Room.on('role.online', addRole);
+    Room.on('role.offline', removeRole);
 
-    Room.on('session.ignored.updated', function(session) {
-        var sid = session.session_id;
-        sockets.raw.forEach(function(socket) {
-            if (socket.session_id === sid) socket.ignored = session.ignored;
-        });
+    Room.on('role.ignored.updated', function(data) {
+        roles.get(data.role_id).ignored = data.ignored;
+        apply();
+    });
+
+    Room.on('role.nickname.updated', function(data) {
+        var role = roles.get(data.role_id);
+        role.nickname = data.nickname;
+        normalizeNickname(role);
+        roles.sort();
+        apply();
+    });
+
+    Room.on('role.status.updated', function(data) {
+        roles.get(data.role_id).status = data.status;
         apply();
     });
 
     function patchUser(user_id, callback) {
-        sockets.raw.forEach(function(socket) {
-            if (socket.user_id === user_id) callback(socket);
+        roles.raw.forEach(function(role) {
+            if (role.user_id === user_id) callback(role);
         });
     }
 
-    Room.on('user.userpic.updated', function(user) {
-        patchUser(user.user_id, function(socket) {
-            socket.userpic = user.userpic;
-            setUserpicUrl(socket);
+    Room.on('user.userpic.updated', function(data) {
+        patchUser(data.user_id, function(role) {
+            role.userpic = data.userpic;
+            setUserpicUrl(role);
         });
         apply();
     });
 
-    Room.on('user.photo.updated', function(user) {
-        patchUser(user.user_id, function(socket) {
-            socket.photo = user.photo;
+    Room.on('user.photo.updated', function(data) {
+        patchUser(data.user_id, function(role) {
+            role.photo = data.photo;
         });
-    });
-
-    Room.on('socket.nickname.updated', function(data) {
-        var socket = sockets.get(data.socket_id);
-        socket.nickname = data.nickname;
-        normalizeNickname(socket);
-        sockets.sort();
-        if (!socket.userpic) {
-            setUserpicUrl(socket);
-        }
-        apply();
-    });
-
-    Room.on('socket.online.updated', function(data) {
-        sockets.get(data.socket_id).online = data.online;
-        apply();
-    });
-
-    Room.on('socket.status.updated', function(data) {
-        sockets.get(data.socket_id).status = data.status;
-        apply();
     });
 
     return {
-        get: function(socket_id) {
-            return sockets.get(socket_id)
+        get: function(role_id) {
+            return roles.get(role_id)
         },
         findSession: function(session_id) {
             return sockets.raw.filter(function(socket) {
