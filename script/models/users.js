@@ -132,11 +132,6 @@ Room.users = (function() {
     return {
         get: function(role_id) {
             return roles.get(role_id)
-        },
-        findSession: function(session_id) {
-            return sockets.raw.filter(function(socket) {
-                return socket.session_id === session_id;
-            });
         }
     };
 

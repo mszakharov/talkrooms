@@ -186,11 +186,14 @@ Talk.format = function(content) {
     function createSpeech(data) {
         data.userpicUrl = Userpics.getUrl(data);
         var elem = renderSpeech(data);
-        if (data.session_id) {
-            elem.attr('data-session', data.session_id);
+        if (data.role_id) {
+            elem.attr('data-role', data.role_id);
         }
         if (data.user_id) {
             elem.attr('data-user', data.user_id);
+        }
+        if (data.session_id) {
+            elem.attr('data-session', data.session_id);
         }
         if (data.recipient_nickname) {
             elem.addClass('personal');
@@ -219,8 +222,7 @@ Talk.format = function(content) {
         if (nickname === Room.socket.nickname) nickname = 'я';
         return $('<span></span>')
             .addClass('speech-recipient')
-            .attr('data-session', message.recipient_session_id)
-            .attr('data-user', message.recipient_id)
+            .attr('data-role', message.recipient_role_id)
             .html('&rarr; <span class="recipient-nickname">' + nickname + '</span>');
     }
 
@@ -232,9 +234,10 @@ Talk.format = function(content) {
 
     function inRow(m1, m2) {
         return m1.date === m2.date &&
+            m1.role_id === m2.role_id &&
             m1.nickname === m2.nickname &&
+            m1.recipient_role_id == m2.recipient_role_id &&
             m1.recipient_nickname == m2.recipient_nickname &&
-            (m1.user_id ? m1.user_id === m2.user_id : m1.session_id === m2.session_id) &&
             m2.timestamp - m1.timestamp < interruption;
     }
 
@@ -460,13 +463,16 @@ Talk.format = function(content) {
         var date = new Date(created);
         var last = {
             message_id: Number(message.attr('data-id')),
+            role_id: Number(speech.attr('data-role')),
             nickname: speech.find('.nickname').text(),
             date: date.toSmartDate(),
             timestamp: date.getTime(),
             created: created
         };
         if (speech.hasClass('personal')) {
-            last.recipient_nickname = speech.find('.recipient-nickname').text();
+            var recipient = speech.find('.recipient-nickname');
+            last.recipient_role_id = Number(recipient.attr('data-role'));
+            last.recipient_nickname = recipient.text();
         }
         composer.speech = speech;
         composer.date = last.date;
@@ -561,7 +567,8 @@ Room.on('user.ignores.updated', function() {
         var data = {
             nickname: speech.find('.nickname').text(),
             session_id: Number(speech.attr('data-session')),
-            user_id: Number(speech.attr('data-user'))
+            user_id: Number(speech.attr('data-user')),
+            role_id: Number(speech.attr('data-role'))
         };
         if (data.user_id) {
             var userpicUrl = speech.find('.userpic').css('background-image');
@@ -573,16 +580,15 @@ Room.on('user.ignores.updated', function() {
     function parseRecipient(speech) {
         var elem = speech.find('.speech-recipient');
         return {
-            user_id: Number(elem.attr('data-user')),
-            session_id: Number(elem.attr('data-session')),
+            role_id: Number(elem.attr('data-role')),
             nickname: elem.find('.recipient-nickname').text()
         };
     }
 
     function getSocket(speech) {
-        var session_id = Number(speech.attr('data-session'));
-        var socket = session_id && Room.users.findSession(session_id)[0];
-        return socket || parseSocket(speech);
+        var role_id = Number(speech.attr('data-role'));
+        var role = role_id && Room.users.get(role_id);
+        return role || parseSocket(speech);
     }
 
     function replyPersonal(speech) {

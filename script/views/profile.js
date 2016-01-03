@@ -26,9 +26,9 @@
         }
         popup.show();
         Profile.fit();
-        if (socket.user_id && !socket.socket_id) {
+        if (socket.user_id && !socket.level) {
             Rest.roles
-                .get(Room.data.room_id, socket.user_id)
+                .get(socket.role_id)
                 .done(function(data) {
                     $.extend(socket, data);
                     preloadPhoto(socket);
@@ -39,6 +39,7 @@
     }
 
     function preloadPhoto(data) {
+        console.log(data);
         if (data.photo) {
             var img = new Image();
             img.src = '/photos/' + data.photo;
@@ -134,7 +135,7 @@
         if ($.isEmptyObject(values)) {
             Profile.hide();
         } else {
-            Rest.sockets.update(Room.socket.socket_id, values).done(Profile.hide);
+            Rest.roles.update(Room.socket.role_id, values).done(Profile.hide);
         }
     });
 
@@ -200,7 +201,7 @@
 
     Profile.on('ready', function(data, photo) {
         if (section.is(':visible')) {
-            if (data.profile_url && Room.socket.profile_url) {
+            if (data.profile_url && Room.socket.user_id) {
                 section.find('.details-link').html(renderLink(data.profile_url));
             }
             if (photo) {

@@ -28,7 +28,7 @@
 
     function setLevel(level) {
         Rest.roles
-            .update(Room.data.room_id, Profile.socket.user_id, {
+            .update(Profile.socket.role_id, {
                 level: level
             })
             .done(collapse);

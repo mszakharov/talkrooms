@@ -116,13 +116,10 @@ var Room = new Events;
 
 })();
 
-// Compare user, session and socket id with my socket
+// Compare role_id with my role
 Room.isMy = function(data) {
     var my = this.socket;
-    return Boolean(my &&
-        my.socket_id === data.socket_id ||
-        my.session_id === data.session_id ||
-        my.user_id && my.user_id === data.user_id);
+    return Boolean(my && my.role_id === data.role_id);
 };
 
 // Socket
@@ -249,10 +246,24 @@ Room.on('room.deleted.updated', function(data) {
 })
 
 // Update my nickname
-Room.on('socket.nickname.updated', function(socket) {
-    if (Room.socket.socket_id === socket.socket_id) {
-        Room.socket.nickname = socket.nickname;
-        Room.trigger('my.nickname.updated', socket);
+Room.on('role.nickname.updated', function(role) {
+    if (Room.socket.role_id === role.role_id) {
+        Room.socket.nickname = role.nickname;
+        Room.trigger('my.nickname.updated', role);
+    }
+});
+
+// Update my status
+Room.on('role.status.updated', function(role) {
+    if (Room.socket.role_id === role.role_id) {
+        Room.socket.status = role.status;
+    }
+});
+
+// Ignored
+Room.on('role.ignored.updated', function(role) {
+    if (Room.socket.role_id === role.role_id) {
+        Room.socket.ignored = role.ignored;
     }
 });
 
@@ -268,20 +279,6 @@ Room.on('user.userpic.updated', function(user) {
 Room.on('user.photo.updated', function(user) {
     if (Room.socket.user_id === user.user_id) {
         Room.socket.photo = user.photo;
-    }
-});
-
-// Update my status
-Room.on('socket.status.updated', function(socket) {
-    if (Room.socket.socket_id === socket.socket_id) {
-        Room.socket.status = socket.status;
-    }
-});
-
-// Ignored
-Room.on('session.ignored.updated', function(session) {
-    if (Room.socket.session_id === session.session_id) {
-        Room.socket.ignored = session.ignored;
     }
 });
 
@@ -344,8 +341,8 @@ Room.on('session.ignored.updated', function(session) {
         Room.trigger('admin.changed', on);
     }
 
-    Room.on('user.level.updated', function(data) {
-        if (Room.socket.user_id === data.user_id) {
+    Room.on('role.level.updated', function(data) {
+        if (Room.socket.role_id === data.role_id) {
             Room.socket.level = data.level;
             checkLevel();
         }

@@ -1,16 +1,16 @@
 // Update level
-Room.on('user.level.updated', function(data) {
+Room.on('role.level.updated', function(data) {
     var opened = Profile.socket;
-    if (opened && opened.user_id === data.user_id) {
+    if (opened && opened.role_id === data.role_id) {
         opened.level = data.level;
         Profile.trigger('level.updated', opened);
     }
 });
 
 // Update ignored
-Room.on('session.ignored.updated', function(data) {
+Room.on('role.ignored.updated', function(data) {
     var opened = Profile.socket;
-    if (opened && opened.session_id === data.session_id) {
+    if (opened && opened.role_id === data.role_id) {
         opened.ignored = data.ignored;
         Profile.trigger('ignored.updated', opened);
     }
@@ -214,9 +214,8 @@ Profile.isCivilian = function() {
     }
 
     function setIgnore(value) {
-        return Rest.sessions.update(Profile.socket.session_id, {
-            room_id: Room.data.room_id,
-            ignore: value
+        return Rest.roles.update(Profile.socket.role_id, {
+            ignored: value
         });
     }
 
@@ -246,7 +245,7 @@ Profile.isCivilian = function() {
     });
 
     banish.on('click', function() {
-        Rest.roles.update(Room.data.room_id, Profile.socket.user_id, {
+        Rest.roles.update(Profile.socket.role_id, {
             level: 10
         });
     });

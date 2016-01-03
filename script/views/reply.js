@@ -67,8 +67,7 @@
                 content: content
             };
             if (recipient) {
-                options.recipient_id = recipient.user_id;
-                options.recipient_session_id = recipient.session_id;
+                options.recipient_role_id = recipient.role_id;
                 cancelPrivate();
             }
             Room.send(options);
