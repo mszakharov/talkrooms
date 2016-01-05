@@ -39,7 +39,6 @@
     }
 
     function preloadPhoto(data) {
-        console.log(data);
         if (data.photo) {
             var img = new Image();
             img.src = '/photos/' + data.photo;

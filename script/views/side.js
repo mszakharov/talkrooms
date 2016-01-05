@@ -36,12 +36,6 @@
         return user[0];
     }
 
-    function renderRequest(data) {
-        var user = template(data);
-        user.attr('data-request', data.request_id);
-        return user[0];
-    }
-
     var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
 
     function formatStatus(status) {
@@ -50,18 +44,17 @@
             status;
     }
 
-    function Group(selector, render) {
+    function Group(selector) {
         this.elem = container.find(selector);
         this.list = this.elem.find('.users-list');
         this.amount = this.elem.find('.users-amount');
-        this.render = render;
     }
 
     Group.prototype.show = function(users, sort) {
         this.list.html('');
         if (users.length) {
             this.amount.html(users.length);
-            this.list.append(users.map(this.render));
+            this.list.append(users.map(renderUser));
             if (sort) {
                 this.list.find('.annoying').appendTo(this.list);
             }
@@ -71,15 +64,15 @@
         }
     };
 
-    var onlineGroup = new Group('.users-online', renderUser);
-    var ignoreGroup = new Group('.users-ignored', renderUser);
+    var onlineGroup = new Group('.users-online');
+    var ignoreGroup = new Group('.users-ignored');
 
     Room.on('users.updated', function(online, ignore) {
         onlineGroup.show(online, Boolean(Room.ignores));
         ignoreGroup.show(ignore);
     });
 
-    var requestsGroup = new Group('.users-requests', renderRequest);
+    var requestsGroup = new Group('.users-requests');
 
     Room.on('requests.updated', function(requests) {
         requestsGroup.show(requests);
@@ -99,17 +92,8 @@
     }
 
     function getData(elem) {
-        var role = elem.attr('data-role');
-        if (role) {
-            return Room.users.get(Number(role));
-        } else {
-            var request = elem.attr('data-request');
-            return Room.requests.get(Number(request));
-        }
-    }
-
-    function getRequest(elem) {
-        return Room.requests.get(Number(elem.attr('data-request')));
+        var role_id = Number(elem.attr('data-role'));
+        return Room.users.get(role_id) || Room.requests.get(role_id);
     }
 
     container.on('click', '.me, .userpic', function(event) {
@@ -127,7 +111,7 @@
         if (event.target.nodeName !== 'A') {
             var user = $(this).closest('.user');
             var data = getData(user);
-            if (data.request_id) {
+            if (data.come_in != null) {
                 Profile.show(data, user);
             } else {
                 Room.replyTo(data.nickname);

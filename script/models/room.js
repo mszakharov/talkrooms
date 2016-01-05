@@ -29,20 +29,23 @@ var Room = new Events;
             case 406: Room.trigger('error', 'Пожалуйста, включите куки в вашем браузере.'); break;
             case 402: Room.trigger('error', 'Слишком много одновременных соединений.'); break;
             case 404: Room.trigger('lost'); break;
-            case 403: locked(); break;
+            case 403: locked(xhr); break;
             default: error();
         }
     }
 
-    function locked() {
+    function locked(xhr) {
         var level = (Room.data && Room.data.level) || 0;
         if (level === 80) {
             Room.trigger('closed');
-        } else if (Me.authorized && level >= 20) {
-            Room.trigger('locked', true);
-            Room.createRequest();
         } else {
-            Room.trigger('locked');
+            var data = xhr.responseJSON;
+            if (data && data.role_id) {
+                Room.trigger('locked', true);
+                Room.wait(data);
+            } else {
+                Room.trigger('locked');
+            }
         }
     }
 
@@ -80,38 +83,34 @@ var Room = new Events;
 (function() {
 
     var timer;
-    var request_id;
+    var role_id;
     var counter;
 
-    function getRequest() {
+    function getRole() {
         clearTimeout(timer);
-        Rest.requests.get(request_id).done(check);
+        Rest.roles.get(role_id).done(check);
     }
 
-    function check(request) {
-        if (request.approved) {
-            Room.enter(Room.hash);
-        } else if (request.approved == null) {
+    function check(role) {
+        if (role.come_in) {
             checkLater();
+        } else if (role.come_in !== false) {
+            Room.enter(Room.hash);
         }
     }
 
     function checkLater() {
-        timer = setTimeout(getRequest, counter++ > 6 ? 60000 : 15000);
-    }
-
-    function wait(data) {
-        request_id = data.request_id;
-        checkLater();
+        timer = setTimeout(getRole, counter++ > 6 ? 60000 : 15000);
     }
 
     Room.on('leave', function() {
         clearTimeout(timer);
     });
 
-    Room.createRequest = function() {
+    Room.wait = function(data) {
         counter = 0;
-        Rest.requests.create({hash: Room.hash}).done(wait);
+        role_id = data.role_id;
+        checkLater();
     };
 
 })();

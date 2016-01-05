@@ -180,16 +180,13 @@
 #profile-moderate .button {
     text-align: center;
 }
-.moder-ignore,
-.moder-banish {
+.moder-ignore .button,
+.moder-banish .button {
     padding: 7px 13px;
     font-size: 16px;
     line-height: 18px;
 }
-.moder-banished {
-    margin-top: 0 !important;
-}
-.moder-ignored {
+.moder-convict {
     position: relative;
     padding: 8px 14px;
     border-radius: 3px;
@@ -248,10 +245,10 @@
 }
 
 /* Request */
-#profile-request {
-    padding-right: 46px !important;
+.moder-request {
+    padding-right: 26px !important;
 }
-#profile-request .button {
+.moder-request .button {
     padding: 7px 3px;
     font-size: 16px;
     line-height: 18px;

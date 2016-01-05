@@ -91,11 +91,6 @@ Room.users = (function() {
     Room.on('role.online', addRole);
     Room.on('role.offline', removeRole);
 
-    Room.on('role.ignored.updated', function(data) {
-        roles.get(data.role_id).ignored = data.ignored;
-        apply();
-    });
-
     Room.on('role.nickname.updated', function(data) {
         var role = roles.get(data.role_id);
         role.nickname = data.nickname;
@@ -107,6 +102,14 @@ Room.users = (function() {
     Room.on('role.status.updated', function(data) {
         roles.get(data.role_id).status = data.status;
         apply();
+    });
+
+    Room.on('role.ignored.updated', function(data) {
+        var role = roles.get(data.role_id);
+        if (role) {
+            role.ignored = data.ignored;
+            apply();
+        }
     });
 
     function patchUser(user_id, callback) {
