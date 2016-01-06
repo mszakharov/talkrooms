@@ -79,11 +79,6 @@ var Hall = {};
         Room.create().fail(failed);
     });
 
-    Hall.toggleCreate = function(auth) {
-        section.find('.hall-login').toggle(!auth);
-        section.find('.hall-action').toggle(auth);
-    };
-
 })();
 
 // Shuffle
@@ -167,7 +162,6 @@ var Hall = {};
     var hidden = true;
 
     function update(data) {
-        Hall.toggleCreate(Me.authorized);
         Hall.showRooms(data);
         if (hidden) {
             $('.hall-columns').show();

@@ -121,31 +121,10 @@
 
 })();
 
-// Shuffle
-(function() {
-
-
-
-})();
-
 // Create a room
-(function() {
-
-    var create = $('.room-create');
-
-    create.find('.create-link').on('click', function() {
-        Room.create();
-    });
-
-    Room.on('enter', function(socket) {
-        if (socket.user_id) {
-            create.slideDown(150);
-        } else {
-            create.hide();
-        }
-    });
-
-})();
+$('.room-create .create-link').on('click', function() {
+    Room.create();
+});
 
 // Toggle side
 (function() {

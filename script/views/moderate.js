@@ -118,7 +118,7 @@ Profile.isCivilian = function() {
     }
 
     function canEnter(role) {
-        return (role.level || 0) >= Room.data.level;
+        return (role.level || 0) >= Room.data.level && !role.ignored;
     }
 
     function onShow(socket, me) {
