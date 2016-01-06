@@ -7,7 +7,12 @@
     });
 
     function getRequests() {
-        return Rest.roles.get({room_id: Room.data.room_id, come_in: true}).done(reset);
+        if (Room.moderator && Room.data.level !== 80) {
+            return Rest.roles.get({room_id: Room.data.room_id, come_in: true}).done(reset);
+        } else {
+            requests.raw = [];
+            apply();
+        }
     }
 
     function reset(data) {
@@ -96,38 +101,42 @@ Profile.isCivilian = function() {
     }
 };
 
-// Roles section
+// Levels section
 (function() {
 
     var section = $('#profile-roles'),
         current = section.find('.roles-current');
 
-    var roles = {
-        10: 'Посетитель',
-        20: 'Посетитель',
+    var levels = {
         50: 'Модератор',
         70: 'Администратор',
-        80: 'Создатель комнаты'
+        80: 'Создатель комнаты',
     };
 
-    function canEnter(socket) {
-        return !socket.request_id && socket.level >= Room.data.level;
+    function getLevel(role) {
+        return levels[role.level] || 'Посетитель';
+    }
+
+    function canEnter(role) {
+        return (role.level || 0) >= Room.data.level;
     }
 
     function onShow(socket, me) {
-        if (socket.user_id && !me && !socket.ignored) {
+        if (!me && canEnter(socket)) {
             var preview = Profile.isCivilian() === false;
-            current.html(preview ? roles[socket.level] : '');
+            current.html(preview ? getLevel(socket) : '');
             section.removeClass('expanded').show();
         }
     }
 
     function onReady(data) {
-        if (section.is(':visible') && canEnter(data) && (Room.admin || !Profile.isCivilian())) {
-            current.html(roles[data.level]);
+        if (!Room.isMy(data) && canEnter(data) && (Room.admin || !Profile.isCivilian())) {
+            current.html(getLevel(data));
+            section.removeClass('expanded').show();
         } else {
             section.hide();
         }
+        Profile.fit();
     }
 
     function toggleEvents(on) {
@@ -135,21 +144,16 @@ Profile.isCivilian = function() {
         Profile[mode]('show', onShow);
         Profile[mode]('ready', onReady);
         Profile[mode]('level.updated', onReady);
-        Profile[mode]('ignored.updated', onIgnored);
-    }
-
-    function onIgnored(role) {
-        toggleSection(!role.ignored);
+        Profile[mode]('ignored.updated', onReady);
     }
 
     function toggleSection(on) {
         if (on) {
-            onShow(Profile.socket, Room.isMy(Profile.socket));
             onReady(Profile.socket);
         } else {
             section.hide();
+            Profile.fit();
         }
-        Profile.fit();
     }
 
     function toggle(on) {
@@ -183,7 +187,7 @@ Profile.isCivilian = function() {
     function toggleControls(role) {
         controls.hide();
         if (role.level < Room.data.level) {
-            if (role.come_in === false) {
+            if (role.come_in === 0) {
                 banished.show();
                 showErase();
             } else {

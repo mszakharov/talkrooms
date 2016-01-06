@@ -15,6 +15,10 @@
         return level > 20 ? inputs.filter('[value="' + level + '"]') : guest;
     }
 
+    function getGuestLevel(role) {
+        return Math.max(role.user_id ? 10 : 0, Room.data.level);
+    }
+
     function onReady(data) {
         if (isSubordinate(data)) {
             findInput(data.level).prop('checked', true);
@@ -47,7 +51,7 @@
     });
 
     inputs.on('click', function() {
-        var level = this.value ? Number(this.value) : Math.max(10, Room.data.level);
+        var level = this.value ? Number(this.value) : getGuestLevel(Profile.socket);
         if (level !== Profile.socket.level) {
             var label = $(this).closest('.role').find('label');
             current.html(label.text());

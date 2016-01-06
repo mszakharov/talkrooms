@@ -94,7 +94,7 @@ var Room = new Events;
     function check(role) {
         if (role.come_in) {
             checkLater();
-        } else if (role.come_in !== false) {
+        } else if (role.come_in !== 0) {
             Room.enter(Room.hash);
         }
     }
