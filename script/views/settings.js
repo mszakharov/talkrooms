@@ -9,7 +9,7 @@
         toggleAlarm(Room.data.level === 0);
         showAlarm(Boolean(Room.data.min_session_created));
         toggleRemove(Room.data.level === 80);
-        hash.parent().toggle(Room.data.level === 80 && Room.socket.user_id);
+        hash.parent().toggle(Boolean(Room.socket.level === 80 && Room.socket.user_id));
         closed.toggle(Room.socket.level === 80);
         submit.prop('disabled', false);
         this.fadeIn(120);
