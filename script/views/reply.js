@@ -155,10 +155,6 @@
 
     Room.on('my.userpic.updated', showUserpic);
 
-    Room.on('my.nickname.updated', function() {
-        if (!Room.socket.userpic) showUserpic();
-    });
-
     Room.on('replies.overflow', function() {
         sendButton.addClass('send-overflow');
     });
