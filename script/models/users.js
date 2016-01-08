@@ -93,15 +93,20 @@ Room.users = (function() {
 
     Room.on('role.nickname.updated', function(data) {
         var role = roles.get(data.role_id);
-        role.nickname = data.nickname;
-        normalizeNickname(role);
-        roles.sort();
-        apply();
+        if (role) {
+            role.nickname = data.nickname;
+            normalizeNickname(role);
+            roles.sort();
+            apply();
+        }
     });
 
     Room.on('role.status.updated', function(data) {
-        roles.get(data.role_id).status = data.status;
-        apply();
+        var role = roles.get(data.role_id);
+        if (role) {
+            role.status = data.status;
+            apply();
+        }
     });
 
     Room.on('role.ignored.updated', function(data) {
@@ -134,7 +139,7 @@ Room.users = (function() {
 
     return {
         get: function(role_id) {
-            return roles.get(role_id)
+            return roles.get(role_id);
         }
     };
 
