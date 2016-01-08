@@ -146,9 +146,8 @@
 
         getUrl: function(data) {
             if (data.userpic) return '/userpics/' + data.userpic;
-            if (data.session_id) {
-                return cached[data.session_id] || (cached[data.session_id] = createUserpic(data.session_id));
-            }
+            var id = data.session_id || data.user_id;
+            return cached[id] || (cached[id] = createUserpic(id));
         }
 
     };
