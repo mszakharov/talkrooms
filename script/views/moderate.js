@@ -80,6 +80,7 @@ Room.on('role.ignored.updated', function(data) {
     var opened = Profile.socket;
     if (opened && opened.role_id === data.role_id) {
         opened.ignored = data.ignored;
+        opened.moderator_id = data.moderator_id;
         Profile.trigger('ignored.updated', opened);
     }
 });
@@ -196,7 +197,7 @@ Profile.isCivilian = function() {
         } else if (Room.data.level >= 20) {
             banish.show();
         } else if (role.ignored) {
-            showIgnored(role.ignored);
+            showIgnored(role);
             showErase();
         } else {
             ignore.show();
@@ -217,10 +218,21 @@ Profile.isCivilian = function() {
         erase.hide();
     }
 
-    function showIgnored(since) {
-        var date = new Date(since);
+    function canRelease(role) {
+        return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.socket.role_id);
+    }
+
+    var releaseAfter = 12 * 60 * 60 * 1000;
+    function timeToRelease(date) {
+        var now = new Date();
+        return now - date > releaseAfter;
+    }
+
+    function showIgnored(role) {
+        var date = new Date(role.ignored);
+        ignored.find('.moder-release').toggle(canRelease(role) || timeToRelease(date));
         ignored.find('.moder-ago')
-            .attr('datetime', since)
+            .attr('datetime', role.ignored)
             .attr('title', String.mix('Правосудие свершилось $1 в $2', date.toSmartDate(), date.toHumanTime()))
             .text(date.toHumanAgo());
         ignored.show();

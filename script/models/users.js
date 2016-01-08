@@ -113,6 +113,7 @@ Room.users = (function() {
         var role = roles.get(data.role_id);
         if (role) {
             role.ignored = data.ignored;
+            role.moderator_id = data.moderator_id;
             apply();
         }
     });
