@@ -103,7 +103,7 @@ var Me = {};
     }
 
     Me.checkVersion = function(data) {
-        if (data.version > version && !notice) showNotice(data.whatsnew);
+        if (data && data.version > version && !notice) showNotice(data.whatsnew);
     };
 
 })();
