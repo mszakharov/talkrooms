@@ -321,9 +321,12 @@ Talk.format = function(content) {
     function removeMessage(id) {
         var message = container.find('.message[data-id="' + id + '"]');
         if (message.length) {
-            clearTimeout(timer);
-            nodes.push(message[0]);
-            timer = setTimeout(clearIgnored, 50);
+            var role_id = Number(message.parent().attr('data-role'));
+            if (role_id !== Room.socket.role_id) {
+                clearTimeout(timer);
+                nodes.push(message[0]);
+                timer = setTimeout(clearIgnored, 50);
+            }
         }
     }
 
