@@ -32,6 +32,7 @@
     }
 
     function setAdminValues() {
+        form.find('.settings-login').toggle(!Me.authorized && Room.socket.level === 80);
         topic.val(Room.data.topic);
         hash.val(Room.data.hash).removeClass('invalid');
         searchable.prop('checked', Room.data.searchable);

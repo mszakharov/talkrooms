@@ -37,6 +37,20 @@
     padding: 5px 25px;
 }
 
+/* Login */
+#room-settings .settings-login {
+    padding: 14px 20px;
+    background: #f5efdc;
+    border-bottom: 1px solid #d6d2c5;
+}
+.settings-login p {
+    margin: 0;
+}
+.settings-login .hint {
+    margin: 8px 0 0;
+    color: #66645e;
+}
+
 /* Remove */
 .room-remove {
     padding: 14px 20px;
