@@ -125,6 +125,13 @@ Room.users = (function() {
         }
     });
 
+    Room.on('role.expired.updated', function(data) {
+        var role = roles.get(data.role_id);
+        if (role) {
+            role.expired = data.expired;
+        }
+    });
+
     function patchUser(user_id, callback) {
         roles.raw.forEach(function(role) {
             if (role.user_id === user_id) callback(role);
