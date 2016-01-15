@@ -25,6 +25,10 @@
 .entry-text .hint {
     font: inherit;
 }
+.entry-spinner {
+    padding-right: 32px;
+    background: url('room/spinner.svg') no-repeat 100% 5px;
+}
 
 /* Left column */
 #side {
