@@ -85,6 +85,15 @@ Room.on('role.ignored.updated', function(data) {
     }
 });
 
+// Update ignore expiration
+Room.on('role.expired.updated', function(data) {
+    var opened = Profile.socket;
+    if (opened && opened.role_id === data.role_id) {
+        opened.expired = data.expired;
+        Profile.trigger('ignored.updated', opened);
+    }
+});
+
 // Update come_in
 Room.on('role.come_in.updated', function(data) {
     var opened = Profile.socket;
@@ -222,19 +231,52 @@ Profile.isCivilian = function() {
         return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.socket.role_id);
     }
 
-    var releaseAfter = 12 * 60 * 60 * 1000;
-    function timeToRelease(date) {
-        var now = new Date();
-        return now - date > releaseAfter;
+    var termElem = ignored.find('.moder-term'),
+        termValue = ignored.find('.moder-term-value'),
+        termSelect = ignored.find('select');
+
+    var terms = {
+        15: 'на 15 минут',
+        120: 'на 2 часа',
+        720: 'на 12 часов'
+    };
+
+    function getMinutes(since, date) {
+        return Math.round((date - since) / 60000);
+    }
+
+    function toggleTermOptions(past) {
+        var options = termSelect[0].options;
+        options[0].disabled = past > 15;
+        options[1].disabled = past > 120;
+    }
+
+    function selectTerm(term) {
+        if (term) {
+            termSelect.val(term)
+        } else {
+            termSelect[0].selectedIndex = 3;
+        }
     }
 
     function showIgnored(role) {
         var date = new Date(role.ignored);
-        ignored.find('.moder-release').toggle(canRelease(role) || timeToRelease(date));
-        ignored.find('.moder-ago')
-            .attr('datetime', role.ignored)
-            .attr('title', String.mix('Правосудие свершилось $1 в $2', date.toSmartDate(), date.toHumanTime()))
-            .text(date.toHumanAgo());
+        var term = role.expired && getMinutes(date, new Date(role.expired));
+        var past = getMinutes(date, Date.now());
+        var cr = canRelease(role);
+        var tr = past > 720;
+        if (cr && !tr) {
+            termElem.addClass('moder-term-editable');
+            termSelect.prop('disabled', false);
+            toggleTermOptions(past);
+            selectTerm(term);
+        } else {
+            termElem.removeClass('moder-term-editable');
+            termSelect.prop('disabled', true);
+        }
+        termValue.text(term ? terms[term] : (tr ? date.toHumanAgo() : 'пожизненно'));
+        termElem.attr('title', String.mix('Начало игнора $1 в $2', date.toSmartDate(), date.toHumanTime()))
+        ignored.find('.moder-release').toggle(cr || tr);
         ignored.show();
     }
 
@@ -291,6 +333,10 @@ Profile.isCivilian = function() {
 
     ignored.find('.moder-release').on('click', function() {
         updateRole({ignored: false});
+    });
+
+    termSelect.on('change', function() {
+        updateRole({expired: this.value ? Number(this.value) * 60 : null});
     });
 
     banish.find('.button').on('click', function() {
