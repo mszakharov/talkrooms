@@ -109,6 +109,13 @@ Room.users = (function() {
         }
     });
 
+    Room.on('role.level.updated', function(data) {
+        var role = roles.get(data.role_id);
+        if (role) {
+            role.level = data.level;
+        }
+    });
+
     Room.on('role.ignored.updated', function(data) {
         var role = roles.get(data.role_id);
         if (role) {
