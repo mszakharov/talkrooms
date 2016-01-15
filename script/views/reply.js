@@ -96,8 +96,10 @@
         cancelPrivate();
     });
 
-    form.on('click', function() {
-        field.focus();
+    form.on('click', function(event) {
+        if (event.target !== userpic[0]) {
+            field.focus();
+        }
     });
 
     form.on('submit', function(event) {
@@ -144,12 +146,18 @@
         }
     });
 
+    var userpic = form.find('.userpic');
+
     function showUserpic() {
-        form.find('.userpic').css({
+        userpic.css({
             backgroundImage: 'url(' + Userpics.getUrl(Room.socket) + ')',
             visibility: 'visible'
         });
     }
+
+    userpic.on('click', function(event) {
+        Profile.edit(this);
+    });
 
     Room.on('ready', showUserpic);
 

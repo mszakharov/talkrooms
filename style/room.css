@@ -300,6 +300,7 @@
     position: absolute;
     left: 11px;
     top: 8px;
+    cursor: pointer;
 }
 .reply-recipient {
     display: none;
