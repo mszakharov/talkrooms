@@ -173,6 +173,7 @@ Talk.format = function(content) {
 
     var renderSpeech = $.template('#speech-template');
     var renderMessage = $.template('#message-template');
+    var renderRecipient = $.template('#recipient-template');
 
     function extendMessage(data) {
         var created = new Date(data.created);
@@ -195,9 +196,14 @@ Talk.format = function(content) {
         if (data.session_id) {
             elem.attr('data-session', data.session_id);
         }
-        if (data.recipient_nickname) {
+        var recipient_id = data.recipient_role_id;
+        if (recipient_id) {
+            var recipient = renderRecipient({
+                role_id: recipient_id,
+                nickname: recipient_id === Room.socket.role_id ? 'я' : data.recipient_nickname
+            });
+            elem.find('.speech-author').append(recipient);
             elem.addClass('personal');
-            elem.find('.speech-author').append(renderRecipient(data));
         }
         elem.append(createMessage(data));
         return elem;
@@ -215,15 +221,6 @@ Talk.format = function(content) {
             elem.addClass('with-my-name');
         }
         return elem;
-    }
-
-    function renderRecipient(message) {
-        var nickname = message.recipient_nickname;
-        if (nickname === Room.socket.nickname) nickname = 'я';
-        return $('<span></span>')
-            .addClass('speech-recipient')
-            .attr('data-role', message.recipient_role_id)
-            .html('&rarr; <span class="recipient-nickname">' + nickname + '</span>');
     }
 
     function renderDate(date) {
