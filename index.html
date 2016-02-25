@@ -154,6 +154,7 @@
 
     <div class="talk-messages">
         <div class="talk-previous">Показать предыдущие сообщения</div>
+        <div class="talk-current"></div>
     </div>
 
     <form class="talk-edit">
@@ -360,7 +361,7 @@
 
 <script type="text/html" id="speech-template">
 <div class="speech">
-    <div class="speech-author">
+    <div class="speech-author" data-role="{role_id}">
         <div class="userpic" style="background-image: url({userpicUrl});"></div>
         <span class="nickname">{nickname}</span>
     </div>

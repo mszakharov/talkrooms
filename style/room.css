@@ -435,6 +435,9 @@
     border: 4px solid #f6f6f6;
     border-bottom: none;
 }
+.talk-current .date:first-child {
+    display: none;
+}
 
 /* Speech */
 .speech {

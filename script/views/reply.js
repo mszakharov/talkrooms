@@ -207,18 +207,15 @@
 
     var editing;
 
-    function showForm(message) {
-        var id = message.attr('data-id');
-        form.height(message.height());
-        message.append(form);
-        field.focus();
-        Rest.messages.get(id).done(function(data) {
-            form.parent('.message').addClass('editing');
-            field.val(data.content);
-            field.height(field[0].scrollHeight);
-            form.height('');
-            editing = data;
+    function showForm(elem) {
+        var node = elem[0];
+        var data = Talk.getData(function(message) {
+            return message.node === node;
         });
+        elem.addClass('editing').append(form);
+        field.focus().val(data.content);
+        field.height(field[0].scrollHeight);
+        editing = data;
     }
 
     function hideForm() {
@@ -231,7 +228,6 @@
     function send() {
         var content = field.val().trim();
         if (content !== editing.content) {
-            Talk.setContent(form.closest('.message'), content);
             Rest.messages
                 .update(editing.message_id, {
                     content: content
