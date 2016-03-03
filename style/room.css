@@ -230,23 +230,43 @@
     border-radius: 4px;
 }
 
-/* Messages */
+/* Talk sections */
 .talk-messages {
     margin-left: 25%;
+}
+.talk-archive,
+.talk-current {
     padding: 12px 0 14px;
 }
-.talk-previous {
-    display: none;
-    margin: -12px 35px 12px;
-    padding: 15px 5px;
-    border-bottom: 1px dashed #CCC;
-    font-size: 14px;
-    line-height: 16px;
-    color: #999;
+.talk-previous,
+.talk-next,
+.talk-recent {
+    margin: 0 5px;
+    padding: 10px 10px 10px 0;
+    text-align: center;
     cursor: pointer;
+    color: #999;
+    background: #F0F0F0;
+    border: 1px solid #DADADA;
+}
+.talk-previous {
+    padding-top: 18px;
+}
+.talk-next {
+    padding-bottom: 15px;
+    border-bottom: none;
+}
+.talk-recent {
+    border-top: 1px solid #AAA;
+    padding-top: 15px;
+}
+.talk-next,
+.talk-recent,
+.talk-archive {
+    display: none;
 }
 .talk-previous.loading {
-    color: #CCC;
+    color: #AAA;
     cursor: default;
 }
 
@@ -435,7 +455,7 @@
     border: 4px solid #f6f6f6;
     border-bottom: none;
 }
-.talk-current .date:first-child {
+.talk-messages .date:first-child {
     display: none;
 }
 
