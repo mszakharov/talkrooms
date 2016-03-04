@@ -789,7 +789,7 @@ Room.on('user.ignores.updated', function() {
         if (speech.hasClass('personal')) {
             replyPersonal(this.parentNode);
         } else {
-            var nickname = this.innerText;
+            var nickname = this.textContent;
             if (nickname !== Room.socket.nickname) {
                 Room.replyTo(nickname);
             } else {
