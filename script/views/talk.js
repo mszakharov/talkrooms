@@ -389,7 +389,7 @@ Talk.format = function(content) {
         if (first) {
             var date = Talk.getDate(first.date).node;
             if (!date.parentNode) {
-                this.container.insertBefore(date, first.node);
+                this.container.insertBefore(date, first.node.parentNode);
             }
         }
     };
@@ -409,14 +409,14 @@ Talk.format = function(content) {
         recent = $('.talk-recent'),
         next = $('.talk-next');
 
-    var archive = new Talk.Section('.talk-archive', 350),
+    var archive = new Talk.Section('.talk-archive', 380),
         current = new Talk.Section('.talk-current', 500);
 
     // Leave a margin to push new messages
     current.overflow = 20;
 
     current.reduceCapacity = function(reduced) {
-        this.capacity = reduced ? 100 : 500;
+        this.capacity = reduced ? 80 : 500;
     };
 
     current.setLast = function(message) {
@@ -500,10 +500,19 @@ Talk.format = function(content) {
     }
 
     function trimCurrent(next) {
-        var bottom = $document.height() - $window.scrollTop();
-        current.shift();
+        var cut = current.messages[-current.vacant()];
+        var offset = cut ? cut.node.getBoundingClientRect().top : 0;
+        if (archive.messages.length === 0 && offset > 0) {
+            current.reduceCapacity(true);
+            archive.reset(current.shift().slice(0, archive.capacity));
+            toggleArchive(true);
+        } else {
+            current.shift();
+        }
+        if (offset < 0) {
+            $window.scrollTop($(cut.node).offset().top - offset);
+        }
         Room.trigger('dates.changed');
-        $window.scrollTop($document.height() - bottom);
         next();
     }
 
@@ -590,11 +599,12 @@ Talk.format = function(content) {
             current.restoreFirstDate();
         } else if (messages.length > current.vacant()) {
             current.reduceCapacity(true);
-            archive.reset(messages.concat(current.shift()));
+            archive.reset(messages.concat(current.shift()).slice(0, archive.capacity));
             toggleArchive(true);
         } else {
             current.prepend(messages);
         }
+        Room.trigger('dates.changed');
     }
 
     function showMoreRecent(data) {
@@ -649,7 +659,7 @@ Talk.format = function(content) {
     }
 
     function initNavigation(elem, load) {
-        elem.on('click', function() {
+        elem.find('.talk-load').on('click', function() {
             if (!loading) {
                 loading = elem.addClass('loading');
                 load().always(loaded);
@@ -659,11 +669,13 @@ Talk.format = function(content) {
 
     initNavigation(previous, function() {
         var first = (archive.messages.length ? archive : current).messages[0];
+        var offset = first.node.getBoundingClientRect().top;
         return loadBefore(first)
             .then(togglePrevious)
             .then(useIgnores)
             .done(function(data) {
-                updateSections(showPrevious, data, first.node);
+                showPrevious(data);
+                $window.scrollTop($(first.node).offset().top - offset);
                 $window.delay(150).scrollTo(function(now) {
                     return now - 150;
                 }, 400);
