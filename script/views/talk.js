@@ -486,6 +486,8 @@ Talk.format = function(content) {
     }
 
     function showRecent(messages) {
+        toggleArchive(false);
+        archive.reset([]);
         current.reset(messages.map(Talk.createMessage));
         current.setLast();
         $window.scrollTop($document.height() - $window.height() - 1);
@@ -587,6 +589,7 @@ Talk.format = function(content) {
 
     function toggleArchive(visible) {
         $(archive.container).toggle(visible);
+        $(current.container).toggleClass('talk-splitted', visible);
         next.toggle(visible);
         recent.toggle(visible);
     }

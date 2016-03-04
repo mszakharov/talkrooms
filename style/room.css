@@ -476,6 +476,9 @@
 .talk-messages .date:first-child {
     display: none;
 }
+.talk-splitted .date:first-child {
+    display: block;
+}
 
 /* Speech */
 .speech {
