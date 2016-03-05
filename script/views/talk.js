@@ -231,7 +231,7 @@ Talk.format = function(content) {
             if (created.daysAgo() < 2) {
                 message.find('.msg-text').append(edit.cloneNode(true));
             }
-        } else if (Talk.isForMe(data.content)) {
+        } else if (!data.recipient_role_id && Talk.isForMe(data.content)) {
             message.addClass('with-my-name');
         }
         this.timestamp = created.getTime();
