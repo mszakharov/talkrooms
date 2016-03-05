@@ -93,6 +93,7 @@
     });
 
     form.find('.reply-public').on('click', function() {
+        field.val('').focus();
         cancelPrivate();
     });
 
@@ -111,9 +112,6 @@
         if (event.which === 13 && !(event.altKey || event.ctrlKey || event.shiftKey)) {
             event.preventDefault();
             send();
-        }
-        if (event.which === 8 && recipient && !this.value) {
-            cancelPrivate();
         }
     });
 
