@@ -545,8 +545,18 @@ Talk.format = function(content) {
         $window.scrollTop($document.height() - offset);
     };
 
+    function findLast(messages, callback) {
+        for (var i = messages.length; i--;) {
+            if (callback(messages[i])) return messages[i];
+        }
+    }
+
+    Talk.find = function(callback) {
+        return findLast(current.messages, callback) || findLast(archive.messages, callback)
+    };
+
     Talk.getData = function(callback) {
-        var message = current.messages.find(callback) || archive.messages.find(callback);
+        var message = this.find(callback);
         if (message) {
             return message.data;
         }
@@ -575,7 +585,7 @@ Talk.format = function(content) {
     });
 
     Room.on('message.content.updated', function(data) {
-        var updated = current.messages.find(function(message) {
+        var updated = Talk.find(function(message) {
             return data.message_id === message.data.message_id;
         });
         if (updated) {
