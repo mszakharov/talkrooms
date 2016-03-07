@@ -3,6 +3,7 @@
 
     var sample = document.createElement('div');
     sample.style.width = '100px';
+    sample.style.height = '20px';
     sample.style.position = 'absolute';
     sample.style.overflowY = 'scroll';
     sample.style.top = '-100px';
