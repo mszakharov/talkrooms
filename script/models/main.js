@@ -34,7 +34,7 @@ var Rest = {
         }
     }
 
-    $window.on('popstate', checkUrl);
+    $window.on('popstate hashchange', checkUrl);
 
     Router.on = function(route, callback) {
         routes.push({route: route, callback: callback});
