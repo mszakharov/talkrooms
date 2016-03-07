@@ -9,19 +9,6 @@
     ctx.lineWidth = 4;
     ctx.lineCap = 'square';
 
-    function Hash(str) {
-        var hval = 0x811c9dc5;
-        for (var i = 0; i < str.length; i++) {
-            hval ^= str.charCodeAt(i);
-            hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
-        }
-        this.value = hval >>> 0;
-    }
-
-    Hash.prototype.slice = function(start, length) {
-        return this.value << start >>> 32 - length;
-    }
-
     var COLORS = [
         ["#d15a4f", "#e0b9b5", 9, 4, 13],
         ["#d6744a", "#e2b8a5", 9, 4, 14],
@@ -40,22 +27,6 @@
         ["#c466a4", "#ddb8d1", 7, 1, 12],
         ["#d15c7f", "#e5bcc8", 8, 3, 12]
     ];
-
-    function getColors(hash) {
-        var color = COLORS[hash.slice(0, 7) % 16];
-        var shade = hash.slice(7, 1);
-        var aux1 = hash.slice(8, 2);
-        var aux2 = hash.slice(10, 4) % 3;
-        return [
-            color[shade],
-            getAuxColor(color, aux1, shade),
-            getAuxColor(color, aux2 !== aux1 ? aux2 : 3, shade)
-        ];
-    }
-
-    function getAuxColor(color, index, shade) {
-        return (index ? COLORS[color[1 + index]] : color)[1 - shade];
-    }
 
     function fillTo(y, color) {
         ctx.lineTo(80, y);
@@ -110,32 +81,55 @@
         ctx.stroke();
     }
 
-    function createUserpic(id) {
+    function bytes(hash, start, length) {
+        return hash << start >>> 32 - (length || 1);
+    }
 
-        var hash = new Hash((id + id * Math.PI % 1).toString(36));
+    function getAuxColor(color, index, shade) {
+        return (index ? COLORS[color[1 + index]] : color)[1 - shade];
+    }
+
+    function getColors(hash) {
+        var color = COLORS[bytes(hash, 4, 4)];
+        var shade = bytes(hash, 11, 1);
+        var aux1 = bytes(hash, 12, 2);
+        var aux2 = bytes(hash, 14, 4) % 3;
+        return [
+            color[shade],
+            getAuxColor(color, aux1, shade),
+            getAuxColor(color, aux2 !== aux1 ? aux2 : 3, shade)
+        ];
+    }
+
+    function renderFace(hash) {
+
         var colors = getColors(hash);
 
         ctx.fillStyle = colors[0];
         ctx.fillRect(0, 0, 80, 80);
 
-        var et = hash.slice(16, 1) * 4 + 22;
-        var eo = hash.slice(17, 1) * 4 + 14;
-        var er = hash.slice(18, 1) * 2 + 6;
+        var et = bytes(hash, 20, 1) * 4 + 22;
+        var eo = bytes(hash, 21, 1) * 4 + 14;
+        var er = bytes(hash, 22, 1) * 2 + 6;
         drawEyes(et, eo, er);
 
-        var hs = hash.slice(20, 1);
-        if (hash.slice(24, 1)) {
+        var hs = bytes(hash, 26, 1);
+        if (bytes(hash, 25, 1)) {
             drawMiddleHair(et - 3, hs ? 2 : -1, colors[1]);
         } else {
             drawSideHair(et - 6, hs ? 6 : -6, colors[1]);
         }
 
-        var mt = hash.slice(24, 1) * 8 + 54;
-        var mb = hash.slice(25, 2) * 3 || -2;
+        var mt = bytes(hash, 29, 1) * 8 + 54;
+        var mb = bytes(hash, 30, 2) * 3 || -2;
         drawMouth(mt, mb, colors[2]);
 
         return ctx.canvas.toDataURL();
 
+    }
+
+    function createUserpic(id) {
+        return renderFace(id * 2654435761); // Knuth's multiplicative hash
     }
 
     var cached = {};
