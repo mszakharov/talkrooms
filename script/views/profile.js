@@ -26,7 +26,7 @@
         }
         popup.show();
         Profile.fit();
-        if (!socket.room_id) {
+        if (socket.message_id) {
             Rest.roles
                 .get(socket.role_id)
                 .done(function(data) {
