@@ -139,7 +139,7 @@
     position: relative;
     left: 5px;
     background: #F6F6F6;
-    box-shadow: 0 1px 0 rgba(0,0,0,0.16);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.1), 0 5px 5px -5px rgba(0, 0, 0, 0.15);
 }
 .topic {
     margin: 0 115px 0 35px;
