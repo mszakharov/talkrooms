@@ -263,6 +263,9 @@
     color: #A0A0A0;
     margin: -2px 0 0 -18px;
 }
+.talk-previous {
+    position: relative;
+}
 .talk-previous > .talk-load {
     padding-top: 18px;
     border-radius: 0 0 10px 10px;
@@ -286,6 +289,16 @@
 .loading > .talk-load {
     color: #A0A0A0;
     cursor: default;
+}
+.talk-datepicker {
+    position: absolute;
+    top: 0;
+    left: 15px;
+    width: 76px;
+    height: 100%;
+    border-right: 1px solid #E0E0E0;
+    background: url("room/calendar.svg") no-repeat 29px 21px;
+    cursor: pointer;
 }
 
 /* Reply form */

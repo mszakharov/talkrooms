@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/style/common.css">
     <link rel="stylesheet" href="/style/main.css">
     <link rel="stylesheet" href="/style/room.css">
+    <link rel="stylesheet" href="/style/datepicker.css">
     <link rel="stylesheet" href="/style/profile.css">
     <link rel="stylesheet" href="/style/settings.css">
     <link rel="stylesheet" href="/style/mobile.css" media="(max-width: 500px)">
@@ -155,6 +156,7 @@
     <div class="talk-messages">
         <div class="talk-previous">
             <div class="talk-load"><span class="talk-load-text"><span class="talk-load-arrow">&uarr;</span> Раньше</span></div>
+            <div class="talk-datepicker" title="Выбрать дату"></div>
         </div>
         <div class="talk-archive"></div>
         <div class="talk-next">
@@ -193,6 +195,15 @@
         </div>
     </form>
 
+</div>
+
+<div id="datepicker" style="display: none;">
+<div class="dp-search">
+    <input class="dp-field" type="text" placeholder="">
+</div>
+<div class="dp-calendar">
+    <div class="dpc-content"></div>
+</div>
 </div>
 
 <div class="popup" id="profile">
@@ -401,6 +412,7 @@
 <script src="/script/collection.js"></script>
 <script src="/script/events.js"></script>
 <script src="/script/rest.js"></script>
+<script src="/script/datepicker.js"></script>
 
 <script src="/script/models/room.js"></script>
 <script src="/script/models/users.js"></script>

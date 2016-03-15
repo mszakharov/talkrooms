@@ -330,7 +330,7 @@ Talk.format = function(content) {
     Section.prototype.join = function(index) {
         var m1 = this.messages[index - 1];
         var m2 = this.messages[index];
-        if (oneSpeech(m1, m2)) {
+        if (m1 && m2 && oneSpeech(m1, m2)) {
             $(m2.node.parentNode).detach().find('.message').appendTo(m1.node.parentNode);
         }
     };
@@ -468,6 +468,13 @@ Talk.format = function(content) {
     function loadAfter(message) {
         return getMessages({
             message_id: {'>': message.data.message_id},
+            order_by: {'-asc': 'message_id'}
+        });
+    }
+
+    function loadAfterDate(date) {
+        return getMessages({
+            created: {'>': date.toISOString()},
             order_by: {'-asc': 'message_id'}
         });
     }
@@ -652,6 +659,17 @@ Talk.format = function(content) {
         }
     }
 
+    function replaceArchive(data) {
+        archive.reset([]);
+        current.reduceCapacity(true);
+        current.shift();
+        showNext(data);
+        if (archive.messages.length) {
+            toggleArchive(true);
+        }
+        Room.trigger('dates.changed');
+    }
+
     function mergeSections(messages) {
         current.reduceCapacity(false);
         var vacant = current.vacant();
@@ -680,8 +698,12 @@ Talk.format = function(content) {
         });
     }
 
+    function getFirstMessage() {
+        return (archive.messages.length ? archive : current).messages[0];
+    }
+
     initNavigation(previous, function() {
-        var first = (archive.messages.length ? archive : current).messages[0];
+        var first = getFirstMessage();
         var offset = first.node.getBoundingClientRect().top;
         return loadBefore(first)
             .then(togglePrevious)
@@ -713,6 +735,31 @@ Talk.format = function(content) {
             .done(function(data) {
                 updateSections(showMoreRecent, data, first.node);
             });
+    });
+
+    // Datepicker
+    var datepicker = $.Datepicker('#datepicker', function(date) {
+        if (loading) return false;
+        loading = datepickerIcon.addClass('loading');
+        loadAfterDate(date)
+            .then(useIgnores)
+            .done(replaceArchive)
+            .done(function() {
+                if (date.getTime() < Date.parse(Room.data.created)) {
+                    previous.hide();
+                }
+            })
+            .always(loaded);
+    });
+
+    var datepickerIcon = $('.talk-datepicker');
+
+    datepickerIcon.on('click', function() {
+        var df = new Date(Room.data.created);
+        var dc = new Date(getFirstMessage().timestamp);
+        var dl = new Date();
+        datepicker.setRange(df, dl);
+        datepicker.show(dc, datepickerIcon);
     });
 
     // Remove obsolete edit icons
