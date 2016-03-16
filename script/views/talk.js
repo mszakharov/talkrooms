@@ -5,6 +5,7 @@
     var months = ' января, февраля, марта, апреля, мая, июня, июля, августа, сентября, октября, ноября, декабря'.split(',');
     var recent = ['сегодня', 'вчера', 'позавчера'];
     var tonight = 0;
+    var currentYear = (new Date).getFullYear();
     var timer;
 
     Date.prototype.toHumanTime = function() {
@@ -13,7 +14,12 @@
     };
 
     Date.prototype.toHumanDate = function() {
-        return this.getDate() + months[this.getMonth()];
+        var year = this.getFullYear();
+        var text = this.getDate() + months[this.getMonth()];
+        if (year !== currentYear) {
+            text += ' ' + year;
+        }
+        return text;;
     };
 
     Date.prototype.toSmartDate = function() {
@@ -27,6 +33,7 @@
     function update() {
         var now = Date.now();
         if (now > tonight) {
+            currentYear = (new Date).getFullYear();
             tonight = (new Date).setHours(24, 0, 0, 0) - 1;
             $window.trigger('date.changed');
         }
