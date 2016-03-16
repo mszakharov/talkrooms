@@ -3,7 +3,7 @@
 
     var sample = document.createElement('div');
     sample.style.width = '100px';
-    sample.style.height = '20px';
+    sample.style.height = '50px'; // >32px to display scrollbar in Firefox
     sample.style.position = 'absolute';
     sample.style.overflowY = 'scroll';
     sample.style.top = '-100px';
