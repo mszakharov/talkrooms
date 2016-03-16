@@ -192,7 +192,7 @@ Talk.format = function(content) {
     function updateTitle(day) {
         var title = day.date.toSmartDate();
         if (title !== day.title) {
-            $(day.node).find('date-text').text(title);
+            $(day.node).find('.date-text').text(title);
             day.title = title;
         }
     }
