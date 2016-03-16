@@ -127,7 +127,7 @@
         send();
     });
 
-    field.on('keypress', function(event) {
+    field.on('keydown', function(event) {
         if (event.which === 13 && !(event.altKey || event.ctrlKey || event.shiftKey)) {
             event.preventDefault();
             send();
