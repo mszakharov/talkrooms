@@ -148,27 +148,14 @@ Talk.format = function(content) {
     return s.replace(/\n/g, '<br>');
 };
 
-// Find my nickname
-(function() {
-
-    var myNickname;
-
-    function escapeRegExp(string){
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Find me in mentions
+Talk.isForMe = function(mentions) {
+    if (!mentions) return false;
+    var my = Room.socket.role_id;
+    for (var i = mentions.length; i--;) {
+        if (mentions[i] === my) return true;
     }
-
-    function updateNickname() {
-        myNickname = new RegExp('(?:^|, )' + escapeRegExp(Room.socket.nickname) + ', ');
-    }
-
-    Room.on('enter', updateNickname);
-    Room.on('my.nickname.updated', updateNickname);
-
-    Talk.isForMe = function(content) {
-        return myNickname.test(content);
-    };
-
-})();
+};
 
 // Dates
 (function() {
@@ -231,7 +218,7 @@ Talk.format = function(content) {
             if (created.daysAgo() < 2) {
                 message.find('.msg-text').append(edit.cloneNode(true));
             }
-        } else if (!data.recipient_role_id && Talk.isForMe(data.content)) {
+        } else if (Talk.isForMe(data.mentions)) {
             message.addClass('with-my-name');
         }
         this.timestamp = created.getTime();
@@ -442,7 +429,7 @@ Talk.format = function(content) {
             return false;
         }
         if (Talk.forMeOnly) {
-            return data.recipient_nickname || Talk.isForMe(data.content);
+            return data.recipient_nickname || Talk.isForMe(data.mentions);
         }
         return true;
     }
