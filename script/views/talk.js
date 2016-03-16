@@ -835,6 +835,13 @@ Room.on('user.ignores.updated', function() {
         }
     }
 
+    function getMention(elem) {
+        return {
+            role_id: Number(elem.parentNode.getAttribute('data-role')),
+            nickname: elem.textContent
+        };
+    }
+
     container.on('click', '.userpic', function(event) {
         event.stopPropagation();
         var role = getRole(this.parentNode);
@@ -846,9 +853,9 @@ Room.on('user.ignores.updated', function() {
         if (speech.hasClass('personal')) {
             replyPersonal(this.parentNode);
         } else {
-            var nickname = this.textContent;
-            if (nickname !== Room.socket.nickname) {
-                Room.replyTo(nickname);
+            var mention = getMention(this);
+            if (mention.role_id !== Room.socket.role_id) {
+                Room.replyTo(mention);
             } else {
                 Room.replyTo();
             }

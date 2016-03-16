@@ -69,6 +69,8 @@
             if (recipient) {
                 options.recipient_role_id = recipient.role_id;
                 cancelPrivate();
+            } else {
+                options.mentions = getMentions(content);
             }
             Room.send(options);
             field.val('').focus();
@@ -80,6 +82,23 @@
         }
         if (expanded) {
             collapseField();
+        }
+    }
+
+    var mentionsIndex = {};
+
+    function getMentions(content) {
+        var mentions = [];
+        var parts = content.split(', ');
+        for (var i = 0; i < parts.length; i++) {
+            var mention = mentionsIndex[parts[i]];
+            if (mention) {
+                if (mentions.indexOf(mention) === -1) {
+                    mentions.push(mention);
+                }
+            } else if (mentions.length) {
+                return mentions;
+            }
         }
     }
 
@@ -171,17 +190,19 @@
 
     Room.on('leave', function() {
         sendButton.removeClass('send-overflow');
+        mentionsIndex = {};
     });
 
     Room.reply = function() {
         field.focus();
     };
 
-    Room.replyTo = function(nickname) {
-        if (!nickname) return field.focus();
+    Room.replyTo = function(mention) {
+        if (!mention) return field.focus();
         var raw = field.get(0);
         var pos = raw.selectionStart;
-        field.focus().val(nickname + ', ' + field.val());
+        mentionsIndex[mention.nickname] = mention.role_id;
+        field.focus().val(mention.nickname + ', ' + field.val());
         if ('setSelectionRange' in raw) {
             pos = pos ? pos + nickname.length + 2 : raw.value.length;
             raw.setSelectionRange(pos, pos);

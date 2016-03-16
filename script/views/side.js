@@ -115,7 +115,7 @@
             if (data.come_in != null) {
                 Profile.show(data, user);
             } else {
-                Room.replyTo(data.nickname);
+                Room.replyTo(data);
             }
         }
     });
