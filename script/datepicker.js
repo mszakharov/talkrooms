@@ -121,7 +121,9 @@ $.Datepicker = function(selector, onChange) {
             year: date.getFullYear()
         });
         field.attr('placeholder', date.toSmartDate());
-        field.val('').focus();
+        if ('ontouchstart' in window !== true) {
+            field.val('').focus();
+        }
     };
 
     picker.hide = function() {

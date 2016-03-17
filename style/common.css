@@ -4,6 +4,11 @@ html, body {
     height: 100%;
 }
 
+html {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: transparent;
+}
+
 body {
     background: #EBE9E6;
     font: 17px/21px 'Helvetica Neue', Helvetica, Arial, sans-serif;

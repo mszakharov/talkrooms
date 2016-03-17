@@ -61,6 +61,11 @@
     border-right: none;
     border-radius: 0 !important;
 }
+.talk-datepicker {
+    left: 0;
+    width: 64px;
+    background-position: 23px 21px;
+}
 
 .speech {
     margin-right: 45px;
@@ -102,6 +107,13 @@
 }
 .reply-send {
     display: none;
+}
+
+#datepicker {
+    top: 20px;
+}
+.dp-calendar {
+    max-height: 250px;
 }
 
 #room-settings {
