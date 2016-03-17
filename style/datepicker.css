@@ -10,6 +10,18 @@
     box-shadow: 0 5px 20px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.05);
 }
 
+/* Close */
+.dp-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 46px;
+    height: 46px;
+    z-index: 2;
+    background: url("room/close.svg") no-repeat 17px 17px;
+    cursor: pointer;
+}
+
 /* Search date */
 .dp-search {
     position: relative;
@@ -19,10 +31,11 @@
     line-height: 20px;
 }
 .dp-field {
-    width: 260px;
+    width: 214px;
     border: none;
     padding: 14px 20px 12px;
     background: transparent;
+    line-height: 20px;
     outline: none;
 }
 .dp-missing {

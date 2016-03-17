@@ -99,6 +99,10 @@ $.Datepicker = function(selector, onChange) {
         applySelected();
     });
 
+    popup.find('.dp-close').on('click', function() {
+        popup.hide();
+    });
+
     picker.setRange = function(begin, end) {
         var d1 = calendar.days[0];
         var d2 = calendar.days[calendar.days.length - 1];
