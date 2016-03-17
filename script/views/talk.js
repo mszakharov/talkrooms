@@ -847,12 +847,7 @@ Room.on('user.ignores.updated', function() {
         if (speech.hasClass('personal')) {
             replyPersonal(this.parentNode);
         } else {
-            var mention = getMention(this);
-            if (mention.role_id !== Room.socket.role_id) {
-                Room.replyTo(mention);
-            } else {
-                Room.replyTo();
-            }
+            Room.replyTo(getMention(this));
         }
     });
 
