@@ -177,6 +177,9 @@
     });
 
     Room.on('ready', showUserpic);
+    Room.on('ready', function() {
+        field.focus();
+    });
 
     Room.on('my.userpic.updated', showUserpic);
 
@@ -215,6 +218,10 @@
         wrapper.addClass('reply-private');
         field.focus();
     };
+
+    $window.on('focus', function() {
+        field.focus();
+    });
 
 })();
 
