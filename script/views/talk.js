@@ -649,7 +649,9 @@ Talk.isForMe = function(mentions) {
             mergeSections(messages);
         } else {
             archive.append(data.map(Talk.createMessage));
-            archive.shift();
+            if (archive.shift()) {
+                previous.show();
+            }
         }
     }
 
