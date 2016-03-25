@@ -200,15 +200,18 @@
         field.focus();
     };
 
-    Room.replyTo = function(mention) {
-        if (!mention) return field.focus();
+    Room.replyTo = function(role) {
         var raw = field.get(0);
         var pos = raw.selectionStart;
-        mentionsIndex[mention.nickname] = mention.role_id;
-        field.focus().val(mention.nickname + ', ' + field.val());
-        if ('setSelectionRange' in raw) {
-            pos = pos ? pos + nickname.length + 2 : raw.value.length;
-            raw.setSelectionRange(pos, pos);
+        if (role && role.nickname) {
+            mentionsIndex[role.nickname] = role.role_id;
+            field.focus().val(role.nickname + ', ' + field.val());
+            if ('setSelectionRange' in raw) {
+                pos = pos ? pos + role.nickname.length + 2 : raw.value.length;
+                raw.setSelectionRange(pos, pos);
+            }
+        } else {
+            field.focus();
         }
     };
 
