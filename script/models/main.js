@@ -88,7 +88,7 @@ var Me = {};
 (function() {
 
     var notice;
-    var version = 31;
+    var version = 32;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
