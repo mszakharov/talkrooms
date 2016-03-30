@@ -36,6 +36,7 @@
         topic.val(Room.data.topic);
         hash.val(Room.data.hash).removeClass('invalid');
         searchable.prop('checked', Room.data.searchable);
+        watched.prop('checked', Room.data.watched);
         levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
         toggleSearchable(Room.data.level < 20);
     }
@@ -63,7 +64,8 @@
         this.value = value;
     });
 
-    var searchable = $('#edit-room-searchable');
+    var searchable = $('#edit-room-searchable'),
+        watched = $('#edit-room-watched');
 
     function toggleSearchable(visible) {
         searchable.closest('.section').toggle(visible);
@@ -114,6 +116,7 @@
             topic: topic.val(),
             hash: hash.val(),
             searchable: searchable.prop('checked') ? 1 : 0,
+            watched: watched.prop('checked') ? 1 : 0,
             level: Number(levels.filter(':checked').attr('value') || Room.data.level)
         });
         if (!data) {
