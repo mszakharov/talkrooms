@@ -6,7 +6,8 @@ var Rest = {
     sockets:  $.Rest('/api/sockets'),
     requests: $.Rest('/api/requests'),
     sessions: $.Rest('/api/sessions'),
-    messages: $.Rest('/api/messages')
+    messages: $.Rest('/api/messages'),
+    subscriptions: $.Rest('/api/subscriptions')
 };
 
 // Router

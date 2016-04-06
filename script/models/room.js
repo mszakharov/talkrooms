@@ -14,6 +14,14 @@ var Room = new Events;
         Room.socket = socket;
         Room.trigger('enter', socket);
         $.when.apply($, Room.promises).done(ready).fail(error);
+        Rest.subscriptions.create({
+            socket_id: socket.socket_id,
+            hash: Room.data.hash
+        }).done(saveSubscription);
+    }
+
+    function saveSubscription(subscription) {
+        Room.subscription = subscription.subscription_id;
     }
 
     function ready() {
@@ -67,6 +75,10 @@ var Room = new Events;
         if (Room.socket) {
             Rest.sockets.destroy(Room.socket.socket_id);
             Room.socket = null;
+        }
+        if (Room.subscription) {
+            Rest.subscriptions.destroy(Room.subscription);
+            Room.subscription = null;
         }
         Room.data = null;
         Room.hash = null;
