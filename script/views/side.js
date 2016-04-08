@@ -9,7 +9,7 @@
         if (data.status) {
             user.find('.nickname').append(' <em>' + formatStatus(data.status) + '</em>');
         }
-        if (data.role_id === Room.socket.role_id) {
+        if (data.role_id === Room.myRole.role_id) {
             user.addClass('me');
         }
         if (data.annoying) {

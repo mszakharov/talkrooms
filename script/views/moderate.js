@@ -228,7 +228,7 @@ Profile.isCivilian = function() {
     }
 
     function canRelease(role) {
-        return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.socket.role_id);
+        return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.myRole.role_id);
     }
 
     var termElem = ignored.find('.moder-term'),

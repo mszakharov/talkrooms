@@ -19,8 +19,9 @@ var Room = new Events;
     }
 
     function enter(subscription) {
+        Room.myRole = subscription.role;
         Room.subscription = subscription.subscription_id;
-        Room.trigger('enter', Room.socket);
+        Room.trigger('enter', Room.myRole);
         $.when.apply($, Room.promises).done(ready).fail(error);
     }
 
@@ -80,6 +81,7 @@ var Room = new Events;
             Rest.subscriptions.destroy(Room.subscription);
             Room.subscription = null;
         }
+        Room.myRole = null;
         Room.data = null;
         Room.hash = null;
         Room.id = null;
@@ -129,8 +131,7 @@ var Room = new Events;
 
 // Compare role_id with my role
 Room.isMy = function(data) {
-    var my = this.socket;
-    return Boolean(my && my.role_id === data.role_id);
+    return this.myRole ? this.myRole.role_id === data.role_id : false;
 };
 
 // Socket
@@ -248,7 +249,7 @@ Room.isMy = function(data) {
 // Delete room
 Room.on('room.deleted.updated', function(data) {
     if (!data.deleted) return;
-    if (Room.socket.level === 80) {
+    if (Room.myRole.level === 80) {
         Room.trigger('leave');
         Room.trigger('deleted');
     } else {
@@ -259,38 +260,38 @@ Room.on('room.deleted.updated', function(data) {
 
 // Update my nickname
 Room.on('role.nickname.updated', function(role) {
-    if (Room.socket.role_id === role.role_id) {
-        Room.socket.nickname = role.nickname;
+    if (Room.myRole.role_id === role.role_id) {
+        Room.myRole.nickname = role.nickname;
         Room.trigger('my.nickname.updated', role);
     }
 });
 
 // Update my status
 Room.on('role.status.updated', function(role) {
-    if (Room.socket.role_id === role.role_id) {
-        Room.socket.status = role.status;
+    if (Room.myRole.role_id === role.role_id) {
+        Room.myRole.status = role.status;
     }
 });
 
 // Ignored
 Room.on('role.ignored.updated', function(role) {
-    if (Room.socket.role_id === role.role_id) {
-        Room.socket.ignored = role.ignored;
+    if (Room.myRole.role_id === role.role_id) {
+        Room.myRole.ignored = role.ignored;
     }
 });
 
 // Update my userpic
 Room.on('user.userpic.updated', function(user) {
-    if (Room.socket.user_id === user.user_id) {
-        Room.socket.userpic = user.userpic;
+    if (Room.myRole.user_id === user.user_id) {
+        Room.myRole.userpic = user.userpic;
         Room.trigger('my.userpic.updated', user);
     }
 });
 
 // Update my photo
 Room.on('user.photo.updated', function(user) {
-    if (Room.socket.user_id === user.user_id) {
-        Room.socket.photo = user.photo;
+    if (Room.myRole.user_id === user.user_id) {
+        Room.myRole.photo = user.photo;
     }
 });
 
@@ -331,7 +332,7 @@ Room.on('user.photo.updated', function(user) {
 (function() {
 
     function checkLevel() {
-        var level = Room.socket.level || 0;
+        var level = Room.myRole.level || 0;
         setModer(level >= 50);
         setAdmin(level >= 70);
     }
@@ -354,8 +355,8 @@ Room.on('user.photo.updated', function(user) {
     }
 
     Room.on('role.level.updated', function(data) {
-        if (Room.socket.role_id === data.role_id) {
-            Room.socket.level = data.level;
+        if (Room.myRole.role_id === data.role_id) {
+            Room.myRole.level = data.level;
             checkLevel();
         }
     });

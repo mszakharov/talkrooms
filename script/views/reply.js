@@ -167,7 +167,7 @@
 
     function showUserpic() {
         userpic.css({
-            backgroundImage: 'url(' + Userpics.getUrl(Room.socket) + ')',
+            backgroundImage: 'url(' + Userpics.getUrl(Room.myRole) + ')',
             visibility: 'visible'
         });
     }

@@ -9,7 +9,7 @@ Room.users = (function() {
     var showIgnored;
 
     function notIgnored(role) {
-        var ignored = role.ignored && !Room.socket.ignored;
+        var ignored = role.ignored && !Room.myRole.ignored;
         if (ignored && showIgnored) this.push(role);
         return !ignored;
     }
@@ -64,7 +64,7 @@ Room.users = (function() {
         apply();
     }
 
-    Room.on('enter', function(socket) {
+    Room.on('enter', function() {
         roles.raw = [];
         showIgnored = Room.moderator;
         this.promises.push(getRoles());

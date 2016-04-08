@@ -7,7 +7,7 @@
         guest = $('#role-guest');
 
     function isSubordinate(user) {
-        var myLevel = Room.socket.level;
+        var myLevel = Room.myRole.level;
         return Boolean(myLevel && (!user.level || myLevel > user.level));
     }
 
@@ -66,7 +66,7 @@
     }
 
     function toggleAdmin() {
-        $('#role-admin').closest('.role').toggle(Room.socket.level === 80);
+        $('#role-admin').closest('.role').toggle(Room.myRole.level === 80);
     }
 
     function toggleSection(on) {

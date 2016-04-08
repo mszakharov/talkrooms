@@ -103,7 +103,7 @@
     }
 
     function shuffleFailed() {
-        back.toggle(Boolean(Room.socket));
+        back.toggle(Boolean(Room.myRole));
         showSection('.search-failed');
     }
 
@@ -144,7 +144,7 @@ Talk.format = function(content) {
 // Find me in mentions
 Talk.isForMe = function(mentions) {
     if (!mentions) return false;
-    var my = Room.socket.role_id;
+    var my = Room.myRole.role_id;
     for (var i = mentions.length; i--;) {
         if (mentions[i] === my) return true;
     }
@@ -207,7 +207,7 @@ Talk.isForMe = function(mentions) {
             content: Talk.format(data.content) || '…',
             time: created.toHumanTime(),
         });
-        if (Room.socket.role_id === data.role_id) {
+        if (Room.myRole.role_id === data.role_id) {
             if (created.daysAgo() < 2) {
                 message.find('.msg-text').append(edit.cloneNode(true));
             }
@@ -259,7 +259,7 @@ Talk.isForMe = function(mentions) {
         if (recipient_id) {
             var recipient = renderRecipient({
                 role_id: recipient_id,
-                nickname: recipient_id === Room.socket.role_id ? 'я' : data.recipient_nickname
+                nickname: recipient_id === Room.myRole.role_id ? 'я' : data.recipient_nickname
             });
             speech.find('.speech-author').append(recipient);
             speech.addClass('personal');
@@ -418,7 +418,7 @@ Talk.isForMe = function(mentions) {
         if (Room.ignores && Room.ignores(data)) {
             return false;
         }
-        if (data.ignore && !Room.socket.ignored) {
+        if (data.ignore && !Room.myRole.ignored) {
             return false;
         }
         if (Talk.forMeOnly) {

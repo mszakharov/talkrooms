@@ -11,8 +11,8 @@
         toggleAlarm(Room.data.level === 0);
         showAlarm(Boolean(Room.data.min_session_created));
         toggleRemove(Room.data.level === 80);
-        hash.parent().toggle(Boolean(Room.socket.level === 80 && Room.socket.user_id));
-        closed.toggle(Room.socket.level === 80);
+        hash.parent().toggle(Boolean(Room.myRole.level === 80 && Room.myRole.user_id));
+        closed.toggle(Room.myRole.level === 80);
         submit.prop('disabled', false);
         this.fadeIn(120);
         fitPopup();
@@ -34,7 +34,7 @@
     }
 
     function setAdminValues() {
-        form.find('.settings-login').toggle(!Me.authorized && Room.socket.level === 80);
+        form.find('.settings-login').toggle(!Me.authorized && Room.myRole.level === 80);
         topic.val(Room.data.topic);
         hash.val(Room.data.hash).removeClass('invalid');
         searchable.prop('checked', Room.data.searchable);
@@ -199,7 +199,7 @@
     });
 
     function toggleRemove(visible) {
-        remove.toggle(visible && Room.socket.level === 80);
+        remove.toggle(visible && Room.myRole.level === 80);
     }
 
     function toggleSettings() {

@@ -83,10 +83,10 @@
 
         edit: function(target) {
             if (target) {
-                this.show(Room.socket, target, true);
+                this.show(Room.myRole, target, true);
             } else {
                 popup.find('.section').hide();
-                this.trigger('edit', Room.socket, true);
+                this.trigger('edit', Room.myRole, true);
             }
         },
 
@@ -134,12 +134,12 @@
         if ($.isEmptyObject(values)) {
             Profile.hide();
         } else {
-            Rest.roles.update(Room.socket.role_id, values).done(Profile.hide);
+            Rest.roles.update(Room.myRole.role_id, values).done(Profile.hide);
         }
     });
 
     Profile.on('edit', function() {
-        var data = Room.socket;
+        var data = Room.myRole;
         nickname.val(data.nickname);
         status.val(data.status);
         if (data.profile_url) {
@@ -190,7 +190,7 @@
         section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
         section.find('.details-nickname').html(socket.nickname);
         var profileText;
-        if (Room.socket.user_id) {
+        if (Room.myRole.user_id) {
             profileText = socket.user_id ? 'загрузка профиля…' : 'без профиля';
         }
         section.find('.details-link').html(profileText || '&nbsp;');
@@ -200,7 +200,7 @@
 
     Profile.on('ready', function(data, photo) {
         if (section.is(':visible')) {
-            if (data.profile_url && Room.socket.user_id) {
+            if (data.profile_url && Room.myRole.user_id) {
                 section.find('.details-link').html(renderLink(data.profile_url));
             }
             if (photo) {
@@ -309,7 +309,7 @@
         logout = $('#profile-logout');
 
     Profile.on('edit', function() {
-        (Room.socket.user_id ? logout : login).show();
+        (Room.myRole.user_id ? logout : login).show();
     });
 
 })();
