@@ -7,21 +7,21 @@ var Room = new Events;
     function admit(data) {
         Room.id = data.room_id;
         Room.data = data;
-        Rest.sockets.create({hash: data.hash}).done(enter).fail(stop);
+        Rest.sockets.create({hash: data.hash}).done(subscribe).fail(stop);
     }
 
-    function enter(socket) {
+    function subscribe(socket) {
         Room.socket = socket;
-        Room.trigger('enter', socket);
-        $.when.apply($, Room.promises).done(ready).fail(error);
         Rest.subscriptions.create({
             socket_id: socket.socket_id,
             hash: Room.data.hash
-        }).done(saveSubscription);
+        }).done(enter).fail(stop);
     }
 
-    function saveSubscription(subscription) {
+    function enter(subscription) {
         Room.subscription = subscription.subscription_id;
+        Room.trigger('enter', Room.socket);
+        $.when.apply($, Room.promises).done(ready).fail(error);
     }
 
     function ready() {
