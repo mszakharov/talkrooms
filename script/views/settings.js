@@ -1,6 +1,8 @@
 (function() {
 
-    var icon = $('.room-settings-icon');
+    var toolbar = $('.header-toolbar');
+
+    var icon = $('.header-room-settings');
     var form = $.popup('#room-settings', function() {
         form.find('.error').remove();
         if (Room.admin) {
@@ -84,7 +86,7 @@
     var submit = form.find('button[type="submit"]');
 
     icon.on('click', function() {
-        form.show();
+        if (!toolbar.data('wasDragged')) form.show();
     });
 
     form.on('submit', function(event) {

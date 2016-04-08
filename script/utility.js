@@ -18,6 +18,11 @@ String.mix = function(template, value) {
 	});
 };
 
+// Fake console
+if (typeof console === 'undefined') {
+    console = {log: $.noop, error: $.noop};
+}
+
 // Templates
 function Template(source) {
     var quotes = ["'", "'"];
@@ -36,22 +41,29 @@ $.template = function(selector) {
     };
 };
 
-// Queue
-function Queue() {
-    var items = [], current;
-    function next() {
-        if (current = items.shift()) current(next);
+// Force reflow for transitions
+$.fn.reflow = function() {
+    for (var i = this.length; i--;) {
+        this[i].offsetWidth;
     }
-    return function(callback) {
-        items.push(callback);
-        if (current === undefined) next();
-    };
-}
+    return this;
+};
 
-// Fake console
-if (typeof console === 'undefined') {
-    console = {log: $.noop, error: $.noop};
-}
+// Auto-prefixed transitionend event
+(function() {
+
+    var style = document.createElement('div').style;
+
+    function setAlias(original, alias) {
+        $.event.special[original] = { bindType: alias };
+    }
+
+    if (!style.transition && style.WebkitTransition !== undefined) {
+        setAlias('transitionend', 'webkitTransitionEnd');
+        setAlias('animationend',  'webkitAnimationEnd');
+    }
+
+})();
 
 // Require script
 (function() {
@@ -177,21 +189,20 @@ $.popup = function(selector, show, hide) {
         if (!event.button && elem !== event.target && !$.contains(elem, event.target)) self.hide();
     }
     function escape(event) {
-        if (event.which === 27) self.hide();
-    }
-    function bind() {
-        $document.on('click', clickout);
-        $document.on('keydown', escape);
+        if (event.which === 27 || event.keyCode === 27) self.hide();
     }
     show = show || self.show;
     hide = hide || self.hide;
     self.show = function() {
+        document.addEventListener('touchstart', clickout, true);
+        document.addEventListener('mousedown', clickout, true);
+        document.addEventListener('keydown', escape, true);
         show.apply(self, arguments);
-        setTimeout(bind, 0);
     };
     self.hide = function() {
-        $document.off('click', clickout);
-        $document.off('keydown', escape);
+        document.removeEventListener('touchstart', clickout, true);
+        document.removeEventListener('mousedown', clickout, true);
+        document.removeEventListener('keydown', escape, true);
         hide.apply(self, arguments);
     };
     return self;

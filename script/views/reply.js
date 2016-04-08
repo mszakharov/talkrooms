@@ -273,7 +273,7 @@
         var oh = this.offsetHeight;
         if (sh > oh) {
             field.height(sh);
-            $window.scrollTop($window.scrollTop() + sh - oh);
+            Talk.scrollBy(sh - oh);
         }
     });
 

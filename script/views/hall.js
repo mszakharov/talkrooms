@@ -4,9 +4,10 @@ var Hall = {};
 // Toggle room
 (function() {
 
-    var body = $('body');
-    var hall = $('#hall');
-    var room = $('#room');
+    var html = $('html'),
+        body = $('body'),
+        hall = $('#hall'),
+        room = $('#room');
 
     var isVisible;
 
@@ -15,6 +16,7 @@ var Hall = {};
     function toggleRoom(visible) {
         if (isVisible === visible) return;
         if (isVisible === undefined) {
+            html.toggleClass('in-room', visible);
             body.toggleClass('in-room', visible);
             hall.css('display', '');
         } else if (visible) {

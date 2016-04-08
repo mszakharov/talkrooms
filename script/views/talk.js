@@ -117,22 +117,8 @@
 
 })();
 
-// Header
-(function() {
-
-    var topic = $('#room .topic');
-
-    function showTopic() {
-        topic.html(Room.data.topic);
-    }
-
-    Room.on('enter', showTopic);
-    Room.on('room.topic.updated', showTopic);
-
-})();
-
 var Talk = {
-    container: $('#talk .talk-messages')
+    content: $('.talk-content')
 };
 
 // Format content
@@ -491,7 +477,7 @@ Talk.isForMe = function(mentions) {
         archive.reset([]);
         current.reset(messages.map(Talk.createMessage));
         current.setLast();
-        $window.scrollTop($document.height() - $window.height() - 1);
+        Talk.scrollDown(true);
         Room.trigger('dates.changed');
     }
 
@@ -499,7 +485,7 @@ Talk.isForMe = function(mentions) {
         var offset = anchor.getBoundingClientRect().top;
         action(data);
         Room.trigger('dates.changed');
-        $window.scrollTop($(anchor).offset().top - offset);
+        Talk.restoreOffset(anchor, offset);
     }
 
     function trimCurrent(next) {
@@ -513,14 +499,14 @@ Talk.isForMe = function(mentions) {
             current.shift();
         }
         if (offset < 0) {
-            $window.scrollTop($(cut.node).offset().top - offset);
+            Talk.restoreOffset(cut.node, offset);
         }
         Room.trigger('dates.changed');
         next();
     }
 
     function cleanDates() {
-        Talk.container
+        Talk.content
             .find('.date')
             .filter(function(i, elem) {
                 return $(elem).next('.speech').length === 0;
@@ -537,13 +523,14 @@ Talk.isForMe = function(mentions) {
     };
 
     Talk.updateIgnore = function(ignore) {
-        var offset = $document.height() - $window.scrollTop();
+        var content = Talk.content.get(0);
+        var offset = content.scrollHeight - content.scrollTop;
         archive.setIgnore(ignore, isVisible);
         current.setIgnore(ignore, isVisible);
         current.setLast();
         cleanDates();
         Room.trigger('dates.changed');
-        $window.scrollTop($document.height() - offset);
+        content.scrollTop = content.scrollHeight - offset;
     };
 
     function findLast(messages, callback) {
@@ -571,16 +558,22 @@ Talk.isForMe = function(mentions) {
     Room.on('message.created', function(data) {
         if (isVisible(data) && data.message_id > current.last.data.message_id) {
             var message = Talk.createMessage(data);
+            var lastSpeech = current.last && current.last.node.parentNode;
+            Talk.fixScroll();
             message.appendTo(current.container, current.last);
             current.messages.push(message);
-            if (message.date !==  current.last.date) {
+            if (message.date !== current.last.date) {
                 Room.trigger('dates.changed');
             }
             current.setLast(message);
             if (current.messages.length > current.capacity + current.overflow) {
-                $window.queue(trimCurrent);
+                Talk.scrollQueue(trimCurrent);
             }
-            Talk.scrollDown(message.node);
+            if (message.node.parentNode === lastSpeech) {
+                Talk.scrollFurther(message.node);
+            } else if (lastSpeech) {
+                Talk.scrollFurther(lastSpeech.nextSibling);
+            }
             Room.trigger('talk.updated');
         }
     });
@@ -706,10 +699,10 @@ Talk.isForMe = function(mentions) {
             .then(useIgnores)
             .done(function(data) {
                 showPrevious(data);
-                $window.scrollTop($(first.node).offset().top - offset);
-                $window.delay(150).scrollTo(function(now) {
+                Talk.restoreOffset(first.node, offset);
+                /*$window.delay(150).scrollTo(function(now) {
                     return now - 150;
-                }, 400);
+                }, 400);*/
             });
     });
 
@@ -778,7 +771,7 @@ Talk.isForMe = function(mentions) {
 
     function setIgnore() {
         clearTimeout(timer);
-        $window.queue(function(next) {
+        Talk.scrollQueue(function(next) {
             Talk.updateIgnore(ignore);
             ignore = {};
             next();
@@ -800,7 +793,7 @@ Room.on('user.ignores.updated', function() {
 // User actions
 (function() {
 
-    var container = Talk.container;
+    var content = Talk.content;
 
     function parseRecipient(context) {
         var elem = $(context).find('.speech-recipient');
@@ -838,13 +831,13 @@ Room.on('user.ignores.updated', function() {
         };
     }
 
-    container.on('click', '.userpic', function(event) {
+    content.on('click', '.userpic', function(event) {
         event.stopPropagation();
         var role = getRole(this.parentNode);
         Profile.show(role, this);
     });
 
-    container.on('click', '.nickname', function() {
+    content.on('click', '.nickname', function() {
         var speech = $(this).closest('.speech');
         if (speech.hasClass('personal')) {
             replyPersonal(this.parentNode);
@@ -853,16 +846,16 @@ Room.on('user.ignores.updated', function() {
         }
     });
 
-    container.on('click', '.speech-recipient', function() {
+    content.on('click', '.speech-recipient', function() {
         replyPersonal(this.parentNode);
     });
 
-    container.on('click', '.msg-edit', function() {
+    content.on('click', '.msg-edit', function() {
         Room.edit($(this).closest('.message'));
     });
 
     Room.editLast = function() {
-        var icons = Talk.container.find('.msg-edit');
+        var icons = content.find('.msg-edit');
         if (icons.length) {
             Room.edit(icons.last().closest('.message'));
         }
@@ -870,76 +863,45 @@ Room.on('user.ignores.updated', function() {
 
 })();
 
-// Scroll talk
-(function() {
-
-    var iOS = /ip(od|ad|hone)/i.test(navigator.platform);
-    function isKeyboardOpened(dh) {
-        var st = $window.scrollTop();
-        var wh = $window.height();
-        return st + wh - dh > 10;
-    }
-
-    function scrollDown(node) {
-        if (iOS) {
-            var dh = $document.height();
-            if (isKeyboardOpened(dh)) {
-                $window.scrollTop(dh);
-                return false;
-            }
-        }
-        $window.scrollTo(function(now) {
-            var height = $window.height();
-            var offset = $(node).offset().top;
-            if (offset < now + height + 20) {
-                var pos = $document.height() - height;
-                if (pos > now) {
-                    return pos;
-                }
-            }
-        });
-    }
-
-    Talk.scrollDown = scrollDown;
-
-})();
-
 // Sticky dates
 (function() {
 
-    var container = Talk.container;
-    var header = $('#talk .talk-header');
-    var value = header.find('.date-text');
+    var content = Talk.content.get(0);
+    var value = $('.header-date-text');
 
     var dates = [];
     var min, max;
-    var headerHeight;
 
     function update() {
         var active = dates.length > 1;
-        headerHeight = header.height();
-        dates = container.find('.date').map(getDate);
+        updateDates();
         if (dates.length) {
-            toggle(window.pageYOffset);
+            toggle(content.scrollTop);
         } else {
-            value.text('сегодня');
+            value.text('Сегодня');
         }
         if (dates.length < 2 && active) {
-            window.removeEventListener('scroll', check, false);
+            content.removeEventListener('scroll', check, false);
             window.removeEventListener('resize', update);
         }
         if (dates.length > 1 && !active) {
-            window.addEventListener('scroll', check, false);
+            content.addEventListener('scroll', check, false);
             window.addEventListener('resize', update);
         }
     }
 
-    function getDate(i, node) {
-        var elem = $(node);
-        return {
-            text: elem.find('.date-text').text(),
-            offset: i ? elem.position().top - headerHeight + 6 : -Infinity
-        };
+    function getTop(node) {
+        return node.getBoundingClientRect().top
+    }
+
+    function updateDates(node) {
+        var offset = getTop(content) - content.scrollTop - 6;
+        dates = Talk.content.find('.date').map(function(i, node) {
+            return {
+                text: $(node).find('.date-text').text(),
+                offset: i ? getTop(node) - offset : -Infinity
+            };
+        });
     }
 
     function toggle(offset) {
@@ -956,7 +918,7 @@ Room.on('user.ignores.updated', function() {
     }
 
     function check() {
-        var offset = window.pageYOffset;
+        var offset = content.scrollTop;
         if (offset < min || offset > max) {
             toggle(offset);
         }
@@ -966,124 +928,104 @@ Room.on('user.ignores.updated', function() {
 
 })();
 
-// Window title
-(function() {
-
-    var mainTitle = document.title;
-    var mark = String.fromCharCode(9733);
-
-    Room.on('enter', function() {
-        document.title = Room.data.topic;
-    });
-
-    Room.on('leave', function() {
-        document.title = mainTitle;
-    });
-
-    Room.on('lost', function() {
-        document.title = 'Комната не найдена';
-    });
-
-    $window.on('focus', function() {
-        if (Room.data) document.title = Room.data.topic;
-    });
-
-    Room.on('room.topic.updated', function() {
-        if (!Room.idle) document.title = Room.data.topic;
-    });
-
-    Room.on('talk.updated', function() {
-        if (Room.idle) {
-            document.title = mark + ' ' + Room.data.topic;
-        }
-    });
-
-})();
-
 // Filter messages for me
 (function() {
 
-    var control = $('#talk .toggle-for-me');
+    var toolbar = $('.header-toolbar'),
+        control = $('.filter-my');
 
     Room.on('enter', function() {
-        control.removeClass('enabled');
+        control.removeClass('filter-my-selected');
     });
 
     control.on('click', function() {
+        if (toolbar.data('wasDragged')) return;
         Talk.forMeOnly = !Talk.forMeOnly;
-        control.toggleClass('enabled', Talk.forMeOnly);
+        control.toggleClass('filter-my-selected', Talk.forMeOnly);
         Talk.loadRecent();
     });
 
 })();
 
-// Notifier
+// Talk scrolling
 (function() {
 
-    var sound;
-    var soundEnabled;
+    var content = Talk.content.get(0);
 
-    var icon = $('#talk .notifications');
+    var scroller = $({}),
+        interrupted,
+        scrolling;
 
-    function isMobile() {
-        return /android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent);
+    function setPosition(value) {
+        if (!interrupted) content.scrollTop = Math.round(value);
     }
 
-    function toggleSound(enabled) {
-        if (enabled === soundEnabled) return;
-        if (enabled) {
-            if (!sound) sound = new Sound({
-                mp3: '/script/sound/message.mp3',
-                ogg: '/script/sound/message.ogg'
-            });
-            Room.on('talk.updated', notify);
-            icon.addClass('enabled');
-        } else {
-            Room.off('talk.updated', notify);
-            icon.removeClass('enabled');
+    function getDuration(a, b) {
+        return 300 + Math.abs(a - b) * 7;
+    }
+
+    function getMaxScroll() {
+        return content.scrollHeight - content.offsetHeight - 1;
+    }
+
+    function isNear(element) {
+        var et = element.getBoundingClientRect().top;
+        var cb = content.getBoundingClientRect().bottom;
+        return et - cb < 10;
+    }
+
+    function stopScrolling() {
+        if (scrolling) {
+            interrupted = true;
+            scroller.stop();
+            interrupted = false;
         }
-        soundEnabled = enabled;
     }
 
-    function notify() {
-        if (Room.idle) sound.play();
+    function scrollEnd() {
+        scrolling = false;
+        Talk.content.dequeue();
     }
 
-    if (isMobile()) {
-        icon.hide();
-        return false;
-    }
+    content.addEventListener('wheel', stopScrolling);
+    content.addEventListener('touchstart', stopScrolling);
 
-    Room.on('ready', function() {
-        var stored = localStorage.getItem('sound_in_' + Room.data.room_id);
-        toggleSound(Boolean(stored));
-    });
+    Talk.scrollBy = function(shift) {
+        content.scrollTop += shift;
+    };
 
-    icon.on('click', function() {
-        toggleSound(!soundEnabled);
-        if (soundEnabled) {
-            localStorage.setItem('sound_in_' + Room.data.room_id, 1);
-        } else {
-            localStorage.removeItem('sound_in_' + Room.data.room_id);
-        }
-    });
+    Talk.restoreOffset = function(node, offset) {
+        content.scrollTop += node.getBoundingClientRect().top - offset;
+    };
 
-})();
+    Talk.fixScroll = function() {
+        if (!scrolling && content.scrollTop > getMaxScroll()) content.scrollTop--;
+    };
 
-// Disconnect
-(function() {
+    Talk.scrollQueue = function(callback) {
+        this.content.queue(callback);
+    };
 
-    var talk = $('#talk');
+    Talk.scrollFurther = function(node) {
+        this.content.queue(function(next) {
+            var cur = content.scrollTop;
+            var pos = getMaxScroll();
+            if (pos > cur && !interrupted && node.parentNode && isNear(node)) {
+                scrolling = true;
+                scroller[0].position = cur;
+                scroller.animate({position: pos}, {
+                    complete: scrollEnd,
+                    duration: getDuration(cur, pos),
+                    step: setPosition
+                });
+            } else {
+                next();
+            }
+        });
+    };
 
-    function restore() {
-        talk.removeClass('disconnected');
-    }
-
-    Room.on('disconnected', function() {
-        talk.addClass('disconnected');
-    });
-
-    Room.on('connected', restore);
-    Room.on('enter', restore);
+    Talk.scrollDown = function() {
+        content.scrollTop = getMaxScroll();
+    };
 
 })();

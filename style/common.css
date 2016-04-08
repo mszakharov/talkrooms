@@ -1,21 +1,42 @@
+/* Fonts */
+@font-face {
+    font-family: 'PT Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('PT Sans'),
+         local('PTSans-Regular'),
+         url('https://fonts.gstatic.com/s/ptsans/v8/oOt0DNfso2UXZt7DYCiN2gLUuEpTyoUstqEm5AMlJo4.woff') format('woff');
+}
+@font-face {
+    font-family: 'PT Serif';
+    font-style: italic;
+    font-weight: 400;
+    src: local('PT Serif Italic'),
+         local('PTSerif-Italic'),
+         url('https://fonts.gstatic.com/s/ptserif/v8/3Nwg9VzlwLXPq3fNKwVRML3hpw3pgy2gAi-Ip7WPMi0.woff') format('woff2');
+}
+
+/* Remove default margin */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
 
+/* Remove tap color */
 html {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Base font and colors */
 body {
     background: #EBE9E6;
-    font: 17px/21px 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #404040;
+    font: 17px/21px 'PT Sans', Helvetica, Arial, sans-serif;
+    color: #3D3D3D;
 }
 
-/* Links */
+/* Normalize links */
 a {
     color: #1270b2;
     background-color: transparent;
@@ -30,7 +51,7 @@ a:hover {
     cursor: pointer;
 }
 
-/* Forms */
+/* Normalize forms */
 button,
 input,
 select,
@@ -146,11 +167,10 @@ button:focus {
 /* Popup */
 .popup {
     display: none;
-    position: fixed;
+    position: absolute;
     z-index: 10;
     margin: -15px -20px -25px;
     overflow: hidden;
-    /*background: rgba(255,0,0,0.1);*/
 }
 .popup-scroll {
     margin-right: -20px;

@@ -6,7 +6,8 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width">
     <link rel="stylesheet" href="/style/common.css">
     <link rel="stylesheet" href="/style/main.css">
-    <link rel="stylesheet" href="/style/room.css">
+    <link rel="stylesheet" href="/style/room_layout.css">
+    <link rel="stylesheet" href="/style/room_elements.css">
     <link rel="stylesheet" href="/style/datepicker.css">
     <link rel="stylesheet" href="/style/profile.css">
     <link rel="stylesheet" href="/style/settings.css">
@@ -49,6 +50,36 @@
 </div>
 
 <div id="room">
+
+<div id="header">
+<div class="header-side">
+    <div class="header-main"><a class="hall-link" href="/#">Talkrooms</a></div>
+</div>
+<div class="header-talk">
+    <div class="header-show-side">
+        <svg width="16" height="16"><path d="M0,0h16v2h-16z M0,7h16v2h-16z M0,14h16v2h-16z" fill="currentColor"></svg>
+    </div>
+    <div class="header-toolbar">
+    <div class="header-toolbar-scroll">
+        <div class="header-title"></div>
+        <div class="header-sound" title="Звук нового сообщения в неактивном окне">
+            <svg width="24" height="24">
+                <path class="header-sound-bell" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4.5,18 C6.5,16,7,13,7,9.25 C7,3,17,3,17,9.25 C17,13,17.5,16,19.5,18 z"/>
+                <path fill="currentColor" d="M8.837,20 A3.5,3.5,0,0,0,15.163,20 z M10.94,4.56 a1.5,1.5,0,1,1,2.12,0 z"/>
+            </svg>
+        </div>
+        <div class="header-filter filter-my" title="Только сообщения для меня и мои">Со мной</div>
+        <div class="header-room">
+            <div class="header-room-settings" title="Настройки комнаты"></div>
+        </div>
+    </div>
+    </div>
+    <div class="header-date">
+        <div class="header-date-text" title="Показать историю сообщений…">&nbsp;</div>
+    </div>
+</div>
+</div>
+
 <div class="room-entry">
     <div class="entry-text entry-lost">
         <h6>Комната не найдена</h6>
@@ -86,77 +117,36 @@
 </div>
 
 <div id="side">
-    <div class="side-scrollable">
-        <div class="side-header">
-            <h2 class="talkrooms"><a class="hall-link" href="/#">Talkrooms</a></h2>
-            <div class="room-shuffle" title="Перейти в случайную комнату"></div>
-        </div>
-        <div class="room-users">
-            <div class="users-group users-online">
-                <h6 class="users-title">Сейчас в комнате <span class="users-amount"></span></h6>
-                <div class="users-list"></div>
-            </div>
-            <div class="users-group users-requests">
-                <h6 class="users-title">Ждут приглашения <span class="users-amount"></span></h6>
-                <div class="users-list"></div>
-            </div>
-            <div class="users-group users-ignored">
-                <h6 class="users-title">В игноре <span class="users-amount"></span></h6>
-                <div class="users-list"></div>
-            </div>
+<div class="side-content">
+    <div class="side-rooms" style="display: none;">
+        <div class="rooms-shuffle"><span class="link">Случайная комната</span></div>
+        <div class="rooms-create"><span class="link">Создать комнату</span></div>
+        <div class="rooms-list">
+            <div class="rooms-more"></div>
         </div>
     </div>
-    <div class="room-create">
-        <span class="create-link"><svg class="create-icon"><path d="M7.5,1 V14 M1,7.5 H14" fill="none" stroke="currentColor" stroke-width="3"/></svg>Создать комнату</span>
+    <div class="room-users">
+        <div class="users-group users-online">
+            <h6 class="users-title">Сейчас в комнате <span class="users-amount"></span></h6>
+            <div class="users-list"></div>
+        </div>
+        <div class="users-group users-requests">
+            <h6 class="users-title">Ждут приглашения <span class="users-amount"></span></h6>
+            <div class="users-list"></div>
+        </div>
+        <div class="users-group users-ignored">
+            <h6 class="users-title">В игноре <span class="users-amount"></span></h6>
+            <div class="users-list"></div>
+        </div>
     </div>
 </div>
+</div>
+
 <div id="talk">
 
-    <div class="talk-header">
-        <div class="placeholder">
-            <div class="topic"></div>
-        </div>
-        <div class="sticky">
-
-            <div class="content">
-                <h1 class="topic"></h1>
-                <div class="date">
-                    <span class="date-text">&nbsp;</span>
-                </div>
-                <div class="toggle-side">
-                <svg width="22" height="20">
-                    <path d="M2,2 h18 m0,8 h-18 m0,8 h18" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round">
-                </svg>
-                </div>
-            </div>
-
-            <div class="room-settings-icon" title="Настройка комнаты">
-            <svg width="24" height="24">
-                <path fill-rule="evenodd" fill="currentColor" d="M24,12.89 L24,11.11 L20.19,9.57 L19.51,7.92 L21.12,4.15 L19.85,2.88 L16.08,4.49 L14.43,3.81 L12.89,0 L11.11,0 L9.57,3.81 L7.92,4.49 L4.15,2.88 L2.88,4.15 L4.49,7.92 L3.81,9.57 L0,11.11 L0,12.89 L3.81,14.43 L4.49,16.08 L2.88,19.85 L4.15,21.12 L7.92,19.51 L9.57,20.19 L11.11,24 L12.89,24 L14.43,20.19 L16.08,19.51 L19.85,21.12 L21.12,19.85 L19.51,16.08 L20.19,14.43 z M7.5,12 a4.5,4.5 0 1 0 9,0 a4.5,4.5 0 1 0 -9,0"/>
-            </svg>
-            </div>
-
-            <div class="talk-controls">
-            <div class="control toggle-for-me" title="Скрыть чужие разговоры">
-                <svg width="24" height="24">
-                    <path fill="currentColor" stroke="#e0b95b" d="M4.5,6.5 h12 l3.2,6 l-3.2,6 h-12 z"/>
-                </svg>
-            </div>
-            <div class="control notifications" title="Звук нового сообщения в неактивном окне">
-                <svg width="24" height="24">
-                    <path d="M4.5,18 C6.5,16,7,13,7,9.25 C7,3,17,3,17,9.25 C17,13,17.5,16,19.5,18 z" class="contour" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M8.837,20 A3.5,3.5,0,0,0,15.163,20 z M10.94,4.56 a1.5,1.5,0,1,1,2.12,0 z" fill="currentColor"/>
-                </svg>
-            </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="talk-messages">
+    <div class="talk-content">
         <div class="talk-previous">
             <div class="talk-load"><span class="talk-load-text"><span class="talk-load-arrow">&uarr;</span> Раньше</span></div>
-            <div class="talk-datepicker" title="Выбрать дату"></div>
         </div>
         <div class="talk-archive"></div>
         <div class="talk-next">
@@ -173,24 +163,20 @@
     </form>
 
     <form class="talk-reply">
-        <div class="sticky">
-            <div class="content">
-                <div class="reply-send" title="Отправить">
-                <svg width="90" height="58">
-                    <path class="send-arrow" d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
-                    <circle class="send-spinner" cx="40" cy="29" r="12" stroke-dasharray="29 18" fill="none" stroke="#CCC" stroke-width="2">
-                        <animateTransform attributeName="transform" type="rotate" from="0 40 29" to="360 40 29" dur="1s" repeatCount="indefinite"/>
-                    </circle>
-                </svg>
-                </div>
-                <div class="reply-wrapper">
-                    <div class="userpic"></div>
-                    <div class="reply-public" title="Сообщение для всех">&times;</div>
-                    <div class="reply-recipient"></div>
-                    <div class="reply-field">
-                        <textarea name="text" maxlength="1024"></textarea>
-                    </div>
-                </div>
+        <div class="reply-send" title="Отправить">
+        <svg width="90" height="58">
+            <path class="send-arrow" d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
+            <circle class="send-spinner" cx="40" cy="29" r="12" stroke-dasharray="29 18" fill="none" stroke="#CCC" stroke-width="2">
+                <animateTransform attributeName="transform" type="rotate" from="0 40 29" to="360 40 29" dur="1s" repeatCount="indefinite"/>
+            </circle>
+        </svg>
+        </div>
+        <div class="reply-wrapper">
+            <div class="userpic"></div>
+            <div class="reply-public" title="Сообщение для всех">&times;</div>
+            <div class="reply-recipient"></div>
+            <div class="reply-field">
+                <textarea name="text" maxlength="1024"></textarea>
             </div>
         </div>
     </form>
@@ -426,6 +412,7 @@
 <script src="/script/models/main.js"></script>
 
 <script src="/script/views/hall.js"></script>
+<script src="/script/views/room.js"></script>
 <script src="/script/views/side.js"></script>
 <script src="/script/views/talk.js"></script>
 <script src="/script/views/reply.js"></script>

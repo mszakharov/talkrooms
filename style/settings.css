@@ -1,9 +1,8 @@
 /* Room settings */
 #room-settings {
     width: 440px;
-    top: 25px;
-    right: 35px;
-    -webkit-font-smoothing: subpixel-antialiased;
+    top: 15px;
+    right: 25px;
 }
 #room-settings .popup-content {
     width: 400px;

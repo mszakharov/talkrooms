@@ -1,21 +1,3 @@
-// Adjust padding to scrollbar width
-(function() {
-
-    var sample = document.createElement('div');
-    sample.style.width = '100px';
-    sample.style.height = '50px'; // >32px to display scrollbar in Firefox
-    sample.style.position = 'absolute';
-    sample.style.overflowY = 'scroll';
-    sample.style.top = '-100px';
-
-    document.body.appendChild(sample);
-    var scrollBarWidth = sample.offsetWidth - sample.clientWidth;
-    document.body.removeChild(sample);
-
-    $('#side .side-scrollable').css('padding-right', 25 - scrollBarWidth);
-
-})();
-
 // Users list
 (function() {
 
@@ -126,35 +108,3 @@
 $('.room-create .create-link').on('click', function() {
     Room.create();
 });
-
-// Toggle side
-(function() {
-
-    var room = $('#room');
-    var talk = $('#talk');
-    var reply = $('.talk-reply textarea');
-
-    var tapEvent = 'touchstart' in window ? 'touchend' : 'click';
-
-    function showSide() {
-        room.addClass('with-side');
-        talk.on(tapEvent, hideSide);
-        reply.on('focus', hideSide);
-    }
-
-    function hideSide() {
-        room.removeClass('with-side');
-        talk.off(tapEvent, hideSide);
-        reply.off('focus', hideSide);
-    }
-
-    $('.toggle-side').on(tapEvent, function(event) {
-        event.stopPropagation();
-        if (room.hasClass('with-side')) {
-            hideSide();
-        } else {
-            showSide();
-        }
-    });
-
-})();
