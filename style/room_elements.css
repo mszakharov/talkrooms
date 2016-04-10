@@ -449,7 +449,7 @@
     position: absolute;
     left: -56px;
     top: 2px;
-    z-index: 1;
+    z-index: 1; /* overlay message dash */
     cursor: pointer;
 }
 .speech-author > .nickname {

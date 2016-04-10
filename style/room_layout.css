@@ -88,10 +88,22 @@ html.in-room {
     width: 100%;
 }
 
+/* Overlay */
+.talk-overlay {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 100%;
+    background: #F8F8F8;
+}
+
 /* Reply form */
 .talk-reply {
     position: absolute;
     bottom: 0;
+    z-index: 1;
     width: 100%;
     min-height: 58px;
     padding: 9px 0 11px;
