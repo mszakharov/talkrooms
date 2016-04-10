@@ -121,6 +121,37 @@ body.in-room {
     display: block;
 }
 
+/* Talkrooms update */
+.updated-notice {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    padding: 16px 0;
+    width: 100%;
+    background: #f5efdc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+.updated-title {
+    width: 920px;
+    margin: 0 auto;
+    color: #403e39;
+}
+.updated-reload {
+    padding: 10px 0;
+    color: #1270b2;
+    text-decoration: underline;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.updated-text {
+    width: 920px;
+    margin: 8px auto 0;
+    font-size: 13px;
+    line-height: 17px;
+    color: #66645e;
+}
+
 @media (min-width: 1400px) {
 
     .talk-dummy {
@@ -138,6 +169,13 @@ body.in-room {
     .hall-content {
         width: auto;
         margin: 40px 50px 50px;
+    }
+
+    .updated-title,
+    .updated-text {
+        width: auto;
+        margin-right: 40px;
+        margin-left: 40px;
     }
 
 }
