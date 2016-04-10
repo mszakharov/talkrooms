@@ -419,9 +419,9 @@
 }
 .date-text {
     position: relative;
-    top: 7px;
+    top: 8px;
     padding: 0 14px;
-    background: #F6F6F6;
+    background: #F8F8F8;
     cursor: default;
 }
 .date:first-child {
