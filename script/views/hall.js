@@ -48,6 +48,7 @@ var Hall = {};
         var withSide = room.hasClass('with-side');
         dummy.css('margin-left', withSide ? 256 : 0).show();
         hall.css('overflow', 'hidden');
+        html.removeClass('in-room');
         body.removeClass('in-room');
         if (withSide) {
             room.removeClass('with-side');

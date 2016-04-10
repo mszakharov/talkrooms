@@ -230,16 +230,13 @@
 
     var talk = $('#talk');
 
-    function restore() {
-        talk.removeClass('disconnected');
-    }
-
-    Room.on('disconnected', function() {
+    Socket.on('disconnected', function() {
         talk.addClass('disconnected');
     });
 
-    Room.on('connected', restore);
-    Room.on('enter', restore);
+    Socket.on('connected', function() {
+        talk.removeClass('disconnected');
+    });
 
 })();
 

@@ -108,3 +108,129 @@ var Me = {};
     };
 
 })();
+
+// Socket
+(function() {
+
+    var Socket = Events.mixin({});
+
+    var path = String.mix('wss://$1/sockets/', window.location.host),
+        stream,
+        token;
+
+    var connectionTimer,
+        connectionTries = 0,
+        closedInstantly = 0;
+
+    function getConnectionDelay(tries) {
+        if (tries > 6) return 60;
+        if (tries > 0) return 10;
+        return 1;
+    }
+
+    function openSocket() {
+        connectionTries = 0;
+        if (window.WebSocket && WebSocket.CLOSED === 3) {
+            stream = new WebSocket(path + token);
+            stream.addEventListener('open', onOpen);
+            stream.addEventListener('message', onMessage);
+            stream.addEventListener('close', onClose);
+        }
+    }
+
+    function disconnect() {
+        clearTimeout(connectionTimer);
+        if (stream) {
+            stream.removeEventListener('open', onOpen);
+            stream.removeEventListener('message', onMessage);
+            stream.removeEventListener('close', onClose);
+            stream.close();
+        }
+        stream = null;
+    }
+
+    function reconnect() {
+        clearTimeout(connectionTimer);
+        Rest.sockets.get(Socket.id)
+            .done(openSocket)
+            .fail(socketLost);
+    }
+
+    function socketLost(xhr) {
+        if (xhr.status == 404) {
+            Socket.ready = createSocket();
+        } else {
+            connectLater();
+        }
+    }
+
+    function connectLater() {
+        var tries = connectionTries++;
+        var delay = closedInstantly > 1 ? getConnectionDelay(tries) : 5;
+        connectionTimer = setTimeout(reconnect, delay * 1000);
+    }
+
+
+    Socket.ready = Me.load().then(createSocket);
+
+    var errors = {
+        406: 'Пожалуйста, включите куки в вашем браузере',
+        402: 'Слишком много одновременных соединений'
+    };
+
+    function createSocket() {
+        return Rest.sockets.create().done(socketCreated).fail(socketFailed);
+    }
+
+    function socketCreated(socket) {
+        token = socket.token;
+        Socket.id = socket.socket_id;
+        openSocket();
+    }
+
+    function socketFailed(xhr) {
+        Socket.trigger('error', errors[xhr.status]);
+    }
+
+
+
+    function onOpen() {
+        closedInstantly = 0;
+        Socket.connected = true;
+        Socket.trigger('connected');
+    }
+
+    function onClose(event) {
+        Socket.connected = false;
+        Socket.trigger('disconnected');
+        if (closedInstantly++ > 5) {
+            disconnect();
+        } else if (event.code !== 1000) {
+            connectLater();
+        }
+    }
+
+    function onMessage(message) {
+        var event = JSON.parse(message.data);
+        console.log(event[0], event[1]);
+        if (Room.id && Room.id === event[1].room_id) {
+            Room.trigger(event[0], event[1]);
+        } else {
+            Socket.trigger(event[0], event[1]);
+        }
+    }
+
+    Socket.subscribe = function(hash) {
+        return Socket.ready.then(function() {
+            return Rest.subscriptions.create({
+                socket_id: Socket.id,
+                hash: hash
+            });
+        });
+    };
+
+    $window.on('beforeunload', disconnect);
+
+    window.Socket = Socket;
+
+})();

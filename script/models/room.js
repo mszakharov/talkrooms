@@ -1,21 +1,13 @@
 // Room
-var Room = new Events;
+var Room = Events.mixin({});
 
 // Enter a room
 (function() {
 
-    function admit(data) {
+    function subscribe(data) {
         Room.id = data.room_id;
         Room.data = data;
-        Rest.sockets.create({hash: data.hash}).done(subscribe).fail(stop);
-    }
-
-    function subscribe(socket) {
-        Room.socket = socket;
-        Rest.subscriptions.create({
-            socket_id: socket.socket_id,
-            hash: Room.data.hash
-        }).done(enter).fail(stop);
+        Socket.subscribe(Room.hash).done(enter).fail(locked);
     }
 
     function enter(subscription) {
@@ -33,19 +25,12 @@ var Room = new Events;
         Room.trigger('error');
     }
 
-    function stop(xhr) {
-        switch (xhr.status) {
-            case 406: Room.trigger('error', 'Пожалуйста, включите куки в вашем браузере.'); break;
-            case 402: Room.trigger('error', 'Слишком много одновременных соединений.'); break;
-            case 404: Room.trigger('lost'); break;
-            case 403: locked(xhr); break;
-            default: error();
-        }
+    function lost(xhr) {
+        Room.trigger(xhr.status === 404 ? 'lost' : 'error');
     }
 
     function locked(xhr) {
-        var level = (Room.data && Room.data.level) || 0;
-        if (level === 80) {
+        if (Room.data.level === 80) {
             Room.trigger('closed');
         } else {
             var data = xhr.responseJSON;
@@ -58,25 +43,17 @@ var Room = new Events;
         }
     }
 
-    function getRoom() {
-        Rest.rooms.get(Room.hash).done(admit).fail(stop);
-    }
-
     Room.enter = function(hash) {
         if (this.hash && this.hash !== hash) {
             this.leave();
         }
         this.hash = hash;
         Room.promises = [];
-        Me.load().done(getRoom).fail(error);
+        Rest.rooms.get(hash).done(subscribe).fail(stop);
     };
 
     Room.leave = function() {
         Room.trigger('leave');
-        if (Room.socket) {
-            Rest.sockets.destroy(Room.socket.socket_id);
-            Room.socket = null;
-        }
         if (Room.subscription) {
             Rest.subscriptions.destroy(Room.subscription);
             Room.subscription = null;
@@ -133,97 +110,6 @@ var Room = new Events;
 Room.isMy = function(data) {
     return this.myRole ? this.myRole.role_id === data.role_id : false;
 };
-
-// Socket
-(function() {
-
-    var stream;
-    var path = String.mix('wss://$1/sockets/', window.location.host);
-
-    var timer,
-        reconnectEvery = 10000,
-        reconnectCount = 0,
-        reconnectAfter = 0;
-
-    var closedCount = 0;
-
-    function connect() {
-        reconnectEvery = 10000;
-        reconnectCount = 0;
-        stream = new WebSocket(path + Room.socket.token);
-        stream.addEventListener('open', onOpen);
-        stream.addEventListener('message', onMessage);
-        stream.addEventListener('close', onClose);
-    }
-
-    function disconnect() {
-        clearTimeout(timer);
-        if (stream) {
-            stream.removeEventListener('open', onOpen);
-            stream.removeEventListener('message', onMessage);
-            stream.removeEventListener('close', onClose);
-            stream.close();
-        }
-        stream = null;
-    }
-
-    function reconnect() {
-        clearTimeout(timer);
-        if (reconnectCount++ > 5) {
-            reconnectEvery = 60000;
-        }
-        Rest.sockets
-            .get(Room.socket.socket_id)
-            .done(connect)
-            .fail(reconnectFailed);
-    }
-
-    function reconnectFailed(xhr) {
-        if (xhr.status == 404) {
-            Room.socket = null;
-            Room.enter(Room.data.hash);
-        } else {
-            deferReconnect();
-        }
-    }
-
-    function deferReconnect() {
-        clearTimeout(timer);
-        var now = (new Date).getTime();
-        var delay = Math.max(0, reconnectAfter - now);
-        reconnectAfter = now + delay + reconnectEvery;
-        timer = setTimeout(reconnect, delay);
-        console.log(String.mix('Reconnect in $1s', Math.round(delay / 1000)));
-    }
-
-    function onOpen() {
-        closedCount = 0;
-        console.log('Socket opened');
-        Room.trigger('connected');
-    }
-
-    function onClose(event) {
-        console.log(String.mix('Socket closed with $1, $2 errors', event.code, closedCount));
-        Room.trigger('disconnected');
-        if (closedCount++ > 5) {
-            disconnect();
-        } else if (event.code !== 1000 && Room.socket) {
-            deferReconnect();
-        }
-    }
-
-    function onMessage(message) {
-        var event = JSON.parse(message.data);
-        console.log(message.data);
-        Room.trigger(event[0], event[1]);
-    }
-
-    if (window.WebSocket && WebSocket.CLOSED === 3) {
-        Room.on('ready', connect);
-        Room.on('leave', disconnect);
-    }
-
-})();
 
 // Update room
 (function() {

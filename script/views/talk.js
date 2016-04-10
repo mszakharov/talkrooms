@@ -3,7 +3,7 @@
 
     var day = 24 * 60 * 60 * 1000;
     var months = ' января, февраля, марта, апреля, мая, июня, июля, августа, сентября, октября, ноября, декабря'.split(',');
-    var recent = ['сегодня', 'вчера', 'позавчера'];
+    var recent = ['Сегодня', 'Вчера', 'Позавчера'];
     var tonight = 0;
     var currentYear = (new Date).getFullYear();
     var timer;
@@ -51,7 +51,7 @@
 // Entry overlay
 (function() {
 
-    var overlay = $('.room-entry');
+    var overlay = $('.talk-overlay');
     var sections = overlay.children();
 
     function showSection(selector) {
