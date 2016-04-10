@@ -213,11 +213,7 @@ var Me = {};
     function onMessage(message) {
         var event = JSON.parse(message.data);
         console.log(event[0], event[1]);
-        if (Room.id && Room.id === event[1].room_id) {
-            Room.trigger(event[0], event[1]);
-        } else {
-            Socket.trigger(event[0], event[1]);
-        }
+        Room.handleEvent(event);
     }
 
     Socket.subscribe = function(hash) {

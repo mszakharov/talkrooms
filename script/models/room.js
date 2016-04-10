@@ -1,6 +1,16 @@
 // Room
 var Room = Events.mixin({});
 
+Room.handleEvent = function(event) {
+    var room_id = event[1].room_id;
+    if (room_id && room_id !== this.id) return;
+    if (this.eventsBuffer) {
+        this.eventsBuffer.push(event);
+    } else {
+        this.trigger(event[0], event[1]);
+    }
+};
+
 // Enter a room
 (function() {
 
@@ -13,12 +23,18 @@ var Room = Events.mixin({});
     function enter(subscription) {
         Room.myRole = subscription.role;
         Room.subscription = subscription.subscription_id;
+        Room.eventsBuffer = [];
         Room.trigger('enter', Room.myRole);
         $.when.apply($, Room.promises).done(ready).fail(error);
     }
 
     function ready() {
         Room.trigger('ready');
+        for (var i = 0; i < Room.eventsBuffer.length; i++) {
+            var event = Room.eventsBuffer[i];
+            Room.trigger(event[0], event[1]);
+        }
+        Room.eventsBuffer = null;
     }
 
     function error() {
@@ -30,13 +46,15 @@ var Room = Events.mixin({});
     }
 
     function locked(xhr) {
-        if (Room.data.level === 80) {
+        if (xhr.status !== 404) {
+            Room.trigger('error');
+        } else if (Room.data.level === 80) {
             Room.trigger('closed');
         } else {
             var data = xhr.responseJSON;
             if (data && data.role_id) {
+                Room.comeIn = data.role_id;
                 Room.trigger('locked', true);
-                Room.wait(data);
             } else {
                 Room.trigger('locked');
             }
@@ -49,7 +67,7 @@ var Room = Events.mixin({});
         }
         this.hash = hash;
         Room.promises = [];
-        Rest.rooms.get(hash).done(subscribe).fail(stop);
+        Rest.rooms.get(hash).done(subscribe).fail(lost);
     };
 
     Room.leave = function() {
@@ -64,45 +82,16 @@ var Room = Events.mixin({});
         Room.id = null;
     };
 
+    Room.on('role.come_in.updated', function(role) {
+        if (Room.comeIn === role.role_id && role.come_in === null) {
+            Room.comeIn = null;
+            Rest.rooms.get(hash).done(subscribe).fail(stop);
+        }
+    });
+
     $window.on('beforeunload', function(event) {
         Room.leave();
     });
-
-})();
-
-// Locked room request
-(function() {
-
-    var timer;
-    var role_id;
-    var counter;
-
-    function getRole() {
-        clearTimeout(timer);
-        Rest.roles.get(role_id).done(check);
-    }
-
-    function check(role) {
-        if (role.come_in) {
-            checkLater();
-        } else if (role.come_in !== 0) {
-            Room.enter(Room.hash);
-        }
-    }
-
-    function checkLater() {
-        timer = setTimeout(getRole, counter++ > 6 ? 60000 : 15000);
-    }
-
-    Room.on('leave', function() {
-        clearTimeout(timer);
-    });
-
-    Room.wait = function(data) {
-        counter = 0;
-        role_id = data.role_id;
-        checkLater();
-    };
 
 })();
 
