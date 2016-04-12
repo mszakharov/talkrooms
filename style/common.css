@@ -35,6 +35,9 @@ body {
     font: 17px/21px 'PT Sans', Helvetica, Arial, sans-serif;
     color: #3D3D3D;
 }
+p {
+    margin: 0;
+}
 
 /* Normalize links */
 a {
@@ -184,4 +187,14 @@ button:focus {
     background: #FFF;
     box-shadow: 0 5px 20px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.05);
     overflow: hidden;
+}
+
+/* Dropdown animation */
+@-webkit-keyframes dropdown {
+    from { opacity: 0; -webkit-transform: scale(0.8, 0.6); }
+      to { opacity: 1; -webkit-transform: none; }
+}
+@keyframes dropdown {
+    from { opacity: 0; transform: scale(0.8, 0.6); }
+      to { opacity: 1; transform: none; }
 }

@@ -48,78 +48,66 @@
 
 })();
 
-// Entry overlay
-(function() {
-
-    var overlay = $('.talk-overlay');
-    var sections = overlay.children();
-
-    function showSection(selector) {
-        sections.hide();
-        overlay.find(selector).show();
-        overlay.show();
-    }
-
-    Room.on('ready', function() {
-        overlay.fadeOut(150);
-    });
-
-    Room.on('leave', function() {
-        sections.hide();
-        overlay.show();
-    });
-
-    Room.on('lost', function() {
-        showSection('.entry-lost');
-    });
-
-    Room.on('locked', function(wait) {
-        showSection(wait ? '.entry-wait' : '.entry-login');
-    });
-
-    Room.on('closed', function(wait) {
-        showSection('.entry-closed');
-    });
-
-    Room.on('deleted', function() {
-        overlay.find('.entry-deleted h6').text('Комната «' + Room.data.topic + '» удалена');
-        showSection('.entry-deleted');
-    });
-
-    Room.on('error', function(text) {
-        var hint = overlay.find('.entry-error .hint');
-        if (text) {
-            hint.html(text).show();
-        } else {
-            hint.empty().hide();
-        }
-        showSection('.entry-error');
-    });
-
-    var back = overlay.find('.entry-back');
-
-    function shuffleRoom() {
-        Room.shuffle().fail(shuffleFailed);
-    }
-
-    function shuffleFailed() {
-        back.toggle(Boolean(Room.myRole));
-        showSection('.search-failed');
-    }
-
-    back.find('.link').on('click', function() {
-        overlay.hide();
-    });
-
-    overlay.find('.entry-search').on('click', shuffleRoom);
-
-    $('.room-shuffle').on('click', shuffleRoom);
-
-})();
-
 var Talk = {
     content: $('.talk-content')
 };
+
+// Talk overlay
+(function() {
+
+    var overlay = $('.talk-overlay'),
+        sections = overlay.children();
+
+    function showOverlay(section) {
+        sections.hide();
+        if (section) {
+            sections.filter(section).show();
+        }
+        overlay.show();
+    }
+
+    function hideOverlay() {
+        overlay.fadeOut(150);
+    }
+
+    Room.on('ready', hideOverlay);
+
+    Room.on('lost', function() {
+        showOverlay('.entry-lost');
+    });
+
+    Room.on('locked', function(wait) {
+        showOverlay(wait ? '.entry-wait' : '.entry-login');
+    });
+
+    Room.on('closed', function(wait) {
+        showOverlay('.entry-closed');
+    });
+
+    Room.on('deleted', function() {
+        showOverlay('.entry-deleted');
+    });
+
+    Room.on('shuffle.failed', function() {
+        cancelShuffle.toggle(Boolean(Room.subscription));
+        showOverlay('.search-failed');
+    });
+
+    Room.on('error', function(text) {
+        showOverlay('.entry-error');
+    });
+
+    var cancelShuffle = overlay.find('.entry-back');
+
+    cancelShuffle.find('.link').on('click', function() {
+        overlay.hide();
+    });
+
+    overlay.find('.entry-search').on('click', function() {
+        Room.shuffle();
+    });
+
+})();
 
 // Format content
 Talk.format = function(content) {
@@ -477,7 +465,8 @@ Talk.isForMe = function(mentions) {
         archive.reset([]);
         current.reset(messages.map(Talk.createMessage));
         current.setLast();
-        Talk.scrollDown(true);
+        Talk.scrollDown();
+        Talk.content.removeClass('talk-loading');
         Room.trigger('dates.changed');
     }
 
@@ -729,7 +718,7 @@ Talk.isForMe = function(mentions) {
     // Datepicker
     var datepicker = $.Datepicker('#datepicker', function(date) {
         if (loading) return false;
-        loading = datepickerIcon.addClass('loading');
+        loading = dpControl.addClass('loading');
         loadAfterDate(date)
             .then(useIgnores)
             .done(replaceArchive)
@@ -741,14 +730,14 @@ Talk.isForMe = function(mentions) {
             .always(loaded);
     });
 
-    var datepickerIcon = $('.talk-datepicker');
+    var dpControl = $('.header-date-text');
 
-    datepickerIcon.on('click', function() {
+    dpControl.on('click', function(event) {
         var df = new Date(Room.data.created);
         var dc = new Date(getFirstMessage().timestamp);
         var dl = new Date();
         datepicker.setRange(df, dl);
-        datepicker.show(dc, datepickerIcon);
+        datepicker.show(dc, dpControl, event.originalEvent.forwardedTouchEvent);
     });
 
     // Remove obsolete edit icons
@@ -942,6 +931,7 @@ Room.on('user.ignores.updated', function() {
         if (toolbar.data('wasDragged')) return;
         Talk.forMeOnly = !Talk.forMeOnly;
         control.toggleClass('filter-my-selected', Talk.forMeOnly);
+        Talk.content.addClass('talk-loading');
         Talk.loadRecent();
     });
 

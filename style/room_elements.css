@@ -19,7 +19,7 @@
 
 /* Titles */
 .header-main,
-.header-title {
+.toolbar-title {
     padding: 14px 0;
     font-weight: normal;
     font-size: 28px;
@@ -28,20 +28,37 @@
 .header-main {
     margin: 0 26px;
 }
-.header-title {
+.toolbar-title {
     flex-shrink: 0;
     flex-grow: 1;
     margin: 0;
     margin-right: 20px;
     white-space: nowrap;
+    -webkit-transition: opacity .25s;
+            transition: opacity .25s;
 }
 .hall-link {
     color: #FFF;
     text-decoration: none;
 }
+.toolbar-title.changing {
+    opacity: 0.6;
+}
+
+/* Toolbar controls */
+.toolbar-tools {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-shrink: 0;
+    margin-right: 26px;
+}
+.toolbar-tools.hidden {
+    display: none;
+}
 
 /* Message sound */
-.header-sound {
+.toolbar-sound {
     flex-shrink: 0;
     width: 24px;
     height: 30px;
@@ -50,18 +67,18 @@
     color: #A3A3A3;
     cursor: pointer;
 }
-.header-sound-bell {
+.toolbar-sound-bell {
     fill: none;
 }
-.header-sound-on {
+.toolbar-sound-on {
     color: #479BCC;
 }
-.header-sound-on .header-sound-bell {
+.toolbar-sound-on .toolbar-sound-bell {
     fill: #479BCC;
 }
 
 /* Filters */
-.header-filter {
+.toolbar-filter {
     flex-shrink: 0;
     height: 18px;
     margin: 15px 0 0 7px;
@@ -93,21 +110,10 @@
 }
 
 /* Room icons */
-.header-room {
-    flex-shrink: 0;
-    position: relative;
-    flex-basis: 92px;
-    min-width: 35px;
-    height: 1px;
-}
-.header-room-empty {
-    flex-shrink: 1;
-}
-.header-room-settings {
+.toolbar-settings {
     display: none;
-    position: absolute;
-    left: 19px;
-    top: 7px;
+    flex-shrink: 0;
+    margin: 7px 4px 0 10px;
     width: 48px;
     height: 48px;
     background: url('room/settings.svg') no-repeat 13px 13px;
@@ -115,7 +121,7 @@
     cursor: pointer;
     transition: opacity .2s;
 }
-.hoverable .header-room-settings:hover {
+.hoverable .toolbar-settings:hover {
     opacity: 1;
 }
 
@@ -155,21 +161,22 @@
 .hoverable .header-date-text:hover {
     color: #707070;
 }
+.header-date.hidden {
+    visibility: hidden;
+}
 
 /* Entry overlay */
 .entry-text {
     display: none;
     margin: 0 60px 0 40px;
-    padding: 40px 0;
+    padding: 30px 0;
+    color: #707070;
 }
 .entry-text h6 {
     margin: 0 0 10px;
     font-weight: normal;
     font-size: 24px;
     line-height: 26px;
-}
-.entry-text .hint {
-    font: inherit;
 }
 .entry-spinner {
     padding-right: 32px;
@@ -417,6 +424,8 @@
 }
 .talk-splitted .date:first-child {
     display: block;
+    border-bottom-color: transparent;
+    box-shadow: none;
 }
 
 /* Speech */

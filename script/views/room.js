@@ -154,6 +154,7 @@
 
     toolbar.on('touchstart', function(event) {
         wasDragged = false;
+        toolbar.removeData('wasDragged'); // reset on click prevented by fastclick
         var touches = event.originalEvent.touches;
         if (touches.length === 1 && canScroll()) {
             $document.on('touchmove', touchDrag);
@@ -171,25 +172,60 @@
         toolbar.removeData('wasDragged');
     });
 
-    toolbar.find('.filter-my').on('click', function() {
-        if (!wasDragged) {
-            $(this).toggleClass('filter-my-selected');
-        }
-    });
-
 })();
 
-// Topic
+// Update header depending on room state
 (function() {
 
-    var topic = $('.header-title');
+    var title = $('.toolbar-title'),
+        tools = $('.toolbar-tools'),
+        date  = $('.header-date');
 
     function showTopic() {
-        topic.html(Room.data.topic);
+        title.html(Room.data.topic);
     }
 
-    Room.on('enter', showTopic);
+    function showTopicOnly() {
+        showTitleOnly(Room.data.topic);
+    }
+
+    function showTitleOnly(text) {
+        title.html(text);
+        tools.addClass('hidden');
+        date.addClass('hidden');
+    }
+
+    Room.on('leave', function() {
+        title.addClass('changing');
+    });
+
+    Room.on('ready', function() {
+        title.removeClass('changing');
+        tools.removeClass('hidden');
+        date.removeClass('hidden');
+    });
+
     Room.on('room.topic.updated', showTopic);
+    Room.on('enter', showTopic);
+
+    Room.on('locked', showTopicOnly);
+    Room.on('closed', showTopicOnly);
+
+    Room.on('lost', function() {
+        showTitleOnly('Комната не найдена');
+    });
+
+    Room.on('shuffle.failed', function() {
+        showTitleOnly('Нет подходящей комнаты');
+    });
+
+    Room.on('deleted', function() {
+        showTitleOnly('<span class="toolbar-deleted">' + Room.data.topic + '</span>');
+    });
+
+    Room.on('error', function() {
+        showTitleOnly('Возникла проблема');
+    });
 
 })();
 
@@ -247,7 +283,7 @@
         soundEnabled;
 
     var toolbar = $('.header-toolbar'),
-        control = $('.header-sound');
+        control = $('.toolbar-sound');
 
     // Disable sound on mobile devices because of audio limitations
     if (/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent)) {
@@ -263,10 +299,10 @@
                 ogg: '/script/sound/message.ogg'
             });
             Room.on('talk.updated', notify);
-            control.addClass('header-sound-on');
+            control.addClass('toolbar-sound-on');
         } else {
             Room.off('talk.updated', notify);
-            control.removeClass('header-sound-on');
+            control.removeClass('toolbar-sound-on');
         }
         soundEnabled = enabled;
     }

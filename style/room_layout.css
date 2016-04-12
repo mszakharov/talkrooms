@@ -86,6 +86,11 @@ html.in-room {
 .talk-content {
     bottom: 78px;
     width: 100%;
+    -webkit-transition: opacity .25s;
+            transition: opacity .25s;
+}
+.talk-loading {
+    opacity: 0.5;
 }
 
 /* Overlay */

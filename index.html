@@ -61,20 +61,20 @@
     </div>
     <div class="header-toolbar">
     <div class="header-toolbar-scroll">
-        <div class="header-title"></div>
-        <div class="header-sound" title="Звук нового сообщения в неактивном окне">
-            <svg width="24" height="24">
-                <path class="header-sound-bell" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4.5,18 C6.5,16,7,13,7,9.25 C7,3,17,3,17,9.25 C17,13,17.5,16,19.5,18 z"/>
-                <path fill="currentColor" d="M8.837,20 A3.5,3.5,0,0,0,15.163,20 z M10.94,4.56 a1.5,1.5,0,1,1,2.12,0 z"/>
-            </svg>
-        </div>
-        <div class="header-filter filter-my" title="Только сообщения для меня и мои">Со мной</div>
-        <div class="header-room">
-            <div class="header-room-settings" title="Настройки комнаты"></div>
+        <div class="toolbar-title changing"></div>
+        <div class="toolbar-tools hidden">
+            <div class="toolbar-sound" title="Звук нового сообщения в неактивном окне">
+                <svg width="24" height="24">
+                    <path class="toolbar-sound-bell" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4.5,18 C6.5,16,7,13,7,9.25 C7,3,17,3,17,9.25 C17,13,17.5,16,19.5,18 z"/>
+                    <path fill="currentColor" d="M8.837,20 A3.5,3.5,0,0,0,15.163,20 z M10.94,4.56 a1.5,1.5,0,1,1,2.12,0 z"/>
+                </svg>
+            </div>
+            <div class="toolbar-filter filter-my" title="Только сообщения для меня и мои">Со мной</div>
+            <div class="toolbar-settings" title="Настройки комнаты"></div>
         </div>
     </div>
     </div>
-    <div class="header-date">
+    <div class="header-date hidden">
         <div class="header-date-text" title="Показать историю сообщений…">&nbsp;</div>
     </div>
 </div>
@@ -110,37 +110,31 @@
 
     <div class="talk-overlay">
         <div class="entry-text entry-lost">
-            <h6>Комната не найдена</h6>
-            <p class="hint">Возможно, у&nbsp;комнаты, в&nbsp;которую вы&nbsp;хотите зайти, изменился адрес, или она удалена. Подходящий момент, чтобы заглянуть в&nbsp;<span class="link entry-search">другую&nbsp;комнату</span>, выбранную случайно.</p>
+            <p>Возможно, у&nbsp;комнаты, в&nbsp;которую вы&nbsp;хотите зайти, изменился адрес, или она удалена. Подходящий момент, чтобы заглянуть в&nbsp;<span class="link entry-search">другую&nbsp;комнату</span>, выбранную случайно.</p>
         </div>
         <div class="entry-text search-failed">
-            <h6>Нет подходящей комнаты</h6>
-            <p class="hint">К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
-            <p class="hint entry-back"><span class="link">Вернуться</span></p>
+            <p>К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
+            <p class="entry-back"><span class="link">Вернуться</span></p>
         </div>
         <div class="entry-text entry-login">
-            <h6>Вход в комнату ограничен</h6>
-            <p class="hint">В эту комнату могут войти только авторизованные посетители. Войдите через
+            <p>Для входа в эту комнату нужна авторизация. Войдите через
                 <a class="login-fb" href="/api/login/facebook">Фейсбук</a>,
                 <a class="login-vk" href="/api/login/vk">Вконтакте</a> или
-                <a class="login-ok" href="/api/login/ok">Одноклассники</a>
+                <a class="login-ok" href="/api/login/ok">Одноклассники</a>.
             </p>
         </div>
         <div class="entry-text entry-wait">
             <h6><span class="entry-spinner">Ожидание приглашения</span></h6>
-            <p class="hint">Это закрытая комната, для входа нужно приглашение. Как только оно будет получено, вы войдёте в комнату автоматически без обновления страницы.</p>
+            <p>Для входа в эту комнату нужно приглашение. Как только оно будет получено, вы попадёте в комнату автоматически без обновления страницы.</p>
         </div>
         <div class="entry-text entry-closed">
-            <h6>Комната закрыта</h6>
-            <p class="hint">Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>, выбранную случайно.</p>
+            <p>Комната закрыта. Подходящий момент, чтобы заглянуть в <span class="link entry-search">другую комнату</span>, выбранную случайно.</p>
         </div>
         <div class="entry-text entry-deleted">
-            <h6>Комната удалена</h6>
-            <p class="hint"><span class="link entry-restore">Восстановить</span> можно в течение 5 минут</p>
+            <p>Комната удалена. <span class="link entry-restore">Восстановить</span> можно в течение 5 минут.</p>
         </div>
         <div class="entry-text entry-error">
             <h6>Не удалось войти в комнату</h6>
-            <p class="hint"></p>
         </div>
     </div>
 
@@ -183,7 +177,7 @@
 
 </div>
 
-<div id="datepicker" style="display: none;">
+<div id="datepicker">
 <div class="dp-close"></div>
 <div class="dp-search">
     <input class="dp-field" type="text" placeholder="">
@@ -404,13 +398,13 @@
 <script src="/script/collection.js"></script>
 <script src="/script/events.js"></script>
 <script src="/script/rest.js"></script>
-<script src="/script/datepicker.js"></script>
 
 <script src="/script/models/room.js"></script>
 <script src="/script/models/users.js"></script>
 <script src="/script/models/userpics.js"></script>
 <script src="/script/models/main.js"></script>
 
+<script src="/script/views/datepicker.js"></script>
 <script src="/script/views/hall.js"></script>
 <script src="/script/views/room.js"></script>
 <script src="/script/views/side.js"></script>

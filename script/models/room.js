@@ -3,7 +3,7 @@ var Room = Events.mixin({});
 
 Room.handleEvent = function(event) {
     var room_id = event[1].room_id;
-    if (room_id && room_id !== this.id) return;
+    if (room_id && room_id !== this.id || !this.id) return;
     if (this.eventsBuffer) {
         this.eventsBuffer.push(event);
     } else {
@@ -46,7 +46,7 @@ Room.handleEvent = function(event) {
     }
 
     function locked(xhr) {
-        if (xhr.status !== 404) {
+        if (xhr.status !== 403) {
             Room.trigger('error');
         } else if (Room.data.level === 80) {
             Room.trigger('closed');
@@ -85,7 +85,7 @@ Room.handleEvent = function(event) {
     Room.on('role.come_in.updated', function(role) {
         if (Room.comeIn === role.role_id && role.come_in === null) {
             Room.comeIn = null;
-            Rest.rooms.get(hash).done(subscribe).fail(stop);
+            Rest.rooms.get(Room.hash).done(subscribe).fail(stop);
         }
     });
 
@@ -247,12 +247,18 @@ Room.on('user.photo.updated', function(user) {
         Router.push(data.hash);
     }
 
+    function shuffleFailed() {
+        Room.trigger('shuffle.failed');
+    }
+
     Room.create = function() {
         return Rest.rooms.create().done(changeRoom);
     };
 
     Room.shuffle = function() {
-        return Rest.rooms.create('search').done(changeRoom);
+        return Rest.rooms.create('search')
+            .done(changeRoom)
+            .fail(shuffleFailed);
     };
 
 })();

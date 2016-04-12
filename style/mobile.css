@@ -23,22 +23,20 @@
     height: 48px;
 }
 .side-content,
-.talk-content {
+.talk-content,
+.talk-overlay {
     top: 48px;
 }
 
 /* Smaller header font */
 .header-main,
-.header-title {
+.toolbar-title {
     padding: 11px 0;
     font-size: 24px;
     line-height: 26px;
 }
 
 /* Smaller toolbar elements */
-.header-title {
-    margin-right: 14px;
-}
 .header-toolbar {
     margin-left: 46px;
 }
@@ -49,25 +47,24 @@
     top: 5px;
     height: 38px;
 }
-.header-sound {
+.toolbar-title {
+    margin-right: 14px;
+}
+.toolbar-tools {
+    margin-right: 14px;
+}
+.toolbar-sound {
     margin-top: 0;
     padding-top: 13px;
     height: 35px;
 }
-.header-filter {
+.toolbar-filter {
     margin: 10px 0 0 9px;
     padding: 4px 11px;
 }
-.header-room {
-    flex-basis: 52px;
-    min-width: 12px;
+.toolbar-settings {
+    margin: 0 -10px 0 4px;
 }
-.header-room-settings {
-    width: 50px;
-    left: 2px;
-    top: 0;
-}
-
 
 .entry-text {
     margin: 0;

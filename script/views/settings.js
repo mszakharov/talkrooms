@@ -1,8 +1,8 @@
 (function() {
 
-    var toolbar = $('.header-toolbar');
+    var toolbar = $('.header-toolbar'),
+        icon = $('.toolbar-settings');
 
-    var icon = $('.header-room-settings');
     var form = $.popup('#room-settings', function() {
         form.find('.error').remove();
         if (Room.admin) {
@@ -243,7 +243,7 @@
 })();
 
 // Restore deleted room
-$('#room .entry-restore').on('click', function() {
+$('.entry-restore').on('click', function() {
     var hash = Room.data.hash;
     Rest.rooms
         .update(hash, {deleted: false})
