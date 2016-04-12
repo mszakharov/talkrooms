@@ -1,7 +1,17 @@
 // Datepicker
 $.Datepicker = function(selector, onChange) {
 
-    var popup = $.popup(selector);
+    var popup = $.popup(selector,
+        function(target) {
+            var middle = target.offset().left + target.outerWidth() / 2;
+            var right = $window.width() - Math.round(middle) - 150;
+            this.css('right', Math.max(right, 10)); // use right to handle iPad orientation change
+            this.addClass('visible');
+        },
+        function() {
+            this.removeClass('visible');
+        }
+    );
 
     var picker = {
         onChange: onChange || $.noop
@@ -111,9 +121,8 @@ $.Datepicker = function(selector, onChange) {
         }
     };
 
-    picker.show = function(date, target) {
-        popup.css('left', target.offset().left + 10);
-        popup.show();
+    picker.show = function(date, target, byTouch) {
+        popup.show(target);
         calendar.update();
         calendar.setCurrent({
             date: date.getDate(),
@@ -121,7 +130,9 @@ $.Datepicker = function(selector, onChange) {
             year: date.getFullYear()
         });
         field.attr('placeholder', date.toSmartDate());
-        if ('ontouchstart' in window !== true) {
+        if (byTouch) {
+            showSelected();
+        } else {
             field.val('').focus();
         }
     };
