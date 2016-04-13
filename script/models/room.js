@@ -47,7 +47,7 @@ Room.handleEvent = function(event) {
 
     function locked(xhr) {
         if (xhr.status !== 403) {
-            Room.trigger('error');
+            Room.trigger('error', xhr.status);
         } else if (Room.data.level === 80) {
             Room.trigger('closed');
         } else {
@@ -61,13 +61,22 @@ Room.handleEvent = function(event) {
         }
     }
 
+    function getRoom(hash) {
+        return Me.ready.then(function() {
+            return Rest.rooms.get(hash);
+        });
+    };
+
     Room.enter = function(hash) {
         if (this.hash && this.hash !== hash) {
             this.leave();
         }
         this.hash = hash;
-        Room.promises = [];
-        Rest.rooms.get(hash).done(subscribe).fail(lost);
+        this.promises = [];
+        this.trigger('hash.selected');
+        Me.ready.done(function() {
+            Rest.rooms.get(hash).done(subscribe).fail(lost);
+        });
     };
 
     Room.leave = function() {

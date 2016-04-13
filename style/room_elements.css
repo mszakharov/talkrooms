@@ -527,11 +527,66 @@
     display: block;
 }
 
-/* Users */
+/* Rooms lists */
+.side-rooms {
+    display: none;
+    margin-left: 26px;
+    padding: 18px 0 20px;
+}
+.side-rooms a,
+.side-rooms .link {
+    color: #1C768C;
+    padding: 4px 0;
+}
+.rooms-shuffle,
+.rooms-create {
+    line-height: 20px;
+    padding: 6px 20px 6px 0;
+}
+.rooms-list {
+    margin: 13px 0;
+    padding: 1px 0;
+}
+.rooms-title {
+    margin: 0 0 6px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+    color: #858482;
+    cursor: default;
+}
+.rooms-list > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.rooms-list li {
+    line-height: 20px;
+    padding: 6px 20px 6px 0;
+}
+.rooms-selected {
+    margin-left: -13px;
+    padding-left: 13px !important;
+    border-radius: 8px 0 0 8px;
+    background: #DBD8D7;
+}
+.rooms-selected a {
+    text-decoration: none;
+    cursor: default;
+}
+.rooms-folded .rooms-title {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.rooms-folded > ul {
+    display: none;
+}
+
+/* Users lists */
 .room-users {
     display: none;
     margin-left: 26px;
-    padding: 0 0 50px;
+    padding: 0 0 20px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .users-group {

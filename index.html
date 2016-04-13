@@ -82,11 +82,20 @@
 
 <div id="side">
 <div class="side-content">
-    <div class="side-rooms" style="display: none;">
-        <div class="rooms-shuffle"><span class="link">Случайная комната</span></div>
-        <div class="rooms-create"><span class="link">Создать комнату</span></div>
-        <div class="rooms-list">
-            <div class="rooms-more"></div>
+    <div class="side-rooms">
+        <div class="rooms-shuffle">
+            <span class="link">Случайная комната</span>
+        </div>
+        <div class="rooms-lists">
+            <div class="rooms-list rooms-recent">
+                <h6 class="rooms-title">Последние комнаты</h6>
+            </div>
+            <div class="rooms-list rooms-my rooms-folded">
+                <h6 class="rooms-title">Мои комнаты</h6>
+            </div>
+        </div>
+        <div class="rooms-create">
+            <span class="link">Создать комнату</span>
         </div>
     </div>
     <div class="room-users">
@@ -134,8 +143,9 @@
             <p>Комната удалена. <span class="link entry-restore">Восстановить</span> можно в течение 5 минут.</p>
         </div>
         <div class="entry-text entry-error">
-            <h6>Не удалось войти в комнату</h6>
+            <p>Не удалось войти в комнату. Проверьте, работает ли у вас интернет, и попробуйте обновить страницу.</p>
         </div>
+        <div class="entry-text entry-custom"></div>
     </div>
 
     <div class="talk-content">

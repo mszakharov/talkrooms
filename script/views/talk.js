@@ -60,15 +60,33 @@ var Talk = {
 
     function showOverlay(section) {
         sections.hide();
-        if (section) {
-            sections.filter(section).show();
-        }
+        sections.filter(section).show();
         overlay.show();
+        Talk.content.removeClass('talk-loading');
     }
 
     function hideOverlay() {
         overlay.fadeOut(150);
     }
+
+    function showError(code) {
+        var text = code && errors[code];
+        if (text) {
+            overlay.find('.entry-custom').html(text);
+            showOverlay('.entry-custom');
+        } else {
+            showOverlay('.entry-error');
+        }
+    }
+
+    var errors = {
+        406: 'Пожалуйста, включите куки в&nbsp;вашем браузере.',
+        402: 'Слишком много одновременных соединений. Такое бывает, если открыть много вкладок или несколько раз подряд обновить страницу.'
+    };
+
+    Room.on('leave', function() {
+        Talk.content.addClass('talk-loading');
+    });
 
     Room.on('ready', hideOverlay);
 
@@ -93,18 +111,13 @@ var Talk = {
         showOverlay('.search-failed');
     });
 
-    Room.on('error', function(text) {
-        showOverlay('.entry-error');
-    });
+    Socket.on('error', showError);
+    Room.on('error', showError);
 
     var cancelShuffle = overlay.find('.entry-back');
 
     cancelShuffle.find('.link').on('click', function() {
         overlay.hide();
-    });
-
-    overlay.find('.entry-search').on('click', function() {
-        Room.shuffle();
     });
 
 })();

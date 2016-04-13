@@ -1,7 +1,113 @@
+// Toggle side lists
+(function() {
+
+    var rooms = $('.side-rooms'),
+        users = $('.room-users');
+
+    function showRooms() {
+        users.hide();
+        rooms.show();
+    }
+
+    $('.hall-link').on('click', function(event) {
+        event.preventDefault();
+        if (rooms.is(':hidden')) {
+            showRooms();
+        } else if (Room.subscription) {
+            rooms.hide();
+            users.show();
+        }
+    });
+
+    Room.on('ready', function() {
+        rooms.hide();
+        users.fadeIn(150);
+    });
+
+    Room.on('leave', function() {
+        users.hide();
+    });
+
+    Room.on('locked', showRooms);
+    Room.on('closed', showRooms);
+    Room.on('lost',   showRooms);
+
+})();
+
+// Room list
+(function() {
+
+    var lists = $('.rooms-lists'),
+        recentList = new List(lists.find('.rooms-recent')),
+        myList     = new List(lists.find('.rooms-my'));
+
+    var renderLink = new Template('<li data-hash="{hash}"><a href="/#{hash}">{topic}</a></li>');
+
+    function List(elem) {
+        this.elem = elem;
+    }
+
+    List.prototype.update = function(rooms) {
+        this.elem.find('ul').remove();
+        if (rooms.length) {
+            this.elem.append('<ul>' + rooms.map(renderLink).join('') + '</ul>');
+            this.elem.show();
+        } else {
+            this.elem.hide();
+        }
+    };
+
+    function updateLists() {
+        recentList.update(Me.recent_rooms);
+        myList.update(Me.rooms);
+        if (Room.hash) {
+            selectCurrent();
+        }
+    }
+
+    function selectCurrent() {
+        lists.find('li[data-hash="' + Room.hash + '"]').addClass('rooms-selected');
+    }
+
+    $('.rooms-shuffle > .link').on('click', function() {
+        Room.shuffle();
+    });
+
+    $('.rooms-create > .link').on('click', function() {
+        Room.create();
+    });
+
+    recentList.elem.find('.rooms-title').on('click', function() {
+        recentList.elem.removeClass('rooms-folded');
+        myList.elem.addClass('rooms-folded');
+    });
+
+    myList.elem.find('.rooms-title').on('click', function() {
+        myList.elem.removeClass('rooms-folded');
+        recentList.elem.addClass('rooms-folded');
+    });
+
+    Socket.on('me.recent_rooms.updated', function() {
+        recentList.update(Me.recent_rooms);
+        if (Room.hash) {
+            selectCurrent();
+        }
+    });
+
+    Me.ready.done(updateLists);
+
+    Room.on('hash.selected', selectCurrent);
+
+    Room.on('leave', function() {
+        lists.find('.rooms-selected').removeClass('rooms-selected');
+    });
+
+})();
+
 // Users list
 (function() {
 
-    var container = $('#room .room-users');
+    var container = $('.room-users');
     var template = $.template('#user-template');
 
     function renderUser(data) {
@@ -61,19 +167,6 @@
         requestsGroup.show(requests);
     });
 
-    Room.on('ready', function() {
-        container.fadeIn(150);
-    });
-
-    Room.on('leave', hideList);
-    Room.on('locked', hideList);
-    Room.on('closed', hideList);
-    Room.on('lost', hideList);
-
-    function hideList() {
-        container.hide();
-    }
-
     function getData(elem) {
         var role_id = Number(elem.attr('data-role'));
         return Room.users.get(role_id) || Room.requests.get(role_id);
@@ -103,8 +196,3 @@
     });
 
 })();
-
-// Create a room
-$('.room-create .create-link').on('click', function() {
-    Room.create();
-});

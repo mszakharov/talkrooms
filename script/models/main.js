@@ -57,7 +57,6 @@ var Rest = {
 })();
 
 Router.on(/^$/, function(hash) {
-    Hall.update();
     Room.toggle(false);
     Room.leave();
 });
@@ -77,11 +76,15 @@ var Me = {};
         Me.authorized = Boolean(data.user_id);
         Me.ignores = data.ignores;
         Me.checkVersion(data.talkrooms);
+        updateRooms(data);
     }
 
-    Me.load = function() {
-        return Rest.sessions.get('me').done(update);
-    };
+    function updateRooms(data) {
+        Me.rooms = data.rooms || [];
+        Me.recent_rooms = data.recent_rooms || [];
+    }
+
+    Me.ready = Rest.sessions.get('me').done(update);
 
 })();
 
@@ -171,12 +174,7 @@ var Me = {};
     }
 
 
-    Socket.ready = Me.load().then(createSocket);
-
-    var errors = {
-        406: 'Пожалуйста, включите куки в вашем браузере',
-        402: 'Слишком много одновременных соединений'
-    };
+    Socket.ready = Me.ready.then(createSocket);
 
     function createSocket() {
         return Rest.sockets.create().done(socketCreated).fail(socketFailed);
@@ -189,9 +187,8 @@ var Me = {};
     }
 
     function socketFailed(xhr) {
-        Socket.trigger('error', errors[xhr.status]);
+        Socket.trigger('error', xhr.status);
     }
-
 
 
     function onOpen() {
@@ -211,8 +208,9 @@ var Me = {};
     }
 
     function onMessage(message) {
+        console.log(message.data);
         var event = JSON.parse(message.data);
-        console.log(event[0], event[1]);
+        Socket.trigger(event[0], event[1]);
         Room.handleEvent(event);
     }
 
@@ -230,3 +228,8 @@ var Me = {};
     window.Socket = Socket;
 
 })();
+
+// Update rooms
+Socket.on('me.recent_rooms.updated', function(data) {
+    Me.recent_rooms = data.recent_rooms || [];
+});

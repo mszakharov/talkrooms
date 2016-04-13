@@ -215,10 +215,6 @@
         showTitleOnly('Комната не найдена');
     });
 
-    Room.on('shuffle.failed', function() {
-        showTitleOnly('Нет подходящей комнаты');
-    });
-
     Room.on('deleted', function() {
         showTitleOnly('<span class="toolbar-deleted">' + Room.data.topic + '</span>');
     });
