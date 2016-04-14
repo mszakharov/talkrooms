@@ -93,7 +93,7 @@ body.in-room {
 
 /* Talkrooms update */
 .updated-notice {
-    position: fixed;
+    position: absolute;
     z-index: 10;
     top: 0;
     left: 0;
@@ -103,8 +103,9 @@ body.in-room {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2), 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 .updated-title {
-    width: 920px;
+    max-width: 920px;
     margin: 0 auto;
+    padding: 0 40px;
     color: #403e39;
 }
 .updated-reload {
@@ -115,8 +116,9 @@ body.in-room {
     cursor: pointer;
 }
 .updated-text {
-    width: 920px;
+    max-width: 920px;
     margin: 8px auto 0;
+    padding: 0 40px;
     font-size: 13px;
     line-height: 17px;
     color: #66645e;
@@ -145,3 +147,5 @@ body.in-room {
         max-width: 580px;
         padding: 40px;
     }
+
+}
