@@ -53,7 +53,7 @@
     display: -webkit-flex;
     display: flex;
     flex-shrink: 0;
-    margin-right: 26px;
+    padding-right: 26px;
 }
 .toolbar-tools.hidden {
     display: none;
