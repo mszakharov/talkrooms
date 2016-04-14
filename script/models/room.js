@@ -136,15 +136,25 @@ Room.isMy = function(data) {
 
 })();
 
+// Leave if subscription deleted
+Room.on('subscription.deleted', function() {
+    if (!Room.subscription) return;
+    if (Room.data.level === 80) {
+        Room.trigger('closed');
+    } else {
+        Room.trigger('locked', true);
+    }
+});
+
 // Delete room
 Room.on('room.deleted.updated', function(data) {
     if (!data.deleted) return;
     if (Room.myRole.level === 80) {
-        Room.trigger('leave');
         Room.trigger('deleted');
+        Room.trigger('leave');
     } else {
-        Room.leave();
         Room.trigger('closed');
+        Room.leave();
     }
 })
 
