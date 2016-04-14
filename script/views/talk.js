@@ -964,7 +964,7 @@ Room.on('user.ignores.updated', function() {
         scrolling;
 
     function setPosition(value) {
-        if (!interrupted) content.scrollTop = Math.round(value);
+        content.scrollTop = Math.round(value);
     }
 
     function getDuration(a, b) {
@@ -984,7 +984,8 @@ Room.on('user.ignores.updated', function() {
     function stopScrolling() {
         if (scrolling) {
             interrupted = true;
-            scroller.stop();
+            scroller.stop(true);
+            scrollEnd();
             interrupted = false;
         }
     }
