@@ -183,6 +183,7 @@ var Me = {};
     function socketCreated(socket) {
         token = socket.token;
         Socket.id = socket.socket_id;
+        Socket.trigger('created');
         openSocket();
     }
 

@@ -98,6 +98,12 @@ Room.handleEvent = function(event) {
         }
     });
 
+    Socket.on('created', function() {
+        if (Room.subscription) {
+            Rest.rooms.get(Room.hash).done(subscribe).fail(stop);
+        }
+    });
+
     $window.on('beforeunload', function(event) {
         Room.leave();
     });
