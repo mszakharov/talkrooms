@@ -31,7 +31,7 @@
         }
     }
 
-    Room.on('connected', next);
+    Socket.on('connected', next);
 
     Room.send = function(data) {
         queue.push(data);

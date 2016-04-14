@@ -42,7 +42,7 @@
     }
 
     // Reset timer after sleep mode
-    Room.on('connected', update);
+    Socket.on('connected', update);
 
     update();
 
