@@ -225,6 +225,10 @@
         showTitleOnly('<span class="toolbar-deleted">' + Room.data.topic + '</span>');
     });
 
+    Room.on('shuffle.failed', function() {
+        if (!Room.subscription) showTitleOnly('Нет подходящей комнаты');
+    });
+
     Room.on('error', function() {
         showTitleOnly('Возникла проблема');
     });

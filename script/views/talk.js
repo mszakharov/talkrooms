@@ -120,6 +120,10 @@ var Talk = {
         overlay.hide();
     });
 
+    overlay.find('.entry-search').on('click', function() {
+        Room.shuffle();
+    });
+
 })();
 
 // Format content
