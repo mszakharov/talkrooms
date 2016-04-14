@@ -77,6 +77,12 @@
         }
     });
 
+    Room.on('hash.selected', function() {
+        if (body.hasClass('visible-side')) {
+            hideSide();
+        }
+    });
+
 })();
 
 // Scrollable toolbar

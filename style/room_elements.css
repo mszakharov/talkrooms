@@ -26,7 +26,7 @@
     line-height: 32px;
 }
 .header-main {
-    margin: 0 26px;
+    margin: 0 10px;
 }
 .toolbar-title {
     flex-shrink: 0;
@@ -39,7 +39,9 @@
 }
 .hall-link {
     color: #FFF;
+    padding: 8px 36px 8px 16px;
     text-decoration: none;
+    background: url('room/show_rooms.svg') no-repeat 100% 21px;
 }
 .toolbar-title.changing {
     opacity: 0.6;
@@ -230,7 +232,7 @@
     position: relative;
 }
 .talk-previous > .talk-load {
-    padding-top: 18px;
+    padding-top: 28px;
     border-radius: 0 0 10px 10px;
     border-top: none;
 }
@@ -398,7 +400,7 @@
 }
 
 /* Disconnect */
-.disconnected .talk-reply .content {
+.disconnected .talk-reply {
     box-shadow: 0 -1px 0 #ca3c30;
 }
 
@@ -450,7 +452,7 @@
     cursor: pointer;
 }
 .speech-author > .nickname {
-    color: #0F6799;
+    color: #1c768c;
     cursor: pointer;
 }
 

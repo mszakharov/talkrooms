@@ -41,6 +41,7 @@
 }
 .dp-field {
     width: 214px;
+    height: 20px;
     border: none;
     padding: 14px 20px 12px;
     background: transparent;

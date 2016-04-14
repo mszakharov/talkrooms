@@ -10,6 +10,7 @@
     }
 
     $('.hall-link').on('click', function(event) {
+        if (event.metaKey || event.ctrlKey || event.shiftKey) return;
         event.preventDefault();
         if (rooms.is(':hidden')) {
             showRooms();

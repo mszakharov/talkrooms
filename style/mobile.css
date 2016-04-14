@@ -1,18 +1,19 @@
 /* Hall */
-.hall-content {
-    margin: 20px 20px 25px;
+.hall-header {
+    padding: 20px 14px;
 }
-.hall-content > h1 {
+.hall-header > h1 {
     margin: 0 0 12px;
     font-size: 30px;
     line-height: 32px;
 }
-.hall-description {
+.hall-features {
+    padding: 0 14px;
+    font-size: 17px;
     line-height: 21px;
-    margin: 0 0 20px;
 }
-.hall-column {
-    margin: 0 0 15px;
+.hall-content {
+    padding: 20px;
 }
 
 /* Smaller header height */
@@ -34,6 +35,10 @@
     padding: 11px 0;
     font-size: 24px;
     line-height: 26px;
+}
+.hall-link {
+    padding: 8px 36px 8px 16px;
+    background-position: 100% 18px;
 }
 
 /* Smaller toolbar elements */
