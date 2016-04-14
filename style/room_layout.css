@@ -58,7 +58,7 @@ html.in-room {
 #side {
     width: 25%;
     overflow-x: hidden;
-    background: #EBE9E8;
+    background: url('side.png') #EBE9E8;
 }
 #talk {
     right: 0;
