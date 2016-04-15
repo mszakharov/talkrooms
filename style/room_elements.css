@@ -23,7 +23,7 @@
     padding: 14px 0;
     font-weight: normal;
     font-size: 28px;
-    line-height: 32px;
+    line-height: 30px;
 }
 .header-main {
     margin: 0 10px;
@@ -39,9 +39,9 @@
 }
 .hall-link {
     color: #FFF;
-    padding: 8px 36px 8px 16px;
+    padding: 7px 36px 9px 16px;
     text-decoration: none;
-    background: url('room/show_rooms.svg') no-repeat 100% 21px;
+    background: url('room/show_rooms.svg') no-repeat 100% 23px;
 }
 .toolbar-title.changing {
     opacity: 0.6;
@@ -86,10 +86,10 @@
     margin: 15px 0 0 7px;
     border: 1px solid #C0C0C0;
     border-radius: 8px;
-    padding: 5px 13px;
+    padding: 6px 13px 5px;
     white-space: nowrap;
     font-size: 15px;
-    line-height: 18px;
+    line-height: 17px;
     cursor: pointer;
 }
 .filter-role {
