@@ -706,9 +706,7 @@ Talk.isForMe = function(mentions) {
             .done(function(data) {
                 showPrevious(data);
                 Talk.restoreOffset(first.node, offset);
-                /*$window.delay(150).scrollTo(function(now) {
-                    return now - 150;
-                }, 400);*/
+                Talk.scrollAbove();
             });
     });
 
@@ -1012,6 +1010,17 @@ Room.on('user.ignores.updated', function() {
 
     Talk.scrollQueue = function(callback) {
         this.content.queue(callback);
+    };
+
+    Talk.scrollAbove = function() {
+        var cur = content.scrollTop;
+        var pos = Math.max(0, cur - 150);
+        scroller[0].position = cur;
+        scroller.delay(150);
+        scroller.animate({position: pos}, {
+            duration: 400,
+            step: setPosition
+        });
     };
 
     Talk.scrollFurther = function(node) {
