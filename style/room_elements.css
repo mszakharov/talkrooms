@@ -150,11 +150,11 @@
     position: relative;
     top: -8px;
     left: 50%;
-    padding: 4px 36px 5px;
+    padding: 6px 36px 7px;
     border-radius: 8px;
     background: url('room/calendar.svg') no-repeat 14px 9px, url('room/calendar.svg') no-repeat 100% 9px;
     font-size: 13px;
-    line-height: 17px;
+    line-height: 13px;
     white-space: nowrap;
     color: #929292;
     cursor: pointer;
