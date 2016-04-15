@@ -117,7 +117,7 @@
     });
 
     form.on('click', function(event) {
-        if (event.target !== userpic[0]) {
+        if (event.target !== userpic[0] && event.target !== field[0]) {
             field.focus();
         }
     });
