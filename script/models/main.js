@@ -84,7 +84,11 @@ var Me = {};
         Me.recent_rooms = data.recent_rooms || [];
     }
 
-    Me.ready = Rest.sessions.get('me').done(update);
+    Me.update = function() {
+        return Rest.sessions.get('me').done(update);
+    };
+
+    Me.ready = Me.update();
 
 })();
 
@@ -229,6 +233,20 @@ var Me = {};
     window.Socket = Socket;
 
 })();
+
+// Login in other tab
+Socket.on('me.user_id.updated', function() {
+    Me.authorized = true;
+    Me.update(); // update rooms and ignores
+});
+
+// Logout in other tab
+Socket.on('me.deleted', function() {
+    Me.authorized = false;
+    if (Router.hash) {
+        Router.push('');
+    }
+});
 
 // Update rooms
 Socket.on('me.recent_rooms.updated', function(data) {

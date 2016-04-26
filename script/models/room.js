@@ -61,12 +61,6 @@ Room.handleEvent = function(event) {
         }
     }
 
-    function getRoom(hash) {
-        return Me.ready.then(function() {
-            return Rest.rooms.get(hash);
-        });
-    };
-
     Room.enter = function(hash) {
         if (this.hash && this.hash !== hash) {
             this.leave();
@@ -104,6 +98,12 @@ Room.handleEvent = function(event) {
         }
     });
 
+    Socket.on('me.user_id.updated', function() {
+        if (Room.hash) {
+            Socket.subscribe(Room.hash).done(enter).fail(locked);
+        }
+    });
+
     $window.on('beforeunload', function(event) {
         Room.leave();
     });
@@ -137,11 +137,11 @@ Room.isMy = function(data) {
 })();
 
 // Leave if subscription deleted
-Room.on('subscription.deleted', function() {
-    if (!Room.subscription) return;
+Room.on('subscription.deleted', function(data) {
+    if (Room.subscription !== data.subsciption_id) return;
     if (Room.data.level === 80) {
         Room.trigger('closed');
-    } else {
+    } else if (Room.myRole.level < Room.data.level) {
         Room.trigger('locked', true);
     }
 });
