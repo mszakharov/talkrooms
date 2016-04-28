@@ -138,10 +138,11 @@ Room.isMy = function(data) {
 
 // Leave if subscription deleted
 Room.on('subscription.deleted', function(data) {
-    if (Room.subscription !== data.subsciption_id) return;
+    if (Room.subscription !== data.subscription_id) return;
     if (Room.data.level === 80) {
         Room.trigger('closed');
     } else if (Room.myRole.level < Room.data.level) {
+        Room.comeIn = data.role_id;
         Room.trigger('locked', true);
     }
 });
