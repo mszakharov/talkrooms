@@ -231,9 +231,9 @@ Profile.isCivilian = function() {
         return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.myRole.role_id);
     }
 
-    var termElem = ignored.find('.moder-term'),
+    var termElem = ignored.find('.moder-convict'),
         termValue = ignored.find('.moder-term-value'),
-        termSelect = ignored.find('select');
+        termOptions = termElem.find('li');
 
     var terms = {
         15: 'на 15 минут',
@@ -241,22 +241,23 @@ Profile.isCivilian = function() {
         720: 'на 12 часов'
     };
 
+    var termsIndex = {
+        15: 0,
+        120: 1,
+        720: 2
+    };
+
     function getMinutes(since, date) {
         return Math.round((date - since) / 60000);
     }
 
-    function toggleTermOptions(past) {
-        var options = termSelect[0].options;
-        options[0].disabled = past > 15;
-        options[1].disabled = past > 120;
+    function toggleTermOption(index, past) {
+        termOptions.eq(index).toggleClass('moder-term-past', past);
     }
 
     function selectTerm(term) {
-        if (term) {
-            termSelect.val(term)
-        } else {
-            termSelect[0].selectedIndex = 3;
-        }
+        termOptions.removeClass('moder-term-selected');
+        termOptions.eq(term ? termsIndex[term] : 3).addClass('moder-term-selected');
     }
 
     function showIgnored(role) {
@@ -265,17 +266,19 @@ Profile.isCivilian = function() {
         var past = getMinutes(date, Date.now());
         var cr = canRelease(role);
         var tr = past > 720;
-        if (cr && !tr) {
-            termElem.addClass('moder-term-editable');
-            termSelect.prop('disabled', false);
-            toggleTermOptions(past);
+        var expired = term ? past >= term : false;
+        if (cr && !tr && !expired) {
+            termValue.addClass('moder-term-editable');
+            toggleTermOption(0, past > 15);
+            toggleTermOption(1, past > 120);
             selectTerm(term);
         } else {
-            termElem.removeClass('moder-term-editable');
-            termSelect.prop('disabled', true);
+            termValue.removeClass('moder-term-editable');
         }
+        termElem.removeClass('moder-term-select');
         termValue.text(term ? terms[term] : (tr ? date.toHumanAgo() : 'пожизненно'));
-        termElem.attr('title', String.mix('Начало игнора $1 в $2', date.toSmartDate(), date.toHumanTime()))
+        termValue.attr('title', String.mix('Начало игнора $1 в $2', date.toSmartDate().toLowerCase(), date.toHumanTime()));
+        ignored.toggleClass('moder-ignored-expired', expired);
         ignored.find('.moder-release').toggle(cr || tr);
         ignored.show();
     }
@@ -335,8 +338,18 @@ Profile.isCivilian = function() {
         updateRole({ignored: false});
     });
 
-    termSelect.on('change', function() {
-        updateRole({expired: this.value ? Number(this.value) * 60 : null});
+    termElem.on('click', 'li:not(.moder-term-past)', function() {
+        var term = this.getAttribute('data-term');
+        if ($(this).hasClass('moder-term-selected')) {
+            termElem.removeClass('moder-term-select');
+        } else {
+            selectTerm(term && Number(term));
+            updateRole({expired: term ? Number(term) * 60 : null});
+        }
+    });
+
+    termElem.on('click', '.moder-term-editable', function() {
+        termElem.addClass('moder-term-select');
     });
 
     banish.find('.button').on('click', function() {

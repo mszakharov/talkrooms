@@ -256,19 +256,18 @@
             <p class="hint">Продолжит писать сообщения, но&nbsp;другие посетители их&nbsp;не&nbsp;увидят</p>
         </div>
         <div class="moder-ignored">
-            <div class="moder-convict">В игноре
-                <span class="moder-term">
-                    <span class="moder-term-value">пожизненно</span>
-                    <select>
-                        <option value="15">на 15 минут</option>
-                        <option value="120">на 2 часа</option>
-                        <option value="720">на 12 часов</option>
-                        <option value="">пожизненно</option>
-                    </select>
-                </span>
-                <span class="moder-release" title="Выпустить"></span>
+            <div class="moder-convict">
+                <div class="moder-term">В игноре <span class="moder-term-value">пожизненно</span></div>
+                <ul class="moder-term-options">
+                    <li data-term="15">15&nbsp;мин</li>
+                    <li data-term="120">2&nbsp;ч</li>
+                    <li data-term="720">12&nbsp;ч</li>
+                    <li>∞</li>
+                </ul>
+                <div class="moder-release" title="Отменить игнор"></div>
             </div>
-            <p class="hint">Может заходить в&nbsp;комнату и&nbsp;писать сообщения, но&nbsp;другие посетители этого не&nbsp;видят</p>
+            <p class="hint ignored-hint-active">Может заходить в&nbsp;комнату и&nbsp;писать сообщения, но&nbsp;другие посетители этого не&nbsp;видят</p>
+            <p class="hint ignored-hint-expired">Выйдет из&nbsp;игнора, если напишет сообщение или&nbsp;ещё&nbsp;раз войдёт в&nbsp;комнату.</p>
         </div>
         <div class="button moder-erase">Удалить сообщения с <span class="erase-from"></span></div>
     </div>

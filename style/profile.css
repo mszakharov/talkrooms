@@ -188,12 +188,12 @@
 }
 .moder-convict {
     position: relative;
-    padding: 8px 14px;
     border-radius: 3px;
     background: #EB6B4B;
     color: #FFF;
     font-size: 16px;
     line-height: 18px;
+    cursor: default;
 }
 .moder-release {
     position: absolute;
@@ -204,34 +204,57 @@
     background: url('profile/cancel.svg') no-repeat 9px 9px;
     cursor: pointer;
 }
+.moder-term {
+    padding: 8px 14px;
+}
+.moder-term-editable {
+    cursor: pointer;
+    box-shadow: inset 0 -1px 0 #fadad2;
+}
+.moder-term-options {
+    display: none;
+    margin: 0;
+    padding: 0 4px;
+    overflow: hidden;
+    list-style: none;
+}
+.moder-term-options > li {
+    float: left;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+.moder-term-options > .moder-term-selected {
+    margin: 5px 2px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #fadad2;
+    color: #CB4B2B;
+    cursor: default;
+}
+.moder-term-past,
+.moder-ignored-expired .moder-term {
+    text-decoration: line-through;
+    color: #fadad2;
+    cursor: default !important;
+}
+.moder-term-select > .moder-term {
+    display: none;
+}
+.moder-term-select > .moder-term-options {
+    display: block;
+}
 .moder-erase {
     margin-top: 12px;
     padding: 7px 13px;
     font-size: 14px;
     line-height: 16px;
 }
-.moder-term {
-    display: inline-block;
-    position: relative;
-    overflow: hidden;
-    vertical-align: top;
+.ignored-hint-expired,
+.moder-ignored-expired .ignored-hint-active {
+    display: none;
 }
-.moder-term-editable {
-    cursor: pointer;
-    border-bottom: 1px solid #fadad2;
-    margin-bottom: -1px;
-}
-.moder-term > select {
-    position: absolute;
-    left: 0;
-    margin: -1px 0 0 -4px;
-    color: #404040;
-    opacity: 0;
-    visibility: hidden;
-    cursor: pointer;
-}
-.moder-term-editable > select {
-    visibility: visible;
+.moder-ignored-expired .ignored-hint-expired {
+    display: block;
 }
 
 /* Roles */
