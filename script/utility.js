@@ -133,8 +133,10 @@ $.fn.reflow = function() {
 
     Sound.prototype.play = function(volume) {
         this.raw.volume = volume || this.volume;
-        this.raw.currentTime = 0;
-        this.raw.play();
+        if (this.raw.readyState) {
+            this.raw.currentTime = 0;
+            this.raw.play();
+        }
     };
 
     window.Sound = Sound;
