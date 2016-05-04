@@ -564,7 +564,7 @@ Talk.isForMe = function(mentions) {
     Room.on('message.created', function(data) {
         if (isVisible(data) && data.message_id > current.last.data.message_id) {
             var message = Talk.createMessage(data);
-            var lastSpeech = current.last && current.last.node.parentNode;
+            var lastSpeech = current.last.node && current.last.node.parentNode;
             Talk.fixScroll();
             message.appendTo(current.container, current.last);
             current.messages.push(message);
