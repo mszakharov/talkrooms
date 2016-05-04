@@ -680,14 +680,14 @@ Talk.isForMe = function(mentions) {
     var loading;
 
     function loaded() {
-        loading.removeClass('loading');
+        loading.removeClass('talk-loading');
         loading = null;
     }
 
     function initNavigation(elem, load) {
         elem.find('.talk-load').on('click', function() {
             if (!loading) {
-                loading = elem.addClass('loading');
+                loading = elem.addClass('talk-loading');
                 load().always(loaded);
             }
         });
@@ -733,7 +733,7 @@ Talk.isForMe = function(mentions) {
     // Datepicker
     var datepicker = $.Datepicker('#datepicker', function(date) {
         if (loading) return false;
-        loading = dpControl.addClass('loading');
+        loading = Talk.content.addClass('talk-loading');
         loadAfterDate(date)
             .then(useIgnores)
             .done(replaceArchive)

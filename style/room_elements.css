@@ -214,6 +214,8 @@
 .talk-next,
 .talk-recent {
     margin: 0 5px;
+    -webkit-transition: opacity .25s;
+            transition: opacity .25s;
 }
 .talk-next {
     border-bottom: 1px solid #B0B0B0;
@@ -257,10 +259,6 @@
 .talk-recent,
 .talk-archive {
     display: none;
-}
-.loading > .talk-load {
-    color: #A0A0A0;
-    cursor: default;
 }
 .talk-datepicker {
     position: absolute;
