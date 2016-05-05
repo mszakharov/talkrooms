@@ -252,3 +252,6 @@ Socket.on('me.deleted', function() {
 Socket.on('me.recent_rooms.updated', function(data) {
     Me.recent_rooms = data.recent_rooms || [];
 });
+Socket.on('me.rooms.updated', function(data) {
+    Me.rooms = data.rooms || [];
+});

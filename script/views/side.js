@@ -88,12 +88,8 @@
         recentList.elem.addClass('rooms-folded');
     });
 
-    Socket.on('me.recent_rooms.updated', function() {
-        recentList.update(Me.recent_rooms);
-        if (Room.hash) {
-            selectCurrent();
-        }
-    });
+    Socket.on('me.recent_rooms.updated', updateLists);
+    Socket.on('me.rooms.updated', updateLists);
 
     Me.ready.done(updateLists);
 
