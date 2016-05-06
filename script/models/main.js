@@ -182,7 +182,7 @@ var Me = {};
 
     function socketLost(xhr) {
         if (xhr.status == 404) {
-            Socket.ready = createSocket();
+            Socket.ready = Me.update().then(createSocket);
         } else {
             connectLater();
         }
