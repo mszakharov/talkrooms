@@ -53,6 +53,9 @@
     var sendButton = form.find('.reply-send');
     var recipient;
 
+    // Disable autofocus on mobile devices
+    var autofocus = !(/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent));
+
     if (!(window.WebSocket && WebSocket.CLOSED === 3)) {
         form.hide();
         Room.replyTo = $.noop;
@@ -73,11 +76,11 @@
                 options.mentions = getMentions(content);
             }
             Room.send(options);
-            field.val('').focus();
-        } else {
-            if (recipient) {
-                cancelPrivate();
-            }
+            field.val('');
+        } else if (recipient) {
+            cancelPrivate();
+        }
+        if (autofocus) {
             field.focus();
         }
         if (expanded) {
@@ -178,7 +181,7 @@
 
     Room.on('ready', showUserpic);
     Room.on('ready', function() {
-        field.focus();
+        if (autofocus) field.focus();
     });
 
     Room.on('my.userpic.updated', showUserpic);
@@ -223,7 +226,7 @@
     };
 
     $window.on('focus', function() {
-        field.focus();
+        if (autofocus) field.focus();
     });
 
 })();
