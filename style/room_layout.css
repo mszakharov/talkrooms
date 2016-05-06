@@ -58,7 +58,6 @@ html.in-room {
 #side {
     width: 25%;
     overflow-x: hidden;
-    background: url('side.png') #EBE9E8;
 }
 #talk {
     right: 0;
@@ -82,6 +81,8 @@ html.in-room {
     right: -25px;
     bottom: 0;
     padding-right: 25px;
+    background: url('side.png') #EBE9E8;
+    background-attachment: local;
 }
 .talk-content {
     bottom: 78px;
