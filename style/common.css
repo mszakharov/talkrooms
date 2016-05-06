@@ -187,6 +187,17 @@ button:focus {
     overflow: hidden;
 }
 
+/* Login links */
+.login-links > .login-fb {
+    color: #3b5998;
+}
+.login-links > .login-vk {
+    color: #45688e;
+}
+.login-links > .login-ok {
+    color: #eb722e;
+}
+
 /* Dropdown animation */
 @-webkit-keyframes dropdown {
     from { opacity: 0; -webkit-transform: scale(0.8, 0.6); }

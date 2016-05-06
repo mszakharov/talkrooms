@@ -47,17 +47,6 @@
     line-height: 17px;
 }
 
-/* Login links */
-.login-fb {
-    color: #3b5998;
-}
-.login-vk {
-    color: #45688e;
-}
-.login-ok {
-    color: #eb722e;
-}
-
 /* Edit profile */
 #profile-edit .textfield {
     margin-top: 0;
