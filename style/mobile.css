@@ -116,14 +116,24 @@
     left: -70px;
 }
 
-/* Smaller reply height */
-.talk-reply {
+/* Smaller reply form height */
+.reply-form {
     padding: 4px 0;
 }
 .talk-content {
     bottom: 66px;
 }
-
+.nickname-hint {
+    padding: 8px 30px 8px 14px;
+}
+.nickname-hint:after {
+    left: 24px;
+    background-position: 0 -2px;
+}
+.nickname-hint-close {
+    top: 0;
+    right: 0;
+}
 .reply-wrapper {
     margin-right: 6px;
     margin-left: 6px;

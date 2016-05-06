@@ -73,6 +73,7 @@ var Me = {};
 (function() {
 
     function update(data) {
+        Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
         Me.ignores = data.ignores;
         Me.checkVersion(data.talkrooms);

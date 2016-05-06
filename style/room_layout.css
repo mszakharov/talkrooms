@@ -110,8 +110,6 @@ html.in-room {
     bottom: 0;
     z-index: 1;
     width: 100%;
-    min-height: 58px;
-    padding: 9px 0 11px;
     background: #FAFAFA;
     box-shadow: 0 -1px 0 rgba(0,0,0,0.08);
 }
@@ -124,6 +122,11 @@ html.in-room {
     border-radius: 50%;
     box-shadow: 0 0 12px rgba(0,0,0,0.1);
     clip: rect(-12px, 2000px, 0, 0);
+}
+.reply-form {
+    position: relative;
+    min-height: 58px;
+    padding: 9px 0 11px;
 }
 
 /* Forced scroll in iOS */

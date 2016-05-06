@@ -47,7 +47,7 @@
 // Reply form
 (function() {
 
-    var form = $('#talk .talk-reply');
+    var form = $('.reply-form');
     var field = form.find('textarea');
     var wrapper = form.find('.reply-wrapper');
     var sendButton = form.find('.reply-send');
@@ -295,5 +295,41 @@
         hideForm();
         showForm(message);
     };
+
+})();
+
+// Random nickname hint
+(function() {
+
+    var hint = $('.nickname-hint'),
+        userpic = $('.reply-form .userpic');
+
+    function showHint(nickname) {
+        hint.find('.nickname-hint-value').html(nickname);
+        Room.on('message.created', hideByMessage);
+        Profile.on('edit', hideHint);
+        userpic.addClass('userpic-highlight');
+        hint.show();
+    }
+
+    function hideHint() {
+        hint.hide();
+        userpic.removeClass('userpic-highlight');
+        Room.off('message.created', hideByMessage);
+        Profile.off('edit', hideHint);
+        localStorage.setItem('nickname_hint_hidden', 1);
+    }
+
+    function hideByMessage(message) {
+        if (Room.isMy(message)) hideHint();
+    }
+
+    hint.find('.nickname-hint-close').on('click', hideHint);
+
+    Room.on('enter', function() {
+        if (Me.rand_nickname && window.localStorage && !localStorage.getItem('nickname_hint_hidden')) {
+            showHint(Room.myRole.nickname);
+        }
+    });
 
 })();

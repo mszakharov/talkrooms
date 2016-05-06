@@ -156,24 +156,30 @@
         <textarea name="text" maxlength="1024"></textarea>
     </form>
 
-    <form class="talk-reply">
-        <div class="reply-send" title="Отправить">
-        <svg width="90" height="58">
-            <path class="send-arrow" d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
-            <circle class="send-spinner" cx="40" cy="29" r="12" stroke-dasharray="29 18" fill="none" stroke="#CCC" stroke-width="2">
-                <animateTransform attributeName="transform" type="rotate" from="0 40 29" to="360 40 29" dur="1s" repeatCount="indefinite"/>
-            </circle>
-        </svg>
+    <div class="talk-reply">
+        <div class="nickname-hint">
+            <p>Имя <span class="nickname-hint-value"></span> выбрано случайно. Чтобы выбрать другое, нажмите на&nbsp;аватар.</p>
+            <div class="nickname-hint-close"></div>
         </div>
-        <div class="reply-wrapper">
-            <div class="userpic"></div>
-            <div class="reply-public" title="Сообщение для всех">&times;</div>
-            <div class="reply-recipient"></div>
-            <div class="reply-field">
-                <textarea name="text" maxlength="1024"></textarea>
+        <form class="reply-form">
+            <div class="reply-send" title="Отправить">
+            <svg width="90" height="58">
+                <path class="send-arrow" d="M31,24 l9,-9 l9,9 M40,15 v19 c0,4 -3,7 -7,7" fill="none" stroke="#999" stroke-width="2"/>
+                <circle class="send-spinner" cx="40" cy="29" r="12" stroke-dasharray="29 18" fill="none" stroke="#CCC" stroke-width="2">
+                    <animateTransform attributeName="transform" type="rotate" from="0 40 29" to="360 40 29" dur="1s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
             </div>
-        </div>
-    </form>
+            <div class="reply-wrapper">
+                <div class="userpic"></div>
+                <div class="reply-public" title="Сообщение для всех">&times;</div>
+                <div class="reply-recipient"></div>
+                <div class="reply-field">
+                    <textarea name="text" maxlength="1024"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
 
 </div>
 

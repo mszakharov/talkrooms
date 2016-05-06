@@ -275,10 +275,6 @@
 .talk-reply {
     transition: box-shadow .5s;
 }
-.talk-reply .content {
-    padding: 9px 0 11px;
-    background: #FFF;
-}
 .reply-wrapper {
     position: relative;
     margin: 0 100px 0 28px;
@@ -407,6 +403,44 @@
 /* Disconnect */
 .disconnected .talk-reply {
     box-shadow: 0 -1px 0 #ca3c30;
+}
+
+/* Random nickname hint */
+.nickname-hint {
+    display: none;
+    position: relative;
+    border-bottom: 1px solid #E6D4A5;
+    padding: 11px 40px 11px 20px;
+    background: #F5EDD3;
+    box-shadow: 0 -1px 0 #E6D4A5;
+    font-size: 15px;
+    line-height: 16px;
+    color: #73716A;
+    cursor: default;
+}
+.nickname-hint:after {
+    content: '';
+    position: absolute;
+    left: 50px;
+    top: 100%;
+    width: 20px;
+    height: 10px;
+    background: url('room/hint_arrow.svg') no-repeat;
+}
+.nickname-hint-value {
+    color: #3D3C3A;
+}
+.nickname-hint-close {
+    position: absolute;
+    top: 3px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    background: url('room/hint_close.svg') no-repeat 10px 10px;
+    cursor: pointer;
+}
+.userpic-highlight {
+    box-shadow: 0px 0px 8px 1px #F0D690;
 }
 
 /* Date */
