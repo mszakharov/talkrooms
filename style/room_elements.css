@@ -182,13 +182,16 @@
 }
 .entry-spinner {
     padding-right: 32px;
-    background: url('room/spinner.svg') no-repeat 100% 5px;
+    background: url('room/spinner.svg') no-repeat 100% 7px;
 }
 .entry-text a,
 .entry-text .link {
     color: #1c768c;
 }
 .entry-back {
+    margin: 10px 0 0;
+}
+.entry-wait .login-links {
     margin: 10px 0 0;
 }
 
