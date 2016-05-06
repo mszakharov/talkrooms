@@ -193,10 +193,6 @@ html.in-room {
 @media (max-width: 800px) {
 
     /* Hide sidebar by default */
-    #side,
-    .header-side {
-        display: none;
-    }
     #talk {
         right: auto;
         left: 0;
@@ -215,10 +211,6 @@ html.in-room {
     }
 
     /* Show sidebar */
-    .visible-side #side,
-    .visible-side .header-side {
-        display: block;
-    }
     .visible-side #talk,
     .visible-side .header-talk {
         left: 256px;

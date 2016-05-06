@@ -55,7 +55,7 @@
 
     function showSide() {
         body.addClass('sliding-side').reflow(); // translate talk without transition
-        body.addClass('visible-side').reflow(); // display side before transition
+        body.addClass('visible-side');
         body.removeClass('sliding-side');
     }
 
@@ -66,7 +66,7 @@
     $('.header-show-side').on('click', function(event) {
         if (body.hasClass('visible-side')) {
             hideSide();
-        } else if (side.is(':hidden')) {
+        } else {
             showSide();
         }
     });
