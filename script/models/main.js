@@ -50,7 +50,16 @@ var Rest = {
         history.replaceState({}, title || document.title, '#' + hash);
     };
 
-    $(checkUrl);
+    $(function() {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+            sessionStorage.removeItem('redirect');
+            if (redirect !== location.hash.replace(/^#/, '')) {
+                Router.replace(redirect);
+            }
+        }
+        checkUrl();
+    });
 
     window.Router = Router;
 
@@ -64,6 +73,13 @@ Router.on(/^$/, function(hash) {
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
     Room.enter(hash);
     Room.toggle(true);
+});
+
+// Redirect after login
+$('.login-links').on('click', 'a', function() {
+    if (Router.hash) {
+        sessionStorage.setItem('redirect', Router.hash);
+    }
 });
 
 // Me
