@@ -5,17 +5,46 @@
 }
 #profile .popup-content {
     width: 320px;
+	cursor: default;
+    -webkit-transform-origin: 50% 55px;
+            transform-origin: 50% 55px; /* userpic center */
+    -webkit-animation: .08s ease-out profile-zoom;
+            animation: .08s ease-out profile-zoom;
+}
+
+/* Profile animation */
+@-webkit-keyframes profile-zoom {
+    from { opacity: 0; -webkit-transform: scale(0.9); }
+      to { opacity: 1; -webkit-transform: none; }
+}
+@keyframes profile-zoom {
+    from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: none; }
 }
 
 /* Sections */
-#profile .section {
+.profile-section {
     display: none;
     position: relative;
-    margin-top: -10px;
     border-radius: 5px;
-    padding: 26px 20px 16px;
     background: #FFF;
-    box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.05), 0px 2px 8px 0px rgba(0,0,0,0.18);
+}
+#profile-view,
+#profile-edit {
+	position: relative;
+	z-index: 1;
+	overflow: hidden;
+    box-shadow:
+    	0 0 0 1px rgba(0, 0, 0, 0.05),
+    	0 2px 8px rgba(0, 0, 0, 0.18);
+}
+#profile-login,
+#profile-logout {
+    margin-top: -10px;
+    padding: 26px 20px 16px;
+}
+#profile-moderate {
+    margin-top: -10px;
 }
 
 /* Elements */
@@ -24,46 +53,186 @@
     font-size: 16px;
     line-height: 21px;
 }
-#profile .button {
-	border: 1px solid #C7C7C7;
-	border-radius: 3px;
-	background: #F8F8F8;
-	background-image: -moz-linear-gradient(top, #FAFAFA, #F5F5F5);
-	background-image: -webkit-linear-gradient(top, #FAFAFA, #F5F5F5);
-	background-image: linear-gradient(top, #FAFAFA, #F5F5F5);
-	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
-	cursor: pointer;
-}
 #profile button {
-	padding: 3px 9px;
     vertical-align: top;
-	font-size: 15px;
 }
-
-/* Hints */
 #profile .hint {
     margin-top: 8px;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 17px;
 }
 
-/* Edit profile */
-#profile-edit .textfield {
-    margin-top: 0;
-    margin-right: 16px;
+/* Social icon */
+.profile-social {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	width: 30px;
+	height: 30px;
+	border-radius: 15px;
+	background-repeat: no-repeat;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
-#profile-edit .submit {
-    margin-top: 10px;
+.profile-social[href*='facebook.com'] {
+	background-image: url('profile/facebook.svg');
+	background-color: #3C5A99;
 }
-#my-nickname {
+.profile-social[href*='vk.com'] {
+	background-image: url('profile/vk.svg');
+	background-color: #4C75A3;
+}
+.profile-social[href*='ok.ru'] {
+	background-image: url('profile/ok.svg');
+	background-color: #F4731C;
+}
+
+/* Close */
+.profile-close {
+	position: absolute;
+	top: 14px;
+	right: 14px;
+	width: 30px;
+	height: 30px;
+	border-radius: 15px;
+	background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9.5 9.5l11 11M9.5 20.5l11-11' stroke-width='1.6' opacity='0.4' stroke='%23000000'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-color: rgba(255, 255, 255, 0.7);
+	cursor: pointer;
+}
+
+/* Photo */
+.profile-photo {
+	margin: 0 0 18px;
+	box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+.profile-photo-img {
+	display: block;
+	width: 320px;
+	height: auto;
+}
+
+/* Userpic */
+.profile-userpic {
+	margin: 28px auto 10px;
+	width: 52px;
+	height: 52px;
+	border-radius: 5px;
+    background-origin: border-box;
+    background-repeat: no-repeat;
+    background-size: 54px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Nickname and status */
+.profile-nickname {
+	margin: 0 20px;
+    font-size: 24px;
+    line-height: 26px;
+    text-align: center;
+}
+.profile-status {
+	margin: 3px 20px 0;
+    font: italic 15px/16px 'PT Serif', serif;
+    text-align: center;
+    color: #808080;
+}
+.profile-status .emoji {
+	font-style: normal;
+}
+
+/* Actions */
+.profile-actions {
+	position: relative;
+	margin: 20px 20px 0;
+	padding: 0 40px 20px;
+    text-align: center;
+}
+.profile-private {
+	box-sizing: border-box;
     width: 100%;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+    border-color: #EBE2CA #e0d8c1 #D6CEB8;
+    color: #7A7462;
+    background: linear-gradient(to bottom, #F5F0E1, #F2EDDF);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+    line-height: 28px;
 }
-#my-status {
-    width: 100%;
+.profile-ignore-icon {
+	position: absolute;
+	top: 0;
+	right: 0;
+	color: #E66450;
+	cursor: pointer;
 }
+.profile-ignore-icon > svg {
+	display: block;
+}
+.profile-ignore-disabled {
+	color: #DEDEDE;
+	cursor: default;
+}
+
+/* Ignore */
+.profile-ignore {
+    display: none;
+	margin: 20px 20px 0;
+	padding: 0 0 18px;
+}
+.profile-ignore > button {
+	width: 100%;
+	height: 38px;
+    border-radius: 8px;
+    border-color: #E66652 #D15947 #BF4E3D;
+    color: #FFF;
+    background: linear-gradient(to bottom, #E66653, #DE6350);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
+}
+.profile-ignore .hint {
+	margin-top: 12px !important;
+}
+
+/* Ignored */
+.profile-ignored {
+	display: none;
+	position: relative;
+	height: 50px;
+	margin-top: 20px;
+	padding: 0 20px;
+	background: #E16451;
+	line-height: 50px;
+	color: #FFF;
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15) inset;
+}
+.profile-ignored-cancel {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    width: 30px;
+    height: 30px;
+    background: url('profile/cancel.svg') no-repeat 9px 9px;
+    cursor: pointer;
+}
+
+/* Edit bitton */
+.profile-edit-button {
+	display: none;
+	height: 50px;
+	margin-top: 20px;
+	border-top: 1px solid #E0E0E0;
+	text-align: center;
+	line-height: 50px;
+	cursor: pointer;
+}
+.profile-edit-icon {
+	padding-left: 20px;
+	background: url('room/edit_role.svg') no-repeat 0 4px;
+}
+
+/* Edit section */
 .my-photo {
-    margin: -16px -20px 16px;
-    padding-top: 120px;
+    padding-top: 160px;
     background-color: #dfe5e5;
     background-size: cover;
     background-position: 0 35%;
@@ -76,145 +245,139 @@
     text-decoration: none;
     color: #FFF;
 }
-
-/* Details */
-.details-photo {
-    margin: -16px -20px 8px;
-    width: 320px;
-    height: auto;
+.profile-edit-fields {
+	margin: 0 20px;
+	padding-top: 18px;
 }
-.details-userpic {
-    display: none;
-    float: left;
-    background-origin: border-box;
-    background-repeat: no-repeat;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    width: 38px;
-    height: 38px;
-    background-size: 40px;
-    border-radius: 4px;
+#profile-edit .textfield {
+    margin-top: 0;
+    margin-right: 16px;
 }
-.details-nickname {
-    font-size: 18px;
-    line-height: 20px;
+#my-nickname {
+    width: 100%;
+    font-size: 24px;
 }
-.details-link {
-    margin-top: 3px;
-    font-size: 14px;
-    line-height: 17px;
-    color: #808080;
+#my-status {
+    width: 100%;
 }
-.details-edit {
-    margin-top: 18px;
+#profile-edit .submit {
+    margin: 20px 20px;
+}
+#profile-edit .submit button {
+	box-sizing: border-box;
+	width: 100%;
     padding: 7px 13px;
-    font-size: 16px;
-    line-height: 18px;
-    text-align: center;
-}
-.details-private {
-    margin-top: 18px;
-    padding: 7px 13px;
-    border: 1px solid #EDE8DA;
-    border-radius: 4px;
-    background: #F0ECE1;
-    text-align: center;
-    color: #736F67;
-    cursor: pointer;
 }
 
-/* Details without photo */
-.no-photo .details-userpic {
-    display: block;
-}
-.no-photo .details-nickname,
-.no-photo .details-link {
-    margin-left: 56px;
+/* Moderate section */
+#profile-moderate {
+	min-height: 60px;
+	background: #FAFAFA;
 }
 
-/* Ignores */
-#profile-ignores .button {
-    text-align: center;
+/* Rank */
+.moder-rank {
+	padding: 10px 20px 0;
+	text-align: center;
+	line-height: 50px;
+	color: #7A7A7A;
 }
-.ignores-normal {
-    padding: 7px 13px;
-    font-size: 16px;
-    line-height: 18px;
+.moder-rank-editable {
+	color: inherit;
+    background: url('profile/select.svg') no-repeat 100% 32px;
+	cursor: pointer;
 }
-.ignores-apply {
-    margin-top: 12px;
-    padding: 7px 13px;
-    font-size: 14px;
-    line-height: 16px;
+
+/* Moderator buttons */
+.moder-guest button,
+.moder-request button {
+	box-sizing: border-box;
+	width: 100%;
+	height: 60px;
+	margin: 0;
+	padding: 10px 0 0;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	font-size: 17px;
+	line-height: 50px;
 }
-.ignores-annoying {
+.moder-request:after,
+.moder-guest-editable:after {
+	content: '';
+	position: absolute;
+	top: 15px;
+	left: 50%;
+	width: 1px;
+	height: 40px;
+	background: #999999;
+	opacity: 0.6;
+}
+.moder-request button,
+.moder-guest-editable button {
+	float: left;
+	width: 50%;
+}
+.moder-promote {
+	display: none;
+}
+.moder-guest-editable .moder-promote {
+	display: block;
+}
+.moder-ignore,
+.moder-banish,
+.moder-reject {
+	color: #C24F3E;
+}
+.moder-invite,
+.moder-promote {
+	color: #448F39;
+}
+
+/* Ignored and banished */
+.moder-sanction {
     position: relative;
-    padding: 8px 14px;
-    border-radius: 3px;
-    background: #EB6B4B;
-    color: #FFF;
-    font-size: 16px;
-    line-height: 18px;
-}
-.ignores-cancel {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 30px;
     height: 30px;
-    background: url('profile/cancel.svg') no-repeat 9px 9px;
-    cursor: pointer;
-}
-
-/* Moderate */
-#profile-moderate .button {
-    text-align: center;
-}
-.moder-ignore .button,
-.moder-banish .button {
-    padding: 7px 13px;
-    font-size: 16px;
-    line-height: 18px;
-}
-.moder-convict {
-    position: relative;
-    border-radius: 3px;
-    background: #EB6B4B;
+    padding: 20px 20px 10px;
+	background: #E16451;
     color: #FFF;
-    font-size: 16px;
-    line-height: 18px;
-    cursor: default;
+    line-height: 30px;
 }
 .moder-release {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: 20px;
+    right: 8px;
     width: 30px;
     height: 30px;
     background: url('profile/cancel.svg') no-repeat 9px 9px;
     cursor: pointer;
 }
-.moder-term {
-    padding: 8px 14px;
+
+/* Ignored */
+.moder-ignored {
+	margin-bottom: 16px;
 }
+
+/* Ignored term */
 .moder-term-editable {
     cursor: pointer;
     box-shadow: inset 0 -1px 0 #fadad2;
 }
 .moder-term-options {
     display: none;
-    margin: 0;
-    padding: 0 4px;
+    margin: 0 0 0 -10px;
+    padding: 0;
     overflow: hidden;
     list-style: none;
 }
 .moder-term-options > li {
     float: left;
-    padding: 8px 10px;
+    padding: 0 10px;
     cursor: pointer;
 }
 .moder-term-options > .moder-term-selected {
-    margin: 5px 2px;
-    padding: 3px 8px;
+	margin: 0 2px;
+    padding: 0 8px;
     border-radius: 4px;
     background: #fadad2;
     color: #CB4B2B;
@@ -232,11 +395,11 @@
 .moder-term-select > .moder-term-options {
     display: block;
 }
-.moder-erase {
-    margin-top: 12px;
-    padding: 7px 13px;
-    font-size: 14px;
-    line-height: 16px;
+
+/* Ignored hints */
+#profile .ignored-hint-active,
+#profile .ignored-hint-expired {
+	margin: 14px 20px 0;
 }
 .ignored-hint-expired,
 .moder-ignored-expired .ignored-hint-active {
@@ -246,57 +409,28 @@
     display: block;
 }
 
-/* Roles */
-#profile-roles {
-    padding: 10px 0 0 !important;
+/* Erase messages */
+.moder-erase {
+	margin: 16px 20px 0;
+	padding-bottom: 20px;
 }
-.roles-current {
-    padding: 16px 20px;
-    color: #808080;
-    background: url('profile/select.svg') no-repeat 0 -20px;
-    cursor: default;
-}
-.roles-current.editable {
-    color: inherit;
-    background-position: 100% 23px;
-    cursor: pointer;
-}
-.roles-list {
-    padding: 4px 20px;
-    display: none;
-}
-.expanded .roles-current {
-    display: none;
-}
-.expanded .roles-list {
-    display: block;
-}
-.role {
-    margin: 14px 0;
-}
-#profile-roles .hint {
-    margin-top: 4px;
-    cursor: default;
+.moder-erase > button {
+	box-sizing: border-box;
+	width: 100%;
+    padding: 9px 13px;
+    font-size: 14px;
+    line-height: 16px;
 }
 
-/* Request */
-.moder-request {
-    padding-right: 26px !important;
+/* Ranks */
+.moder-ranks {
+	display: none;
+	margin: 0 20px;
+	padding: 30px 0 6px;
 }
-.moder-request .button {
-    padding: 7px 3px;
-    font-size: 16px;
-    line-height: 18px;
-    text-align: center;
+.rank {
+    margin: 0 0 14px;
 }
-.request-approve {
-    position: relative;
-    margin-right: -26px;
-    float: right;
-    width: 50%;
-    color: #00801a;
-}
-.request-reject {
-    width: 50%;
-    color: #ca3c30;
+#profile .moder-ranks .hint {
+    margin-top: 4px;
 }

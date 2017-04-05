@@ -101,6 +101,24 @@
 
 })();
 
+// Format status
+(function() {
+
+    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
+
+    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g
+
+    Room.formatStatus = function(status) {
+	    var s = status;
+	    if (~s.indexOf('#')) {
+		    s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
+	    }
+	    s = s.replace(emoji, '<span class="emoji">$&</span>');
+	    return s;
+    };
+
+})();
+
 // Users list
 (function() {
 
@@ -110,7 +128,7 @@
     function renderUser(data) {
         var user = template(data);
         if (data.status) {
-            user.find('.nickname').append(' <em>' + formatStatus(data.status) + '</em>');
+            user.find('.nickname').append(' <em>' + Room.formatStatus(data.status) + '</em>');
         }
         if (data.role_id === Room.myRole.role_id) {
             user.addClass('me');
@@ -120,14 +138,6 @@
         }
         user.attr('data-role', data.role_id);
         return user[0];
-    }
-
-    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
-
-    function formatStatus(status) {
-        return ~status.indexOf('#') ?
-            status.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>') :
-            status;
     }
 
     function Group(selector) {
@@ -176,7 +186,9 @@
             Profile.edit(elem);
             $('#my-status').select();
         } else {
-            Profile.show(getData(elem), elem);
+            Profile.show(getData(elem), {
+	            target: elem
+	        });
         }
     });
 
@@ -185,7 +197,9 @@
             var user = $(this).closest('.user');
             var data = getData(user);
             if (data.come_in != null) {
-                Profile.show(data, user);
+                Profile.show(data, {
+	                target: user
+	            });
             } else {
                 Room.replyTo(data);
             }

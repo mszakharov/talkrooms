@@ -250,7 +250,7 @@ Room.on('user.photo.updated', function(user) {
     function setAdmin(on) {
         if (Room.admin === on) return;
         if (Room.admin = on) {
-            $.require('views/roles.js');
+            $.require('views/ranks.js');
         }
         Room.trigger('admin.changed', on);
     }

@@ -1,101 +1,299 @@
 // Profile
 (function() {
 
-    var popup = $.popup('#profile', function() {
-        this.fadeIn(120);
-    });
+	var Profile = new Events();
 
-    var scroller = popup.find('.popup-scroll');
-    var content = popup.find('.popup-content');
+    var $popup = $.popup('#profile');
 
-    function show(socket, target, edit) {
-        var me = Room.isMy(socket);
-        popup.find('.section').hide();
-        Profile.socket = socket;
-        Profile.target = target && $(target);
-        Profile.trigger(edit ? 'edit' : 'show', socket, me);
-        if (Profile.target) {
-            var position = Profile.target.offset();
-            Profile.position = {
-                top: position.top - 16 - $window.scrollTop(),
-                left: position.left > 40 ? position.left - 20 : 20
+    var $scroller = $popup.find('.popup-scroll');
+    var $content = $popup.find('.popup-content');
+
+	var $sections = $popup.find('.profile-section');
+
+	var marginTop = 15;
+
+	function getCenter(target) {
+		var rect = target.getBoundingClientRect();
+		return {
+            top: Math.round((rect.top + rect.bottom) / 2),
+            left: Math.round((rect.left + rect.right) / 2)
+        };
+	}
+
+    function preloadPhoto(role) {
+        if (role.photo) {
+            var img = new Image();
+            img.src = '/photos/' + role.photo;
+            img.onload = function() {
+                Profile.trigger('ready', role, img);
+	            Profile.fit();
             };
-            popup.css('left', Profile.position.left);
         } else {
-            Profile.position = null;
+            Profile.trigger('ready', role);
+            Profile.fit();
         }
-        popup.show();
+    }
+
+    Profile.show = function(role, context, edit) {
+        var me = Room.isMy(role);
+        $sections.hide();
+        Profile.role = role;
+        Profile.socket = role;
+        Profile.context = context;
+        Profile.trigger(edit ? 'edit' : 'show', role, me);
+        if (!context.nickname) {
+	        context.nickname = role.nickname;
+        }
+        if (context.target) {
+	        $.extend(context, getCenter(context.target[0] || context.target));
+            $popup.css('left', Math.max(20, Profile.context.left - 160));
+        }
+        $popup.show();
         Profile.fit();
-        if (socket.message_id) {
+        if (role.message_id) {
             Rest.roles
-                .get(socket.role_id)
+                .get(role.role_id)
                 .done(function(data) {
-                    $.extend(socket, data);
-                    preloadPhoto(socket);
+                    $.extend(role, data);
+                    preloadPhoto(role);
                 })
         } else {
-            preloadPhoto(socket);
+            preloadPhoto(role);
         }
-    }
+    };
 
-    function preloadPhoto(data) {
-        if (data.photo) {
-            var img = new Image();
-            img.src = '/photos/' + data.photo;
-            img.onload = function() {
-                Profile.trigger('ready', data, img);
-            };
-        } else {
-            Profile.trigger('ready', data);
-        }
-    }
-
-    function hide() {
-        Profile.target = null;
+    Profile.hide = function() {
+        Profile.role = null;
+        Profile.context = null;
         Profile.socket = null;
-        popup.hide();
-    }
+        $popup.hide();
+    };
 
-    function updateIndexes() {
-        var nodes = popup.find('.section').get();
-        for (var i = nodes.length; i--;) {
-            nodes[i].style.zIndex = nodes.length - i;
+    Profile.fit = function() {
+        if (!this.context.top) return;
+        var wh = window.innerHeight;
+        var ch = $content.height();
+        var top = Math.min(this.context.top - 55, wh - ch - 25);
+        if (top < 15) {
+            $popup.css('top', 15);
+            $scroller.height(wh - 20).scrollTop(15 - top);
+        } else {
+            $popup.css('top', top);
+            $scroller.height('');
         }
-    }
+    };
 
-    updateIndexes();
+    Profile.edit = function(target) {
+        if (target) {
+            this.show(Room.myRole, {target: target}, true);
+        } else {
+            $sections.hide();
+            this.trigger('edit', Room.myRole, true);
+            this.fit();
+        }
+    };
 
-    window.Profile = Events.mixin({
+	function updateRole(data) {
+		$.extend(Profile.role, data);
+		Profile.trigger('role.updated', data);
+	}
 
-        fit: function() {
-            if (!this.position) return;
-            var wh = window.innerHeight;
-            var ch = content.height();
-            var top = Math.min(this.position.top, wh - ch - 25);
-            if (top < 15) {
-                popup.css('top', 15);
-                scroller.height(wh - 20).scrollTop(15 - top);
-            } else {
-                popup.css('top', top);
-                scroller.height('');
-            }
-        },
+	function updateByRole(data) {
+		if (Profile.role && Profile.role.role_id === data.role_id) {
+			updateRole(data);
+		}
+	}
 
-        edit: function(target) {
-            if (target) {
-                this.show(Room.myRole, target, true);
-            } else {
-                popup.find('.section').hide();
-                this.trigger('edit', Room.myRole, true);
-            }
-        },
+	function updateByUser(data) {
+		if (Profile.role && Profile.role.user_id === data.user_id) {
+			if (data.photo) {
+				$.extend(Profile.role, data);
+	            preloadPhoto(Profile.role);
+			} else {
+				updateRole(data);
+			}
+		}
+	}
 
-        show: show,
-        hide: hide
+	$content.find('.profile-close').on('click', function() {
+		Profile.hide();
+	});
 
+    Socket.on('role.nickname.updated', updateByRole);
+    Socket.on('role.status.updated', updateByRole);
+
+    Socket.on('user.photo.updated', updateByUser);
+    Socket.on('user.userpic.updated', updateByUser);
+
+    Room.on('leave', function() {
+	    Profile.hide();
     });
 
-    Room.on('leave', hide);
+    window.Profile = Profile;
+
+})();
+
+/* Role details */
+(function() {
+
+    var $section = $('#profile-view');
+
+    var $social = $section.find('.profile-social'),
+    	$photo = $section.find('.profile-photo'),
+    	$userpic = $section.find('.profile-userpic'),
+		$nickname = $section.find('.profile-nickname'),
+		$status = $section.find('.profile-status');
+
+    var socialType = /facebook|vk|ok/;
+    var socialTitles = {
+        facebook: 'Профиль в Фейсбуке',
+        vk: 'Профиль Вконтакте',
+        ok: 'Профиль в Одноклассниках'
+    };
+
+    function matchTitle(url) {
+	    var match = url.match(socialType);
+	    if (match) {
+		    return socialTitles[match[0]];
+	    }
+    }
+
+    function formatStatus() {
+
+    }
+
+    function showRole(role) {
+		$userpic.css('background-image', 'url(' + Userpics.getUrl(role) + ')').show();
+		$nickname.text(role.nickname);
+		if (role.status) {
+			$status.html(Room.formatStatus(role.status)).show();
+		} else {
+			$status.hide().text('');
+		}
+        if (role.profile_url && Room.myRole.user_id) {
+	        $social.attr('href', role.profile_url);
+	        $social.attr('title', matchTitle(role.profile_url));
+	        $social.show();
+        } else {
+	        $social.hide();
+        }
+    }
+
+    Profile.on('show', function(role, isMy) {
+        $photo.hide().text('');
+	    showRole(role);
+        $section.show();
+    });
+
+    Profile.on('ready', function(role, photoElem) {
+	    showRole(role);
+        if (photoElem) {
+			photoElem.className = 'profile-photo-img';
+			$userpic.hide();
+			$photo.text('').append(photoElem).show();
+        }
+    });
+
+    Profile.on('role.updated', function(role) {
+		showRole(Profile.role);
+    });
+
+})();
+
+// Actions
+(function() {
+
+	var $section = $('#profile-view');
+
+	var $actions = $section.find('.profile-actions'),
+		$ignore  = $section.find('.profile-ignore'),
+		$ignored = $section.find('.profile-ignored');
+		$edit    = $section.find('.profile-edit-button');
+
+	var ignoreDisabled = false;
+	var $ignoreIcon = $actions.find('.profile-ignore-icon');
+
+	var ignoreTitles = [
+		'У модераторов нет личного игнора',
+		'Скрыть во всех комнатах…'
+	];
+
+    function toggleIgnored(ignored) {
+        $actions.toggle(!ignored);
+        $ignored.toggle(ignored);
+        $ignore.hide();
+    }
+
+    function showIgnored() {
+	    toggleIgnored(true);
+    }
+
+    function showActions() {
+	    toggleIgnored(false);
+    }
+
+    function updateIgnores(action, role) {
+        var ignores = {};
+        if (role.user_id) {
+            ignores[action + '_user_id'] = role.user_id;
+        } else {
+            ignores[action + '_session_id'] = role.session_id;
+        }
+        return Rest.sessions.update('me', {ignores: ignores});
+    }
+
+    function isIgnored() {
+	    return Room.ignores ? Room.ignores(Profile.role) : false;
+    }
+
+    $actions.find('.profile-private').on('click', function() {
+        Room.replyPrivate(Profile.role);
+        Profile.hide();
+    });
+
+    $ignoreIcon.on('click', function() {
+	    if (ignoreDisabled) return false;
+        $actions.hide();
+        $ignore.find('.nickname').text(Profile.role.nickname);
+        $ignore.show();
+        Profile.fit();
+    });
+
+    $ignore.find('button').on('click', function() {
+        updateIgnores('add', Profile.role).then(showIgnored);
+    });
+
+    $ignored.find('.profile-ignored-cancel').on('click', function() {
+        updateIgnores('delete', Profile.role).then(showActions);
+    });
+
+    $edit.on('click', function() {
+        Profile.edit();
+    });
+
+    Room.on('moderator.changed', function(isModerator) {
+	    ignoreDisabled = isModerator;
+		$ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
+		$ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
+        if (Profile.socket) {
+	        toggleIgnored(!isModerator && isIgnored());
+        }
+    });
+
+    Room.on('user.ignores.updated', function() {
+        if (Profile.role) {
+	        toggleIgnored(isIgnored());
+        }
+    });
+
+    Profile.on('show', function(role, isMy) {
+		toggleIgnored(isMy ? false : isIgnored());
+		if (isMy) {
+			toggleIgnored(false);
+			$actions.hide();
+		}
+		$edit.toggle(isMy);
+    });
 
 })();
 
@@ -151,154 +349,6 @@
         }
         form.show();
     });
-
-})();
-
-/* User details */
-(function() {
-
-    var section = $('#profile-details');
-
-    var types = /(facebook|vk|ok)/;
-    var titles = {
-        facebook: 'Профиль в Фейсбуке',
-        vk: 'Профиль Вконтакте',
-        ok: 'Профиль в Одноклассниках'
-    };
-
-    var edit = section.find('.details-edit');
-    edit.on('click', function() {
-        Profile.edit();
-    });
-
-    var sendPrivate = section.find('.details-private');
-    sendPrivate.on('click', function() {
-        Room.replyPrivate(Profile.socket);
-        Profile.hide();
-    });
-
-    var link = '<a href="$1" target="_blank">$2</a>';
-    function renderLink(url) {
-        var type = url.match(types)[1];
-        return String.mix(link, url, titles[type]);
-    }
-
-    Profile.on('show', function(socket, me) {
-        edit.toggle(me);
-        sendPrivate.toggle((socket.user_id || socket.session_id) && !me && !socket.request_id);
-        section.addClass('no-photo');
-        section.find('.details-userpic').css('background-image', 'url(' + Userpics.getUrl(socket) + ')');
-        section.find('.details-nickname').html(socket.nickname);
-        var profileText;
-        if (Room.myRole.user_id) {
-            profileText = socket.user_id ? 'загрузка профиля…' : 'без профиля';
-        }
-        section.find('.details-link').html(profileText || '&nbsp;');
-        section.find('.details-photo').remove();
-        section.show();
-    });
-
-    Profile.on('ready', function(data, photo) {
-        if (section.is(':visible')) {
-            if (data.profile_url && Room.myRole.user_id) {
-                section.find('.details-link').html(renderLink(data.profile_url));
-            }
-            if (photo) {
-                section.removeClass('no-photo');
-                $(photo).addClass('details-photo').prependTo(section);
-                Profile.fit();
-            }
-        }
-    });
-
-    Room.on('socket.nickname.updated', function(socket) {
-        if (Profile.socket && socket.socket_id === Profile.socket.socket_id) {
-            section.find('.details-nickname').html(socket.nickname);
-        }
-    });
-
-})();
-
-// Ignores
-(function() {
-
-    var section = $('#profile-ignores');
-
-    var normal = section.find('.ignores-normal'),
-        riposte = section.find('.ignores-riposte'),
-        annoying = section.find('.ignores-annoying');
-
-    function toggleState(on) {
-        riposte.hide();
-        normal.toggle(!on);
-        annoying.toggle(on);
-    }
-
-    function showNormal() {
-        annoying.hide();
-        normal.show();
-    }
-
-    function showAnnoying() {
-        normal.hide();
-        riposte.hide();
-        annoying.show();
-        Profile.fit();
-    }
-
-    function showRiposte() {
-        normal.hide();
-        riposte.find('.ignores-nickname').html(Profile.socket.nickname);
-        riposte.show();
-        Profile.fit();
-    }
-
-    function updateIgnores(action, data) {
-        var ignores = {};
-        if (data.user_id) {
-            ignores[action + '_user_id'] = data.user_id;
-        } else {
-            ignores[action + '_session_id'] = data.session_id;
-        }
-        return Rest.sessions.update('me', {ignores: ignores});
-    }
-
-    function onShow(socket, me) {
-        if (!me && !Room.moderator) {
-            toggleState(Room.ignores && Room.ignores(socket));
-            section.show();
-        }
-    }
-
-    normal.on('click', function() {
-        showRiposte();
-    });
-
-    section.find('.ignores-apply').on('click', function() {
-        updateIgnores('add', Profile.socket).done(showAnnoying);
-    });
-
-    section.find('.ignores-cancel').on('click', function() {
-        updateIgnores('delete', Profile.socket).done(showNormal);
-    });
-
-    Room.on('moderator.changed', function(on) {
-        if (Profile.socket) {
-            if (on) {
-                section.hide();
-            } else {
-                onShow(Profile.socket, Room.isMy(Profile.socket));
-            }
-        }
-    });
-
-    Room.on('user.ignores.updated', function() {
-        if (Profile.socket && section.is(':visible')) {
-            toggleState(Room.ignores && Room.ignores(Profile.socket));
-        }
-    });
-
-    Profile.on('show', onShow);
 
 })();
 

@@ -143,6 +143,9 @@ Talk.format = function(content) {
     if (~s.indexOf('#')) {
         s = s.replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2" target="_blank">$2</a>');
     }
+    if (~s.indexOf('~~')) {
+        s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+    }
     return s.replace(/\n/g, '<br>');
 };
 
@@ -838,7 +841,11 @@ Room.on('user.ignores.updated', function() {
     content.on('click', '.userpic', function(event) {
         event.stopPropagation();
         var role = getRole(this.parentNode);
-        Profile.show(role, this);
+        Profile.show(role, {
+	        nickname: $(this).next('.nickname').text(),
+	        target: this,
+	        inTalk: true
+        });
     });
 
     content.on('click', '.nickname', function() {

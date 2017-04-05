@@ -82,7 +82,7 @@ $('.login-links').on('click', 'a', function() {
     }
 });
 
-// Me
+// My session
 var Me = {};
 
 // Get my session
@@ -101,11 +101,11 @@ var Me = {};
         Me.recent_rooms = data.recent_rooms || [];
     }
 
-    Me.update = function() {
-        return Rest.sessions.get('me').done(update);
+    Me.reload = function() {
+        return this.ready = Rest.sessions.get('me').done(update);
     };
 
-    Me.ready = Me.update();
+    Me.reload();
 
 })();
 
@@ -182,7 +182,7 @@ var Me = {};
 
     function socketLost(xhr) {
         if (xhr.status == 404) {
-            Socket.ready = Me.update().then(createSocket);
+            Socket.ready = Me.reload().then(createSocket);
         } else {
             connectLater();
         }
@@ -254,7 +254,7 @@ var Me = {};
 // Login in other tab
 Socket.on('me.user_id.updated', function() {
     Me.authorized = true;
-    Me.update(); // update rooms and ignores
+    Me.reload(); // update rooms and ignores
 });
 
 // Logout in other tab

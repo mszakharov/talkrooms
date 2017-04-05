@@ -15,20 +15,32 @@
     }
 
     function send() {
-        Rest.messages.create(current).done(next).fail(retry);
+        Rest.messages.create(current).done(next).fail(failed);
     }
 
-    function retry(xhr) {
-        if (xhr.status === 429) {
-            var delay = Number(xhr.responseText || 5);
-            if (delay > 5) {
-                Room.trigger('replies.overflow');
-                overflow = true;
-            }
-            setTimeout(send, delay * 1000);
+    function retry(delay) {
+        setTimeout(send, delay * 1000);
+        if (delay > 5) {
+            Room.trigger('replies.overflow');
+            overflow = true;
+        }
+    }
+
+    function failed(xhr) {
+	    if (xhr.status === 406) {
+			notAcceptable(xhr.responseText);
+        } else if (xhr.status === 429) {
+            retry(Number(xhr.responseText || 5));
         } else {
             current = null;
         }
+    }
+
+    var link = /\b(http\S+[^.,)?!\s])/g;
+
+    function notAcceptable(reason) {
+		Room.replyFailed(current, reason);
+		next();
     }
 
     Socket.on('connected', next);
@@ -52,6 +64,8 @@
     var wrapper = form.find('.reply-wrapper');
     var sendButton = form.find('.reply-send');
     var recipient;
+
+    var $warning = $('.reply-warning');
 
     // Disable autofocus on mobile devices
     var autofocus = !(/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent));
@@ -86,6 +100,7 @@
         if (expanded) {
             collapseField();
         }
+	    $warning.hide();
     }
 
     var mentionsIndex = {};
@@ -175,8 +190,14 @@
         });
     }
 
+    var screenKeyboard = 'ontouchstart' in window;
+
     userpic.on('click', function(event) {
         Profile.edit(this);
+		// Screen keyboard overlays login links, don't show it
+        if (!screenKeyboard) {
+	        $('#my-nickname').focus();
+	    }
     });
 
     Room.on('ready', showUserpic);
@@ -195,6 +216,7 @@
     });
 
     Room.on('leave', function() {
+	    $warning.hide();
         sendButton.removeClass('send-overflow');
         mentionsIndex = {};
     });
@@ -225,6 +247,20 @@
         field.focus();
     };
 
+    Room.replyFailed = function(data, reason) {
+        Room.trigger('reply.warning');
+	    $warning.show();
+	    field.on('input', hideWarning);
+		if (!field.val()) {
+			field.val(data.content);
+		}
+    };
+
+    function hideWarning() {
+	    $warning.hide();
+	    field.off('input', hideWarning);
+    }
+
     $window.on('focus', function() {
         if (autofocus) field.focus();
     });
@@ -236,6 +272,8 @@
 
     var form = $('.talk-edit');
     var field = form.find('textarea').val('');
+
+	var $warning = form.find('.talk-edit-warning');
 
     var editing;
 
@@ -254,6 +292,7 @@
         field.val('').height('');
         form.parent('.message').removeClass('editing');
         form.detach();
+		$warning.hide();
         editing = null;
     }
 
@@ -265,10 +304,20 @@
                     content: content
                 })
                 .done(hideForm)
-                .done(Room.reply);
+                .done(Room.reply)
+                .fail(showWarning);
         } else {
             hideForm();
         }
+    }
+
+    function showWarning(xhr) {
+	    if (xhr.status === 406) {
+			$warning.show();
+			Talk.scrollBy($warning.outerHeight());
+		} else {
+			hideForm();
+		}
     }
 
     field.on('input', function(event) {
@@ -291,7 +340,7 @@
         }
     });
 
-    field.on('blur', hideForm);
+    //field.on('blur', hideForm);
     Room.on('enter', hideForm);
 
     Room.edit = function(message) {
@@ -310,6 +359,7 @@
     function showHint(nickname) {
         hint.find('.nickname-hint-value').html(nickname);
         Room.on('message.created', hideByMessage);
+        Room.on('reply.warning', hideHint);
         Profile.on('edit', hideHint);
         userpic.addClass('userpic-highlight');
         hint.show();
@@ -319,6 +369,7 @@
         hint.hide();
         userpic.removeClass('userpic-highlight');
         Room.off('message.created', hideByMessage);
+        Room.off('reply.warning', hideHint);
         Profile.off('edit', hideHint);
         localStorage.setItem('nickname_hint_hidden', 1);
     }

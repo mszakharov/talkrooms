@@ -151,8 +151,10 @@ input.invalid ~ .hint {
 
 /* Button */
 button {
-    border: 1px solid #C7C7C7;
-    border-radius: 3px;
+    border: 1px solid #CDCDCD;
+    border-top-color: #D7D7D7;
+    border-bottom-color: #C2C2C2;
+    border-radius: 8px;
     padding: 3px 9px;
     background: #F8F8F8;
     background-image: -moz-linear-gradient(top, #FAFAFA, #F5F5F5);
@@ -206,4 +208,14 @@ button:focus {
 @keyframes dropdown {
     from { opacity: 0; transform: scale(0.8, 0.6); }
       to { opacity: 1; transform: none; }
+}
+
+/* Fade animation */
+@-webkit-keyframes fade-in {
+    from { opacity: 0; }
+      to { opacity: 1; }
+}
+@keyframes fade-in {
+    from { opacity: 0; }
+      to { opacity: 1; }
 }

@@ -46,6 +46,7 @@ html.in-room {
     padding: 22px 20px 20px 24px;
     cursor: pointer;
     color: #A0A0A0;
+    transform: translateX(0); /* Fix blurry svg in Firefox */
 }
 
 /* Columns */
