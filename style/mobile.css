@@ -120,6 +120,9 @@
 .reply-form {
     padding: 4px 0;
 }
+.reply-warning {
+    padding: 8px 30px 8px 14px;
+}
 .talk-content {
     bottom: 66px;
 }
