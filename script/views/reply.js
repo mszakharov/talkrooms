@@ -340,7 +340,7 @@
         }
     });
 
-    //field.on('blur', hideForm);
+    field.on('blur', hideForm);
     Room.on('enter', hideForm);
 
     Room.edit = function(message) {
