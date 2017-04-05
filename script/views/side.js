@@ -109,12 +109,12 @@
     var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g
 
     Room.formatStatus = function(status) {
-	    var s = status;
-	    if (~s.indexOf('#')) {
-		    s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
-	    }
-	    s = s.replace(emoji, '<span class="emoji">$&</span>');
-	    return s;
+        var s = status;
+        if (~s.indexOf('#')) {
+            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
+        }
+        s = s.replace(emoji, '<span class="emoji">$&</span>');
+        return s;
     };
 
 })();
@@ -187,8 +187,8 @@
             $('#my-status').select();
         } else {
             Profile.show(getData(elem), {
-	            target: elem
-	        });
+                target: elem
+            });
         }
     });
 
@@ -198,8 +198,8 @@
             var data = getData(user);
             if (data.come_in != null) {
                 Profile.show(data, {
-	                target: user
-	            });
+                    target: user
+                });
             } else {
                 Room.replyTo(data);
             }

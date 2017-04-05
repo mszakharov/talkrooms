@@ -68,10 +68,10 @@
 
 // Update current role
 Profile.send = function(data) {
-	var role = this.role;
-	if (role) {
-		return Rest.roles.update(role.role_id, data);
-	}
+    var role = this.role;
+    if (role) {
+        return Rest.roles.update(role.role_id, data);
+    }
 };
 
 // Whip sound
@@ -86,7 +86,7 @@ Profile.send = function(data) {
 
     function playWhip(role) {
         if (role.ignored) {
-	        console.log(whippedByMe);
+            console.log(whippedByMe);
             if (role.role_id === whippedByMe) {
                 whippedByMe = null;
             } else {
@@ -96,107 +96,107 @@ Profile.send = function(data) {
     }
 
     function toggleEvent(toggle) {
-		Socket[toggle ? 'on' : 'off']('role.ignored.updated', playWhip);
+        Socket[toggle ? 'on' : 'off']('role.ignored.updated', playWhip);
     }
 
     Profile.whip = function() {
-	    whippedByMe = Profile.role.role_id;
-		whipSound.play(0.5);
+        whippedByMe = Profile.role.role_id;
+        whipSound.play(0.5);
     };
 
     Room.on('moderator.changed', function(isModerator) {
-		toggleEvent(isModerator);
+        toggleEvent(isModerator);
     });
 
-	toggleEvent(Room.moderator);
+    toggleEvent(Room.moderator);
 
 })();
 
 // Moderate section
 (function() {
 
-	var $section = $('#profile-moderate');
+    var $section = $('#profile-moderate');
 
-	var MODERATOR = 50;
+    var MODERATOR = 50;
 
-	function updateRole(data) {
-		if (Profile.role && Profile.role.role_id === data.role_id) {
-			var role = $.extend(Profile.role, data);
-			Profile.trigger('moderated', getState(role));
+    function updateRole(data) {
+        if (Profile.role && Profile.role.role_id === data.role_id) {
+            var role = $.extend(Profile.role, data);
+            Profile.trigger('moderated', getState(role));
             Profile.fit();
-		}
-	}
+        }
+    }
 
-	function getState(role) {
-		if (role.level >= MODERATOR) {
-			return 'rank';
-		}
+    function getState(role) {
+        if (role.level >= MODERATOR) {
+            return 'rank';
+        }
         if (role.level < Room.data.level) {
-	        return role.come_in === 0 ? 'banished' : 'request';
-		}
-		if (role.ignored) {
-			return 'ignored';
-		}
-		return 'guest';
-	}
+            return role.come_in === 0 ? 'banished' : 'request';
+        }
+        if (role.ignored) {
+            return 'ignored';
+        }
+        return 'guest';
+    }
 
-	function onRoomUpdated() {
-		if (isActive) {
-			Profile.trigger('moderated', getState(Profile.role));
-			Profile.fit();
-		}
-	}
+    function onRoomUpdated() {
+        if (isActive) {
+            Profile.trigger('moderated', getState(Profile.role));
+            Profile.fit();
+        }
+    }
 
-	function toggleEvents(toggle) {
+    function toggleEvents(toggle) {
 
-		Socket[toggle]('role.level.updated', updateRole);
-		Socket[toggle]('role.ignored.updated', updateRole);
-		Socket[toggle]('role.expired.updated', updateRole);
-		Socket[toggle]('role.come_in.updated', updateRole);
+        Socket[toggle]('role.level.updated', updateRole);
+        Socket[toggle]('role.ignored.updated', updateRole);
+        Socket[toggle]('role.expired.updated', updateRole);
+        Socket[toggle]('role.come_in.updated', updateRole);
 
-	    Room[toggle]('room.level.updated', onRoomUpdated);
+        Room[toggle]('room.level.updated', onRoomUpdated);
 
-	}
+    }
 
-	var isActive = false;
+    var isActive = false;
 
-	Profile.on('show', function(role, isMy) {
-		isActive = Boolean(Room.moderator && !isMy);
-		$section.toggle(isActive);
-		if (isActive) {
-			Profile.trigger('moderated', null);
-		}
-	});
+    Profile.on('show', function(role, isMy) {
+        isActive = Boolean(Room.moderator && !isMy);
+        $section.toggle(isActive);
+        if (isActive) {
+            Profile.trigger('moderated', null);
+        }
+    });
 
-	Profile.on('ready', function(role) {
-		if (isActive) {
-			Profile.trigger('moderated', getState(role));
-		}
-	});
+    Profile.on('ready', function(role) {
+        if (isActive) {
+            Profile.trigger('moderated', getState(role));
+        }
+    });
 
-	function toggleSection(isModerator) {
-		toggleEvents(isModerator ? 'on' : 'off');
+    function toggleSection(isModerator) {
+        toggleEvents(isModerator ? 'on' : 'off');
         if (Profile.role) {
             if (isModerator) {
-				isActive = isModerator && !Room.isMy(Profile.role);
-				$section.toggle(isActive);
-				if (isActive) {
-					Profile.trigger('moderated', getState(Profile.role));
-				}
+                isActive = isModerator && !Room.isMy(Profile.role);
+                $section.toggle(isActive);
+                if (isActive) {
+                    Profile.trigger('moderated', getState(Profile.role));
+                }
             } else {
                 isActive = false;
                 $section.hide();
             }
             Profile.fit();
         }
-	}
+    }
 
     Room.on('moderator.changed', toggleSection);
 
-	// Wait for sections initialization below
-	setTimeout(function() {
-	    toggleSection(Room.moderator);
-	}, 100);
+    // Wait for sections initialization below
+    setTimeout(function() {
+        toggleSection(Room.moderator);
+    }, 100);
 
 })();
 
@@ -223,7 +223,7 @@ Profile.isCivilian = function() {
     });
 
     Profile.on('moderated', function(state) {
-		$request.toggle(state === 'request');
+        $request.toggle(state === 'request');
     });
 
 })();
@@ -231,7 +231,7 @@ Profile.isCivilian = function() {
 // Current rank
 (function() {
 
-	var $rank = $('.moder-rank');
+    var $rank = $('.moder-rank');
 
     var ranks = {
         50: 'Модератор',
@@ -240,12 +240,12 @@ Profile.isCivilian = function() {
     };
 
     Profile.on('moderated', function(state) {
-	    if (state === 'rank') {
-			$rank.text(ranks[Profile.role.level]);
-			$rank.show();
-	    } else {
-			$rank.hide();
-	    }
+        if (state === 'rank') {
+            $rank.text(ranks[Profile.role.level]);
+            $rank.show();
+        } else {
+            $rank.hide();
+        }
     });
 
 })();
@@ -256,7 +256,7 @@ Profile.isCivilian = function() {
     var $guest = $('.moder-guest');
 
     var $ignore = $guest.find('.moder-ignore');
-		$banish = $guest.find('.moder-banish');
+        $banish = $guest.find('.moder-banish');
 
     $ignore.on('click', function() {
         Profile.send({ignored: true});
@@ -265,25 +265,25 @@ Profile.isCivilian = function() {
 
     $banish.on('click', function() {
         Profile.send({
-	        level: Profile.role.user_id ? 10 : 0,
-	        come_in: false
-		});
+            level: Profile.role.user_id ? 10 : 0,
+            come_in: false
+        });
     });
 
     $guest.find('.moder-promote').on('click', function() {
         Profile.trigger('moderated', 'ranks');
-		Profile.fit();
+        Profile.fit();
     });
 
     Profile.on('moderated', function(state) {
-	    if (state === 'guest') {
-		    var useIgnore = Room.data.level < 20;
-			$ignore.toggle(useIgnore);
-			$banish.toggle(!useIgnore);
-			$guest.show();
-	    } else {
-			$guest.hide();
-	    }
+        if (state === 'guest') {
+            var useIgnore = Room.data.level < 20;
+            $ignore.toggle(useIgnore);
+            $banish.toggle(!useIgnore);
+            $guest.show();
+        } else {
+            $guest.hide();
+        }
     });
 
 })();
@@ -291,7 +291,7 @@ Profile.isCivilian = function() {
 // Ignored profile
 (function() {
 
-	var $ignored = $('.moder-ignored');
+    var $ignored = $('.moder-ignored');
 
     var $sanction = $ignored.find('.moder-sanction'),
         termValue = $sanction.find('.moder-term-value'),
@@ -367,12 +367,12 @@ Profile.isCivilian = function() {
     });
 
     Profile.on('moderated', function(state, role) {
-	    if (state === 'ignored') {
-		    showIgnored(Profile.role)
-			$ignored.show();
-	    } else {
-			$ignored.hide();
-	    }
+        if (state === 'ignored') {
+            showIgnored(Profile.role)
+            $ignored.show();
+        } else {
+            $ignored.hide();
+        }
     });
 
 })();
@@ -384,13 +384,13 @@ Profile.isCivilian = function() {
 
     $banished.find('.moder-release').on('click', function() {
         Profile.send({
-	        level: Room.data.level,
-	        come_in: null
-		});
+            level: Room.data.level,
+            come_in: null
+        });
     });
 
     Profile.on('moderated', function(state) {
-		$banished.toggle(state === 'banished');
+        $banished.toggle(state === 'banished');
     });
 
 })();
@@ -401,8 +401,8 @@ Profile.isCivilian = function() {
     var $erase = $('.moder-erase');
 
     var showFor = {
-		ignored: true,
-		banished: true
+        ignored: true,
+        banished: true
     };
 
     var targetMessage;
@@ -415,8 +415,8 @@ Profile.isCivilian = function() {
     }
 
     function onErased() {
-	    targetMessage = null;
-	    $erase.hide();
+        targetMessage = null;
+        $erase.hide();
     }
 
     $erase.on('click', function() {
@@ -425,17 +425,17 @@ Profile.isCivilian = function() {
     });
 
     Profile.on('show', function(role, isMy) {
-		targetMessage = Profile.context.inTalk ? getMessage(Profile.context.target) : null;
-	});
+        targetMessage = Profile.context.inTalk ? getMessage(Profile.context.target) : null;
+    });
 
     Profile.on('moderated', function(state) {
-	    if (showFor[state] && targetMessage) {
+        if (showFor[state] && targetMessage) {
             var time = targetMessage.find('.msg-time').text();
             $erase.find('.erase-from').text(time);
             $erase.show();
-	    } else {
-		    $erase.hide();
-	    }
+        } else {
+            $erase.hide();
+        }
     });
 
 })();

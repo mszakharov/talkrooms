@@ -1,24 +1,24 @@
 // Profile
 (function() {
 
-	var Profile = new Events();
+    var Profile = new Events();
 
     var $popup = $.popup('#profile');
 
     var $scroller = $popup.find('.popup-scroll');
     var $content = $popup.find('.popup-content');
 
-	var $sections = $popup.find('.profile-section');
+    var $sections = $popup.find('.profile-section');
 
-	var marginTop = 15;
+    var marginTop = 15;
 
-	function getCenter(target) {
-		var rect = target.getBoundingClientRect();
-		return {
+    function getCenter(target) {
+        var rect = target.getBoundingClientRect();
+        return {
             top: Math.round((rect.top + rect.bottom) / 2),
             left: Math.round((rect.left + rect.right) / 2)
         };
-	}
+    }
 
     function preloadPhoto(role) {
         if (role.photo) {
@@ -26,7 +26,7 @@
             img.src = '/photos/' + role.photo;
             img.onload = function() {
                 Profile.trigger('ready', role, img);
-	            Profile.fit();
+                Profile.fit();
             };
         } else {
             Profile.trigger('ready', role);
@@ -42,10 +42,10 @@
         Profile.context = context;
         Profile.trigger(edit ? 'edit' : 'show', role, me);
         if (!context.nickname) {
-	        context.nickname = role.nickname;
+            context.nickname = role.nickname;
         }
         if (context.target) {
-	        $.extend(context, getCenter(context.target[0] || context.target));
+            $.extend(context, getCenter(context.target[0] || context.target));
             $popup.css('left', Math.max(20, Profile.context.left - 160));
         }
         $popup.show();
@@ -93,31 +93,31 @@
         }
     };
 
-	function updateRole(data) {
-		$.extend(Profile.role, data);
-		Profile.trigger('role.updated', data);
-	}
+    function updateRole(data) {
+        $.extend(Profile.role, data);
+        Profile.trigger('role.updated', data);
+    }
 
-	function updateByRole(data) {
-		if (Profile.role && Profile.role.role_id === data.role_id) {
-			updateRole(data);
-		}
-	}
+    function updateByRole(data) {
+        if (Profile.role && Profile.role.role_id === data.role_id) {
+            updateRole(data);
+        }
+    }
 
-	function updateByUser(data) {
-		if (Profile.role && Profile.role.user_id === data.user_id) {
-			if (data.photo) {
-				$.extend(Profile.role, data);
-	            preloadPhoto(Profile.role);
-			} else {
-				updateRole(data);
-			}
-		}
-	}
+    function updateByUser(data) {
+        if (Profile.role && Profile.role.user_id === data.user_id) {
+            if (data.photo) {
+                $.extend(Profile.role, data);
+                preloadPhoto(Profile.role);
+            } else {
+                updateRole(data);
+            }
+        }
+    }
 
-	$content.find('.profile-close').on('click', function() {
-		Profile.hide();
-	});
+    $content.find('.profile-close').on('click', function() {
+        Profile.hide();
+    });
 
     Socket.on('role.nickname.updated', updateByRole);
     Socket.on('role.status.updated', updateByRole);
@@ -126,7 +126,7 @@
     Socket.on('user.userpic.updated', updateByUser);
 
     Room.on('leave', function() {
-	    Profile.hide();
+        Profile.hide();
     });
 
     window.Profile = Profile;
@@ -139,10 +139,10 @@
     var $section = $('#profile-view');
 
     var $social = $section.find('.profile-social'),
-    	$photo = $section.find('.profile-photo'),
-    	$userpic = $section.find('.profile-userpic'),
-		$nickname = $section.find('.profile-nickname'),
-		$status = $section.find('.profile-status');
+        $photo = $section.find('.profile-photo'),
+        $userpic = $section.find('.profile-userpic'),
+        $nickname = $section.find('.profile-nickname'),
+        $status = $section.find('.profile-status');
 
     var socialType = /facebook|vk|ok/;
     var socialTitles = {
@@ -152,10 +152,10 @@
     };
 
     function matchTitle(url) {
-	    var match = url.match(socialType);
-	    if (match) {
-		    return socialTitles[match[0]];
-	    }
+        var match = url.match(socialType);
+        if (match) {
+            return socialTitles[match[0]];
+        }
     }
 
     function formatStatus() {
@@ -163,39 +163,39 @@
     }
 
     function showRole(role) {
-		$userpic.css('background-image', 'url(' + Userpics.getUrl(role) + ')').show();
-		$nickname.text(role.nickname);
-		if (role.status) {
-			$status.html(Room.formatStatus(role.status)).show();
-		} else {
-			$status.hide().text('');
-		}
-        if (role.profile_url && Room.myRole.user_id) {
-	        $social.attr('href', role.profile_url);
-	        $social.attr('title', matchTitle(role.profile_url));
-	        $social.show();
+        $userpic.css('background-image', 'url(' + Userpics.getUrl(role) + ')').show();
+        $nickname.text(role.nickname);
+        if (role.status) {
+            $status.html(Room.formatStatus(role.status)).show();
         } else {
-	        $social.hide();
+            $status.hide().text('');
+        }
+        if (role.profile_url && Room.myRole.user_id) {
+            $social.attr('href', role.profile_url);
+            $social.attr('title', matchTitle(role.profile_url));
+            $social.show();
+        } else {
+            $social.hide();
         }
     }
 
     Profile.on('show', function(role, isMy) {
         $photo.hide().text('');
-	    showRole(role);
+        showRole(role);
         $section.show();
     });
 
     Profile.on('ready', function(role, photoElem) {
-	    showRole(role);
+        showRole(role);
         if (photoElem) {
-			photoElem.className = 'profile-photo-img';
-			$userpic.hide();
-			$photo.text('').append(photoElem).show();
+            photoElem.className = 'profile-photo-img';
+            $userpic.hide();
+            $photo.text('').append(photoElem).show();
         }
     });
 
     Profile.on('role.updated', function(role) {
-		showRole(Profile.role);
+        showRole(Profile.role);
     });
 
 })();
@@ -203,20 +203,20 @@
 // Actions
 (function() {
 
-	var $section = $('#profile-view');
+    var $section = $('#profile-view');
 
-	var $actions = $section.find('.profile-actions'),
-		$ignore  = $section.find('.profile-ignore'),
-		$ignored = $section.find('.profile-ignored');
-		$edit    = $section.find('.profile-edit-button');
+    var $actions = $section.find('.profile-actions'),
+        $ignore  = $section.find('.profile-ignore'),
+        $ignored = $section.find('.profile-ignored');
+        $edit    = $section.find('.profile-edit-button');
 
-	var ignoreDisabled = false;
-	var $ignoreIcon = $actions.find('.profile-ignore-icon');
+    var ignoreDisabled = false;
+    var $ignoreIcon = $actions.find('.profile-ignore-icon');
 
-	var ignoreTitles = [
-		'У модераторов нет личного игнора',
-		'Скрыть во всех комнатах…'
-	];
+    var ignoreTitles = [
+        'У модераторов нет личного игнора',
+        'Скрыть во всех комнатах…'
+    ];
 
     function toggleIgnored(ignored) {
         $actions.toggle(!ignored);
@@ -225,11 +225,11 @@
     }
 
     function showIgnored() {
-	    toggleIgnored(true);
+        toggleIgnored(true);
     }
 
     function showActions() {
-	    toggleIgnored(false);
+        toggleIgnored(false);
     }
 
     function updateIgnores(action, role) {
@@ -243,7 +243,7 @@
     }
 
     function isIgnored() {
-	    return Room.ignores ? Room.ignores(Profile.role) : false;
+        return Room.ignores ? Room.ignores(Profile.role) : false;
     }
 
     $actions.find('.profile-private').on('click', function() {
@@ -252,7 +252,7 @@
     });
 
     $ignoreIcon.on('click', function() {
-	    if (ignoreDisabled) return false;
+        if (ignoreDisabled) return false;
         $actions.hide();
         $ignore.find('.nickname').text(Profile.role.nickname);
         $ignore.show();
@@ -272,27 +272,27 @@
     });
 
     Room.on('moderator.changed', function(isModerator) {
-	    ignoreDisabled = isModerator;
-		$ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
-		$ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
+        ignoreDisabled = isModerator;
+        $ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
+        $ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
         if (Profile.socket) {
-	        toggleIgnored(!isModerator && isIgnored());
+            toggleIgnored(!isModerator && isIgnored());
         }
     });
 
     Room.on('user.ignores.updated', function() {
         if (Profile.role) {
-	        toggleIgnored(isIgnored());
+            toggleIgnored(isIgnored());
         }
     });
 
     Profile.on('show', function(role, isMy) {
-		toggleIgnored(isMy ? false : isIgnored());
-		if (isMy) {
-			toggleIgnored(false);
-			$actions.hide();
-		}
-		$edit.toggle(isMy);
+        toggleIgnored(isMy ? false : isIgnored());
+        if (isMy) {
+            toggleIgnored(false);
+            $actions.hide();
+        }
+        $edit.toggle(isMy);
     });
 
 })();

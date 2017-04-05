@@ -842,9 +842,9 @@ Room.on('user.ignores.updated', function() {
         event.stopPropagation();
         var role = getRole(this.parentNode);
         Profile.show(role, {
-	        nickname: $(this).next('.nickname').text(),
-	        target: this,
-	        inTalk: true
+            nickname: $(this).next('.nickname').text(),
+            target: this,
+            inTalk: true
         });
     });
 

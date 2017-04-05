@@ -27,8 +27,8 @@
     }
 
     function failed(xhr) {
-	    if (xhr.status === 406) {
-			notAcceptable(xhr.responseText);
+        if (xhr.status === 406) {
+            notAcceptable(xhr.responseText);
         } else if (xhr.status === 429) {
             retry(Number(xhr.responseText || 5));
         } else {
@@ -39,8 +39,8 @@
     var link = /\b(http\S+[^.,)?!\s])/g;
 
     function notAcceptable(reason) {
-		Room.replyFailed(current, reason);
-		next();
+        Room.replyFailed(current, reason);
+        next();
     }
 
     Socket.on('connected', next);
@@ -100,7 +100,7 @@
         if (expanded) {
             collapseField();
         }
-	    $warning.hide();
+        $warning.hide();
     }
 
     var mentionsIndex = {};
@@ -194,10 +194,10 @@
 
     userpic.on('click', function(event) {
         Profile.edit(this);
-		// Screen keyboard overlays login links, don't show it
+        // Screen keyboard overlays login links, don't show it
         if (!screenKeyboard) {
-	        $('#my-nickname').focus();
-	    }
+            $('#my-nickname').focus();
+        }
     });
 
     Room.on('ready', showUserpic);
@@ -216,7 +216,7 @@
     });
 
     Room.on('leave', function() {
-	    $warning.hide();
+        $warning.hide();
         sendButton.removeClass('send-overflow');
         mentionsIndex = {};
     });
@@ -249,16 +249,16 @@
 
     Room.replyFailed = function(data, reason) {
         Room.trigger('reply.warning');
-	    $warning.show();
-	    field.on('input', hideWarning);
-		if (!field.val()) {
-			field.val(data.content);
-		}
+        $warning.show();
+        field.on('input', hideWarning);
+        if (!field.val()) {
+            field.val(data.content);
+        }
     };
 
     function hideWarning() {
-	    $warning.hide();
-	    field.off('input', hideWarning);
+        $warning.hide();
+        field.off('input', hideWarning);
     }
 
     $window.on('focus', function() {
@@ -273,7 +273,7 @@
     var form = $('.talk-edit');
     var field = form.find('textarea').val('');
 
-	var $warning = form.find('.talk-edit-warning');
+    var $warning = form.find('.talk-edit-warning');
 
     var editing;
 
@@ -292,7 +292,7 @@
         field.val('').height('');
         form.parent('.message').removeClass('editing');
         form.detach();
-		$warning.hide();
+        $warning.hide();
         editing = null;
     }
 
@@ -312,12 +312,12 @@
     }
 
     function showWarning(xhr) {
-	    if (xhr.status === 406) {
-			$warning.show();
-			Talk.scrollBy($warning.outerHeight());
-		} else {
-			hideForm();
-		}
+        if (xhr.status === 406) {
+            $warning.show();
+            Talk.scrollBy($warning.outerHeight());
+        } else {
+            hideForm();
+        }
     }
 
     field.on('input', function(event) {
