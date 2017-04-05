@@ -113,7 +113,7 @@ var Me = {};
 (function() {
 
     var notice;
-    var version = 33;
+    var version = 34;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
