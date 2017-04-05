@@ -329,7 +329,7 @@
     font-size: 14px;
     line-height: 16px;
     word-wrap: break-word;
-    color: #B3ACA1;
+    color: #999382;
 }
 .reply-private .reply-recipient {
     display: block;
@@ -525,7 +525,7 @@
     background: #F0ECE1;
 }
 .speech-recipient {
-    color: #B3ACA1;
+    color: #999382;
     cursor: pointer;
 }
 
