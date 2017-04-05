@@ -68,13 +68,19 @@ $.fn.reflow = function() {
 // Require script
 (function() {
 
+    var random = '?' + Math.random().toString().substring(2, 8);
+
     var loaded = {};
 
     function loadScript(url) {
         loaded[url] = false;
-        $.getScript('/script/' + url).done(function() {
+        var script = document.createElement('script');
+        document.head.appendChild(script);
+        script.addEventListener('load', function() {
             loaded[url] = true;
         });
+        script.async = true;
+        script.src = '/script/' + url + random;
     }
 
     $.require = function(url) {
