@@ -103,12 +103,21 @@
 /* Photo */
 .profile-photo {
 	margin: 0 0 18px;
-	box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15);
 }
 .profile-photo-img {
 	display: block;
 	width: 320px;
 	height: auto;
+}
+
+/* Pseudo-shadow (inset shadow doesn't work for image, z-index hack disables image context menu) */
+.profile-photo:after {
+    content: '';
+    display: block;
+    position: relative;
+    height: 1px;
+    margin-top: -1px;
+    background: rgba(0, 0, 0, 0.15);
 }
 
 /* Userpic */
