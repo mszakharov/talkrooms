@@ -1,0 +1,151 @@
+body {
+    background: url('side.png') #EBE9E8;
+}
+
+/* Hall header */
+#hall {
+    position: relative;
+    height: 100%;
+}
+.hall-header {
+    padding: 60px 0 60px;
+    background: #6C979E;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+    color: #FFF;
+}
+.hall-header > h1 {
+    margin: 0 40px 30px;
+    font-weight: normal;
+    font-size: 42px;
+    line-height: 42px;
+    text-align: center;
+}
+.hall-features {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 0 40px;
+    font-size: 20px;
+    line-height: 26px;
+    text-align: center;
+}
+
+/* Hall content */
+.hall-create {
+    background: #f8f8f8;
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, .15);
+}
+.hall-shuffle {
+    padding-bottom: 20px;
+}
+.hall-content {
+    margin: 0 auto;
+    padding: 60px;
+    max-width: 660px;
+}
+.hall-action {
+    margin-top: 20px;
+    font-size: 24px;
+    line-height: 26px;
+}
+.hall-action .link {
+    color: #1c768c;
+}
+.hall-failed {
+    display: none;
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 21px;
+    color: #808080;
+}
+.hall-recent {
+    margin-top: 30px;
+    display: none;
+}
+.hall-recent > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.hall-recent li {
+    line-height: 20px;
+    padding: 6px 20px 6px 0;
+}
+.hall-recent a {
+    padding: 4px 0;
+    color: #1c768c;
+}
+
+/* Room */
+#room {
+    display: none;
+}
+
+/* Visible room */
+body.in-room {
+    background: #F6F6F6;
+}
+.in-room #hall {
+    display: none;
+}
+.in-room #room {
+    display: block;
+}
+
+/* Talkrooms update */
+.updated-notice {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    padding: 16px 0;
+    width: 100%;
+    background: #f5efdc;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .2), 0 1px 0 rgba(0, 0, 0, .2);
+}
+.updated-title {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 40px;
+    color: #403e39;
+}
+.updated-reload {
+    padding: 10px 0;
+    color: #1270b2;
+    text-decoration: underline;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.updated-text {
+    max-width: 920px;
+    margin: 8px auto 0;
+    padding: 0 40px;
+    font-size: 13px;
+    line-height: 17px;
+    color: #66645e;
+}
+
+@media (max-width: 740px) {
+
+    .hall-header {
+        padding: 40px 0;
+    }
+
+    .hall-header > h1 {
+        margin-bottom: 20px;
+        font-size: 36px;
+        line-height: 38px;
+    }
+
+    .hall-features {
+        max-width: 580px;
+        padding: 0 40px;
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .hall-content {
+        max-width: 580px;
+        padding: 40px;
+    }
+
+}

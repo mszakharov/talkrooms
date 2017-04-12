@@ -1,0 +1,211 @@
+/* Hall */
+.hall-header {
+    padding: 20px 14px;
+}
+.hall-header > h1 {
+    margin: 0 0 12px;
+    font-size: 30px;
+    line-height: 32px;
+}
+.hall-features {
+    padding: 0 14px;
+    font-size: 17px;
+    line-height: 21px;
+}
+.hall-content {
+    padding: 20px;
+}
+
+/* Smaller header height */
+#header,
+.header-side,
+.header-talk,
+.header-toolbar {
+    height: 48px;
+}
+.side-content,
+.talk-content,
+.talk-overlay {
+    top: 48px;
+}
+
+/* Smaller header font */
+.header-main,
+.toolbar-title {
+    padding: 11px 0;
+    font-size: 24px;
+    line-height: 26px;
+}
+.hall-link {
+    padding: 8px 36px 8px 16px;
+    background-position: 100% 18px;
+}
+
+/* Smaller toolbar elements */
+.header-toolbar {
+    margin-left: 46px;
+}
+.header-show-side {
+    padding: 16px 14px 14px 16px;
+}
+.header-toolbar-scrolled:before {
+    top: 5px;
+    height: 38px;
+}
+.toolbar-title {
+    margin-right: 14px;
+}
+.toolbar-tools {
+    padding-right: 14px;
+}
+.toolbar-sound {
+    margin-top: 0;
+    padding-top: 13px;
+    height: 35px;
+}
+.toolbar-filter {
+    margin: 10px 0 0 9px;
+    padding: 4px 11px;
+}
+.toolbar-settings {
+    margin: 0 -10px 0 4px;
+}
+
+.entry-text {
+    margin: 0;
+    padding: 30px 30px 40px;
+}
+
+.talk-previous,
+.talk-next,
+.talk-recent {
+    margin: 0;
+}
+.talk-load {
+    margin: 0;
+    border-left: none;
+    border-right: none;
+    border-radius: 0 !important;
+}
+.talk-datepicker {
+    left: 0;
+    width: 64px;
+    background-position: 23px 21px;
+}
+
+.speech {
+    margin-right: 45px;
+    margin-left: 6px;
+    padding-left: 58px;
+    padding-right: 5px;
+}
+.speech-author > .userpic {
+    left: -50px;
+}
+.speech.personal {
+    padding-left: 57px;
+    padding-right: 4px;
+}
+.message:before {
+    left: -28px;
+}
+.msg-time {
+    right: -40px;
+}
+.with-ny-name:after {
+    left: -70px;
+}
+
+/* Smaller reply form height */
+.reply-form {
+    padding: 4px 0;
+}
+.reply-warning {
+    padding: 8px 30px 8px 14px;
+}
+.talk-content {
+    bottom: 66px;
+}
+.nickname-hint {
+    padding: 8px 30px 8px 14px;
+}
+.nickname-hint:after {
+    left: 24px;
+    background-position: 0 -2px;
+}
+.nickname-hint-close {
+    top: 0;
+    right: 0;
+}
+.reply-wrapper {
+    margin-right: 6px;
+    margin-left: 6px;
+    padding-right: 10px;
+    padding-left: 57px;
+}
+.reply-wrapper .userpic {
+    left: 7px;
+}
+.reply-send {
+    display: none;
+}
+
+/* Datepicker */
+#datepicker {
+    top: 18px;
+    -webkit-transform-origin: 150px 30px;
+        -ms-transform-origin: 150px 30px;
+            transform-origin: 150px 30px;
+}
+.dp-calendar {
+    max-height: 270px;
+}
+
+/* Settings */
+#room-settings {
+    right: 20px;
+    width: 360px;
+}
+#room-settings .popup-content {
+    width: 320px;
+}
+
+.updated-notice {
+    padding: 12px 0;
+}
+.updated-title {
+    font-size: 16px;
+    line-height: 19px;
+}
+.updated-title,
+.updated-text {
+    padding: 0 14px;
+}
+
+@media (max-width: 360px) {
+
+    #profile {
+        margin-left: -20px;
+        width: 320px;
+    }
+    #profile .popup-scroll {
+        padding-left: 10px;
+    }
+    #profile .popup-content {
+        width: 300px;
+    }
+    .profile-photo-img {
+        width: 300px;
+    }
+
+    #room-settings {
+        width: 320px;
+    }
+    #room-settings .popup-scroll {
+        padding-left: 10px;
+    }
+    #room-settings .popup-content {
+        width: 300px;
+    }
+
+}

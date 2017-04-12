@@ -1,0 +1,118 @@
+/* Popup */
+#datepicker {
+    display: none;
+    position: absolute;
+    top: 35px;
+    z-index: 10;
+    width: 300px;
+    overflow: hidden;
+    border-radius: 5px;
+    background: #FFF;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .22), 0 0 0 1px rgba(0, 0, 0, .05);
+    -webkit-transform-origin: 150px 23px;
+            -ms-transform-origin: 150px 23px;
+        transform-origin: 150px 23px;
+}
+#datepicker.visible {
+    display: block;
+    -webkit-animation: .12s ease-out dropdown;
+            animation: .12s ease-out dropdown;
+}
+
+/* Close */
+.dp-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 46px;
+    height: 46px;
+    z-index: 2;
+    background: url("room/close.svg") no-repeat 17px 18px;
+    cursor: pointer;
+    -webkit-user-select: none;
+}
+
+/* Search date */
+.dp-search {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1), 0 5px 5px -5px rgba(0, 0, 0, .2);
+    font-size: 19px;
+    line-height: 20px;
+}
+.dp-field {
+    width: 214px;
+    height: 20px;
+    border: none;
+    padding: 14px 20px 12px;
+    background: transparent;
+    line-height: 20px;
+    outline: none;
+}
+.dp-missing {
+    color: #ca3c30;
+}
+
+/* Calendar */
+.dp-calendar {
+    width: 325px;
+    max-height: 340px;
+    overflow-y: auto;
+    outline: none;
+    -webkit-overflow-scrolling: touch;
+}
+.dpc-content {
+    position: relative;
+    margin: 0 10px;
+    padding: 6px 0 8px;
+    width: 280px;
+    overflow: hidden;
+    cursor: default;
+    -webkit-user-select: none;
+}
+
+/* Calendar months */
+.dp-month {
+    clear: left;
+    position: relative;
+    top: 13px;
+    margin-bottom: 8px;
+    border-top: 1px solid #D0D0D0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 16px;
+    color: #909090;
+}
+.dp-month:first-child {
+    border-top: none;
+}
+.dp-month-name {
+    position: relative;
+    top: -9px;
+    padding: 0 10px;
+    background: #FFF;
+}
+
+/* Calendar days */
+.dp-hidden {
+    visibility: hidden;
+}
+.dp-day {
+    float: left;
+    width: 40px;
+    padding: 8px 0;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+}
+.dp-weekend {
+    color: #E05040;
+}
+.dp-selected {
+    color: #FFF;
+    background: #7c9ea3 !important;
+    cursor: default;
+}
+.hoverable .dp-day:hover {
+    background: #F0F0F0;
+}

@@ -1,0 +1,102 @@
+/* Room settings */
+#room-settings {
+    width: 440px;
+    top: 15px;
+    right: 25px;
+}
+#room-settings .popup-content {
+    width: 400px;
+}
+#room-settings .section {
+    padding: 2px 20px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+/* Controls */
+#room-settings .textfield {
+    margin-right: 16px;
+}
+#room-settings .textfield input {
+    width: 100%;
+}
+#room-settings .checkbox .hint {
+    margin-top: 2px;
+}
+
+/* Fileds */
+#edit-room-topic {
+    font-size: 24px;
+}
+#room-settings .submit {
+    background: #F8F8F8;
+    padding: 12px 20px;
+    text-align: right;
+}
+#room-settings button {
+    padding: 5px 25px;
+}
+
+/* Login */
+#room-settings .settings-login {
+    padding: 14px 20px;
+    background: #f5efdc;
+    border-bottom: 1px solid #d6d2c5;
+}
+.settings-login p {
+    margin: 0;
+}
+.settings-login .hint {
+    margin: 8px 0 0;
+    color: #66645e;
+}
+
+/* Remove */
+.room-remove {
+    padding: 14px 20px;
+    border-top: 1px solid #d6d2c5;
+    background: #f5efdc;
+    text-align: center;
+    box-shadow: inset 0 10px 8px -8px rgba(0, 0, 0, .12);
+}
+.room-remove .link {
+    color: #ca3c30;
+}
+
+/* Alarm */
+.alarm-on,
+.alarm-off {
+    margin: 14px 0;
+}
+.alarm-on {
+    display: none;
+}
+.alarm-off .button {
+	border: 1px solid #C7C7C7;
+	border-radius: 3px;
+	background: #F8F8F8;
+	background-image: linear-gradient(to bottom, #FAFAFA, #F5F5F5);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+	cursor: pointer;
+    text-align: center;
+    padding: 7px 13px;
+    font-size: 16px;
+    line-height: 18px;
+}
+.alarm-active {
+    position: relative;
+    padding: 8px 14px;
+    border-radius: 3px;
+    background: #EB6B4B;
+    color: #FFF;
+    font-size: 16px;
+    line-height: 18px;
+}
+.alarm-cancel {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 30px;
+    height: 30px;
+    background: url('profile/cancel.svg') no-repeat 9px 9px;
+    cursor: pointer;
+}

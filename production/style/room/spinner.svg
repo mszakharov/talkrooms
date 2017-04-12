@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke-width="2">
+    <circle cx="10" cy="10" r="8" stroke="#E8E8E8"></circle>
+    <circle cx="10" cy="10" r="8" stroke="#AAAAAA" stroke-dasharray="40 10">
+        <animateTransform attributeName="transform" type="rotate" from="0 10 10" to="360 10 10" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    </g>
+</svg>
