@@ -1,0 +1,13 @@
+{
+  "name": "talkrooms",
+  "scripts": {
+    "build": "gulp"
+  },
+  "devDependencies": {
+    "del": "2.2.2",
+    "gulp": "3.9.1",
+    "gulp-postcss": "6.4.0",
+    "postcss-cssnext": "2.10.0",
+    "run-sequence": "1.2.2"
+  }
+}
