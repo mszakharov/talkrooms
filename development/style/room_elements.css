@@ -1,7 +1,5 @@
 /* Scrollable toolbar */
 .header-toolbar-scroll {
-    display: -webkit-box;
-    display: -webkit-flex;
     display: flex;
     height: 85px;
     align-items: flex-start;
@@ -34,8 +32,7 @@
     margin: 0;
     margin-right: 20px;
     white-space: nowrap;
-    -webkit-transition: opacity .25s;
-            transition: opacity .25s;
+    transition: opacity .25s;
 }
 .hall-link {
     color: #FFF;
@@ -49,8 +46,6 @@
 
 /* Toolbar controls */
 .toolbar-tools {
-    display: -webkit-box;
-    display: -webkit-flex;
     display: flex;
     flex-shrink: 0;
     padding-right: 26px;
@@ -98,7 +93,6 @@
 }
 .filter-my {
     border-color: #C4C4C4 #C0C0C0 #BABABA;
-    background: -webkit-linear-gradient(top, #FDFDFD, #F2F2F2);
     background: linear-gradient(to bottom, #FDFDFD, #F2F2F2);
     box-shadow: 0 1px 0 rgba(0,0,0,0.05);
 }
@@ -152,7 +146,9 @@
     left: 50%;
     padding: 6px 36px 7px;
     border-radius: 8px;
-    background: url('room/calendar.svg') no-repeat 14px 9px, url('room/calendar.svg') no-repeat 100% 9px;
+    background:
+        url('room/calendar.svg') no-repeat 14px 9px,
+        url('room/calendar.svg') no-repeat 100% 9px;
     font-size: 13px;
     line-height: 13px;
     white-space: nowrap;
@@ -217,8 +213,7 @@
 .talk-next,
 .talk-recent {
     margin: 0 5px;
-    -webkit-transition: opacity .25s;
-            transition: opacity .25s;
+    transition: opacity .25s;
 }
 .talk-next {
     border-bottom: 1px solid #B0B0B0;

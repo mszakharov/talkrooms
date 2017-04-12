@@ -74,9 +74,7 @@
 	border: 1px solid #C7C7C7;
 	border-radius: 3px;
 	background: #F8F8F8;
-	background-image: -moz-linear-gradient(top, #FAFAFA, #F5F5F5);
-	background-image: -webkit-linear-gradient(top, #FAFAFA, #F5F5F5);
-	background-image: linear-gradient(top, #FAFAFA, #F5F5F5);
+	background-image: linear-gradient(to bottom, #FAFAFA, #F5F5F5);
 	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
 	cursor: pointer;
     text-align: center;

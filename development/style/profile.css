@@ -6,17 +6,11 @@
 #profile .popup-content {
     width: 320px;
 	cursor: default;
-    -webkit-transform-origin: 50% 55px;
-            transform-origin: 50% 55px; /* userpic center */
-    -webkit-animation: .08s ease-out profile-zoom;
-            animation: .08s ease-out profile-zoom;
+    transform-origin: 50% 55px; /* userpic center */
+    animation: .08s ease-out profile-zoom;
 }
 
 /* Profile animation */
-@-webkit-keyframes profile-zoom {
-    from { opacity: 0; -webkit-transform: scale(0.9); }
-      to { opacity: 1; -webkit-transform: none; }
-}
 @keyframes profile-zoom {
     from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: none; }
@@ -249,7 +243,7 @@
 .my-photo-update {
     display: block;
     padding: 16px;
-    background: rgba(75,75,75,0.6);
+    background: rgba(75, 75, 75, 0.6);
     text-align: center;
     text-decoration: none;
     color: #FFF;

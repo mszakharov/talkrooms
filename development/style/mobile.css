@@ -153,8 +153,7 @@
 /* Datepicker */
 #datepicker {
     top: 18px;
-    -webkit-transform-origin: 150px 30px;
-            transform-origin: 150px 30px;
+    transform-origin: 150px 30px;
 }
 .dp-calendar {
     max-height: 270px;

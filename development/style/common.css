@@ -156,10 +156,8 @@ button {
     border-bottom-color: #C2C2C2;
     border-radius: 8px;
     padding: 3px 9px;
-    background: #F8F8F8;
-    background-image: -moz-linear-gradient(top, #FAFAFA, #F5F5F5);
-    background-image: -webkit-linear-gradient(top, #FAFAFA, #F5F5F5);
-    background-image: linear-gradient(top, #FAFAFA, #F5F5F5);
+    background-color: #F8F8F8;
+    background-image: linear-gradient(to bottom, #FAFAFA, #F5F5F5);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
     transition: border-color .1s;
 }
@@ -185,7 +183,9 @@ button:focus {
     border-radius: 5px;
     margin-bottom: 20px;
     background: #FFF;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.05);
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
 
@@ -201,20 +201,12 @@ button:focus {
 }
 
 /* Dropdown animation */
-@-webkit-keyframes dropdown {
-    from { opacity: 0; -webkit-transform: scale(0.8, 0.6); }
-      to { opacity: 1; -webkit-transform: none; }
-}
 @keyframes dropdown {
     from { opacity: 0; transform: scale(0.8, 0.6); }
       to { opacity: 1; transform: none; }
 }
 
 /* Fade animation */
-@-webkit-keyframes fade-in {
-    from { opacity: 0; }
-      to { opacity: 1; }
-}
 @keyframes fade-in {
     from { opacity: 0; }
       to { opacity: 1; }
