@@ -1,24 +1,22 @@
 // Requests list
 (function() {
 
-    var requests = new Collection({
-        index: 'role_id',
-        order: 'nickname'
-    });
+    var requests = new Room.Roles();
 
     function getRequests() {
         if (Room.moderator && Room.data.level !== 80) {
-            return Rest.roles.get({room_id: Room.data.room_id, come_in: true}).done(reset);
+            return Rest.roles
+                .get({room_id: Room.data.room_id, come_in: true})
+                .done(reset);
         } else {
-            requests.raw = [];
+            requests.items = [];
             apply();
         }
     }
 
     function reset(data) {
-        requests.raw = data;
-        requests.raw.forEach(setUserpicUrl);
-        requests.sort();
+        data.forEach(setUserpicUrl);
+        requests.reset(data);
         apply();
     }
 
@@ -27,15 +25,13 @@
     }
 
     function apply() {
-        Room.trigger('requests.updated', requests.raw);
+        Room.trigger('requests.updated', requests.items);
     }
 
     function addRequest(request) {
-        if (!requests.get(request.request_id)) {
-            setUserpicUrl(request);
-            requests.add(request);
-            apply();
-        }
+        setUserpicUrl(request);
+        requests.add(request);
+        apply();
     }
 
     function toggleRequest(role) {

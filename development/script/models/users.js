@@ -1,10 +1,106 @@
+// Roles collection
+(function() {
+
+    var extend = Object.assign || $.extend;
+
+    // Remove role from array
+    function removeRole(list, role) {
+        for (var i = list.length; i--;) {
+            if (list[i] === role) {
+                return list.splice(i, 1)[0];
+            }
+        }
+    }
+
+    // Insert role to array sorted by nickname
+    // and return inserted position
+    function insertRole(list, role) {
+        for (var i = list.length; i--;) {
+            if (role.nickname < list[i].nickname) {
+                list.splice(i, 0, role);
+                return i;
+            }
+        }
+    }
+
+    // Collection constructor
+    function Roles() {
+        this.index = {};
+        this.items = [];
+    }
+
+    Roles.prototype = {
+
+        trigger: function() {
+
+        },
+
+        reset: function(roles) {
+            this.index = {};
+            this.items = [];
+            for (var i = roles.length; i--;) {
+                var role = roles[i];
+                this.index[role.role_id] = role;
+                this.items[i] = role;
+            }
+        },
+
+        add: function(data) {
+            if (this.index[data.role_id]) {
+                this.update(data);
+            } else {
+                insertRole(this.items, data);
+                this.index[data.role_id] = data;
+                this.trigger('added', data);
+            }
+        },
+
+        remove: function(roleId) {
+            var role = this.index[roleId];
+            if (role) {
+                removeRole(this.items, role);
+                delete this.index[roleId];
+                this.trigger('removed', role);
+            }
+        },
+
+        update: function(data) {
+            var role = this.index[data.role_id];
+            if (role) {
+                extend(role, data);
+                this.trigger('updated', role);
+            }
+        },
+
+        updateUser: function(data) {
+            var roles = this.items;
+            for (var i = roles.length; i--;) {
+                if (roles[i].user_id === data.user_id) {
+                    extend(roles[i], data);
+                    //this.trigger('updated', roles[i]);
+                    return;
+                }
+            }
+        },
+
+        get: function(roleId) {
+            return this.index[roleId];
+        }
+
+    };
+
+    // Export helpers to use in view
+    Roles.insertRole = insertRole;
+    Roles.removeRole = removeRole;
+
+    Room.Roles = Roles;
+
+})();
+
 /* Users cache */
 Room.users = (function() {
 
-    var roles = new Collection({
-        index: 'role_id',
-        order: 'normal_nickname'
-    });
+    var roles = new Room.Roles();
 
     var showIgnored;
 
@@ -16,7 +112,7 @@ Room.users = (function() {
 
     function apply() {
         var ignore = [];
-        Room.trigger('users.updated', roles.raw.filter(notIgnored, ignore), ignore);
+        Room.trigger('users.updated', roles.items.filter(notIgnored, ignore), ignore);
     }
 
     function getRoles() {
@@ -25,14 +121,10 @@ Room.users = (function() {
                 room_id: Room.data.room_id,
                 num_online_sockets: {'>': 0}
             })
-            .done(reset);
-    }
-
-    function reset(data) {
-        roles.raw = data;
-        roles.raw.forEach(setUserpicUrl);
-        roles.raw.forEach(normalizeNickname);
-        roles.sort();
+            .done(function(data) {
+                data.forEach(setUserpicUrl);
+                roles.reset(data);
+            });
     }
 
     function setAnnoying(role) {
@@ -43,20 +135,11 @@ Room.users = (function() {
         role.userpicUrl = Userpics.getUrl(role);
     }
 
-    function normalizeNickname(role) {
-        var lower = role.nickname.toLowerCase();
-        var pure = lower.replace(/[^\wа-яё]/g, '');
-        role.normal_nickname = lower === pure ? lower : pure + role.nickname;
-    }
-
     function addRole(role) {
-        if (!roles.get(role.role_id)) {
-            setAnnoying(role);
-            normalizeNickname(role);
-            setUserpicUrl(role);
-            roles.add(role);
-            apply();
-        }
+        roles.add(role);
+        setAnnoying(role);
+        setUserpicUrl(role);
+        apply();
     }
 
     function removeRole(role) {
@@ -64,92 +147,57 @@ Room.users = (function() {
         apply();
     }
 
+    function updateRole(data) {
+        roles.update(data);
+        apply();
+    }
+
+    function updateSilent(data) {
+        roles.update(data);
+    }
+
     Room.on('enter', function() {
-        roles.raw = [];
+        roles.items = [];
         showIgnored = Room.moderator;
         this.promises.push(getRoles());
     });
 
     Room.on('ready', function() {
-        roles.raw.forEach(setAnnoying);
+        roles.items.forEach(setAnnoying);
         apply();
     });
 
     Room.on('moderator.changed', function() {
         showIgnored = Room.moderator;
-        if (roles.raw.length) {
-            roles.raw.forEach(setAnnoying);
+        if (roles.items.length) {
+            roles.items.forEach(setAnnoying);
             apply();
         }
     });
 
     Room.on('me.ignores.updated', function() {
-        roles.raw.forEach(setAnnoying);
+        roles.items.forEach(setAnnoying);
         apply();
     });
 
     Room.on('role.online', addRole);
     Room.on('role.offline', removeRole);
 
-    Room.on('role.nickname.updated', function(data) {
-        var role = roles.get(data.role_id);
-        if (role) {
-            role.nickname = data.nickname;
-            normalizeNickname(role);
-            roles.sort();
-            apply();
-        }
-    });
-
-    Room.on('role.status.updated', function(data) {
-        var role = roles.get(data.role_id);
-        if (role) {
-            role.status = data.status;
-            apply();
-        }
-    });
-
-    Room.on('role.level.updated', function(data) {
-        var role = roles.get(data.role_id);
-        if (role) {
-            role.level = data.level;
-        }
-    });
-
-    Room.on('role.ignored.updated', function(data) {
-        var role = roles.get(data.role_id);
-        if (role) {
-            role.ignored = data.ignored;
-            role.moderator_id = data.moderator_id;
-            apply();
-        }
-    });
-
-    Room.on('role.expired.updated', function(data) {
-        var role = roles.get(data.role_id);
-        if (role) {
-            role.expired = data.expired;
-        }
-    });
-
-    function patchUser(user_id, callback) {
-        roles.raw.forEach(function(role) {
-            if (role.user_id === user_id) callback(role);
-        });
-    }
+    Room.on('role.nickname.updated', updateRole);
+    Room.on('role.status.updated', updateRole);
+    Room.on('role.ignored.updated', updateRole);
 
     Room.on('user.userpic.updated', function(data) {
-        patchUser(data.user_id, function(role) {
-            role.userpic = data.userpic;
-            setUserpicUrl(role);
-        });
+        roles.updateUser(data);
         apply();
     });
 
+    // This events don't affect the view
+    Room.on('role.level.updated', updateSilent);
+    Room.on('role.expired.updated', updateSilent);
+
     Room.on('user.photo.updated', function(data) {
-        patchUser(data.user_id, function(role) {
-            role.photo = data.photo;
-        });
+        roles.updateUser(data);
     });
 
     return {
