@@ -17,13 +17,14 @@
 
     // Insert role into sorted array and return inserted position
     function insertRole(list, role) {
-        for (var i = list.length; i--;) {
-            if (role.alias < list[i].alias) {
-                list.splice(i, 0, role);
-                return i;
-            }
+        var i = 0, l = list.length;
+        while (i < l && role.alias > list[i].alias) {
+            i++;
         }
+        list.splice(i, 0, role);
+        return i;
     }
+
 
     // Remove role from array
     function removeRole(list, role) {
@@ -36,15 +37,25 @@
 
 
     // Collection constructor
-    function Roles() {
+    function Roles(fetchOptions) {
         this.index = {};
         this.items = [];
+        this.fetchOptions = fetchOptions;
     }
 
     Roles.prototype = {
 
         trigger: function() {
 
+        },
+
+        fetch: function() {
+            var that = this;
+            return Rest.roles
+                .get(this.fetchOptions)
+                .then(function(roles) {
+                    that.reset(roles);
+                });
         },
 
         reset: function(roles) {
@@ -120,7 +131,7 @@
 /* Users cache */
 Room.users = (function() {
 
-    var roles = new Room.Roles();
+    var roles;
 
     var showIgnored;
 
@@ -133,18 +144,6 @@ Room.users = (function() {
     function apply() {
         var ignore = [];
         Room.trigger('users.updated', roles.items.filter(notIgnored, ignore), ignore);
-    }
-
-    function getRoles() {
-        return Rest.roles
-            .get({
-                room_id: Room.data.room_id,
-                num_online_sockets: {'>': 0}
-            })
-            .done(function(data) {
-                data.forEach(setUserpicUrl);
-                roles.reset(data);
-            });
     }
 
     function setAnnoying(role) {
@@ -177,19 +176,27 @@ Room.users = (function() {
     }
 
     Room.on('enter', function() {
-        roles.items = [];
         showIgnored = Room.moderator;
-        this.promises.push(getRoles());
+        roles = new Room.Roles({
+            room_id: Room.data.room_id,
+            num_online_sockets: {'>': 0}
+        });
+        this.promises.push(roles.fetch());
     });
 
     Room.on('ready', function() {
         roles.items.forEach(setAnnoying);
+        roles.items.forEach(setUserpicUrl);
         apply();
+    });
+
+    Room.on('leave', function() {
+        roles = null;
     });
 
     Room.on('moderator.changed', function() {
         showIgnored = Room.moderator;
-        if (roles.items.length) {
+        if (roles) {
             roles.items.forEach(setAnnoying);
             apply();
         }
