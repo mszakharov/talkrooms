@@ -818,7 +818,7 @@ Room.on('user.ignores.updated', function() {
 
     function getRole(elem) {
         var role_id = Number(elem.getAttribute('data-role'));
-        var role = role_id && Room.users.get(role_id);
+        var role = role_id && Room.roles.get(role_id);
         return role || getMessageData(elem.parentNode);
     }
 

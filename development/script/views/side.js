@@ -176,7 +176,8 @@
 
     function getData(elem) {
         var role_id = Number(elem.attr('data-role'));
-        return Room.users.get(role_id) || Room.requests.get(role_id);
+        return Room.roles.get(role_id) ||
+            (Room.requests ? Room.requests.get(role_id) : undefined);
     }
 
     container.on('click', '.me, .userpic', function(event) {
