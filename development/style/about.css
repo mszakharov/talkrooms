@@ -1,0 +1,96 @@
+/* Hall header */
+.about-header {
+    padding: 60px 0 60px;
+    background: #6C979E;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15);
+    color: #FFF;
+}
+.about-header > h1 {
+    margin: 0 40px 30px;
+    font-weight: normal;
+    font-size: 42px;
+    line-height: 42px;
+    text-align: center;
+}
+.about-features {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 0 40px;
+    font-size: 20px;
+    line-height: 26px;
+    text-align: center;
+}
+
+/* Hall content */
+.about-create {
+    background: #f8f8f8;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.15);
+}
+.about-shuffle {
+    padding-bottom: 20px;
+}
+.about-content {
+    margin: 0 auto;
+    padding: 60px;
+    max-width: 660px;
+}
+.about-action {
+    margin-top: 20px;
+    font-size: 24px;
+    line-height: 26px;
+}
+.about-action .link {
+    color: #1c768c;
+}
+.about-failed {
+    display: none;
+    margin-top: 20px;
+    font-size: 15px;
+    line-height: 21px;
+    color: #808080;
+}
+
+/* Recent rooms */
+.about-recent {
+    margin-top: 30px;
+    display: none;
+}
+.about-recent > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.about-recent li {
+    line-height: 20px;
+    padding: 6px 20px 6px 0;
+}
+.about-recent a {
+    padding: 4px 0;
+    color: #1c768c;
+}
+
+@media (max-width: 740px) {
+
+    .about-header {
+        padding: 40px 0;
+    }
+
+    .about-header > h1 {
+        margin-bottom: 20px;
+        font-size: 36px;
+        line-height: 38px;
+    }
+
+    .about-features {
+        max-width: 580px;
+        padding: 0 40px;
+        font-size: 18px;
+        line-height: 22px;
+    }
+
+    .about-content {
+        max-width: 580px;
+        padding: 40px;
+    }
+
+}

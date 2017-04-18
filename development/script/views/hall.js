@@ -1,93 +1,64 @@
-// Toggle room
+// Room list
 (function() {
 
-    var html = $('html'),
-        body = $('body'),
-        hall = $('#hall'),
-        room = $('#room');
+    var $hall = $('.hall');
 
-    var isVisible;
+    var recentList = new List($hall.find('.hall-recent')),
+        myList     = new List($hall.find('.hall-my'));
 
-    function toggleRoom(visible) {
-        if (isVisible === visible) return;
-        if (visible) {
-            showRoom();
+    var renderLink = Template($('#room-template').html());
+
+    function List(elem) {
+        this.elem = elem;
+    }
+
+    List.prototype.update = function(rooms) {
+        this.elem.find('ul').remove();
+        if (rooms.length) {
+            this.elem.append('<ul>' + rooms.map(renderLink).join('') + '</ul>');
+            this.elem.show();
         } else {
-            hideRoom();
+            this.elem.hide();
         }
-        isVisible = visible;
+    };
+
+    function updateLists() {
+
+        var isMy = {};
+        Me.rooms.forEach(function(room) {
+            isMy[room.hash] = true;
+        });
+
+        var recent = Me.recent_rooms.filter(function(room) {
+            return !isMy[room.hash];
+        });
+
+        recentList.update(recent);
+        myList.update(Me.rooms);
+
     }
 
-    function showRoom() {
-        html.addClass('in-room');
-        body.addClass('in-room');
-        hall.hide();
-        room.show();
-    }
-
-    function hideRoom() {
-        html.removeClass('in-room');
-        body.removeClass('in-room');
-        hall.find('.hall-failed:visible').hide()
-            .prev('.hall-action').show();
-        room.hide();
-        hall.show();
-    }
-
-    var recent = $('.hall-recent'),
-        renderLink = new Template('<li data-hash="{hash}"><a href="/#{hash}">{topic}</a></li>');
-
-    function showRecent() {
-        var rooms = Me.recent_rooms;
-        if (rooms && rooms.length) {
-            recent.empty().append( renderRecent(rooms.slice(0, 3)) ).show();
-        }
-    }
-
-    function renderRecent(rooms) {
-        var list = $('<ul></ul>');
-        for (var i = 0; i < rooms.length; i++) {
-            list.append(renderLink(rooms[i]));
-        }
-        return list;
-    }
-
-    Me.ready.done(showRecent);
-
-    Room.toggle = toggleRoom;
-
-})();
-
-// Create
-(function() {
-
-    var section = $('.hall-create');
-
-    function failed() {
-        section.find('.hall-action').hide();
-        section.find('.hall-failed').show();
-    }
-
-    section.find('.hall-action .link').on('click', function() {
-        Room.create().fail(failed);
+    $('.hall-shuffle > .link').on('click', function() {
+        Room.shuffle();
     });
 
-})();
-
-// Shuffle
-(function() {
-
-    var section = $('.hall-shuffle');
-
-    function failed() {
-        section.find('.hall-action').hide();
-        section.find('.hall-failed').show();
-    }
-
-    section.find('.hall-action .link').on('click', function() {
-        Room.shuffle().fail(failed);
+    $('.hall-create > button').on('click', function() {
+        Room.create();
     });
 
+    Socket.on('me.recent_rooms.updated', updateLists);
+    Socket.on('me.rooms.updated', updateLists);
+
+    Room.on('lists', function() {
+        $hall.show();
+    });
+
+    Room.on('enter', function() {
+        $hall.hide();
+    });
+
+    Me.ready.done(updateLists);
+
+    Room.trigger('lists');
+
 })();
-
-

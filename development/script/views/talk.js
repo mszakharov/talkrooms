@@ -52,6 +52,7 @@ var Talk = {
     content: $('.talk-content')
 };
 
+
 // Talk overlay
 (function() {
 

@@ -1,5 +1,5 @@
 /* Disable bounce scrolling in Safari */
-html.in-room {
+html.in-rooms {
     overflow: hidden;
     height: 100%;
 }
@@ -25,7 +25,7 @@ html.in-room {
     color: #FFF;
     background: linear-gradient(to bottom, #719FA6, #6C979E);
 }
-.header-talk {
+.header-main {
     position: relative;
     height: 60px;
     margin-left: 25%;
@@ -53,7 +53,7 @@ html.in-room {
 
 /* Columns */
 #side,
-#talk {
+#main {
     position: absolute;
     top: 0;
     height: 100%;
@@ -62,7 +62,7 @@ html.in-room {
     width: 25%;
     overflow-x: hidden;
 }
-#talk {
+#main {
     right: 0;
     left: 25%;
     z-index: 1;
@@ -146,9 +146,9 @@ html.in-room {
 
 /* Sidebar sliding animation */
 .visible-side #side,
-.visible-side #talk,
+.visible-side #main,
 .visible-side .header-side,
-.visible-side .header-talk {
+.visible-side .header-main {
     -webkit-font-smoothing: subpixel-antialiased;
     transition: transform .25s;
 }
@@ -156,8 +156,8 @@ html.in-room {
 .sliding-side .header-side {
     transform: translateX(-80px);
 }
-.sliding-side #talk,
-.sliding-side .header-talk {
+.sliding-side #main,
+.sliding-side .header-main {
     transform: translateX(-256px);
 }
 
@@ -167,10 +167,10 @@ html.in-room {
     .header-side {
         width: 350px;
     }
-    #talk {
+    #main {
         left: 350px;
     }
-    .header-talk {
+    .header-main {
         margin-left: 350px;
     }
 
@@ -182,10 +182,10 @@ html.in-room {
     .header-side {
         width: 256px;
     }
-    #talk {
+    #main {
         left: 256px;
     }
-    .header-talk {
+    .header-main {
         margin-left: 256px;
     }
 
@@ -194,12 +194,12 @@ html.in-room {
 @media (max-width: 800px) {
 
     /* Hide sidebar by default */
-    #talk {
+    #main {
         right: auto;
         left: 0;
         width: 100%;
     }
-    .header-talk {
+    .header-main {
         margin-left: 0;
     }
 
@@ -212,8 +212,8 @@ html.in-room {
     }
 
     /* Show sidebar */
-    .visible-side #talk,
-    .visible-side .header-talk {
+    .visible-side #main,
+    .visible-side .header-main {
         left: 256px;
     }
 
