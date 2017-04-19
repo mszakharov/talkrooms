@@ -92,6 +92,7 @@ var Me = {};
         Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
         Me.ignores = data.ignores;
+        Me.subscriptions = data.subscriptions;
         Me.checkVersion(data.talkrooms);
         updateRooms(data);
     }

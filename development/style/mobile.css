@@ -25,7 +25,8 @@
 }
 .side-content,
 .talk-content,
-.talk-overlay {
+.talk-overlay,
+.hall {
     top: 48px;
 }
 

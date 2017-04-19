@@ -1,37 +1,15 @@
-// Toggle side lists
+// Toggle users list
 (function() {
 
-    var rooms = $('.side-rooms'),
-        users = $('.room-users');
-
-    function showRooms() {
-        users.hide();
-        rooms.show();
-    }
-
-    $('.hall-link').on('click', function(event) {
-        if (event.metaKey || event.ctrlKey || event.shiftKey) return;
-        event.preventDefault();
-        if (rooms.is(':hidden')) {
-            showRooms();
-        } else if (Room.subscription) {
-            rooms.hide();
-            users.show();
-        }
-    });
+    var users = $('.room-users');
 
     Room.on('ready', function() {
-        rooms.hide();
         users.fadeIn(150);
     });
 
     Room.on('leave', function() {
         users.hide();
     });
-
-    Room.on('locked', showRooms);
-    Room.on('closed', showRooms);
-    Room.on('lost',   showRooms);
 
 })();
 

@@ -77,22 +77,6 @@
     <ul class="side-subscriptions">
         <li class="subscriptions-add">Другие комнаты</li>
     </ul>
-    <div class="side-rooms">
-        <div class="rooms-shuffle">
-            <span class="link">Случайная комната</span>
-        </div>
-        <div class="rooms-lists">
-            <div class="rooms-list rooms-recent">
-                <h6 class="rooms-title">Последние комнаты</h6>
-            </div>
-            <div class="rooms-list rooms-my rooms-folded">
-                <h6 class="rooms-title">Мои комнаты</h6>
-            </div>
-        </div>
-        <div class="rooms-create">
-            <span class="link">Создать комнату</span>
-        </div>
-    </div>
     <div class="room-users">
         <div class="users-group users-requests">
             <h6 class="users-title">Ждут приглашения <span class="users-amount"></span></h6>
@@ -113,19 +97,27 @@
 <div id="main">
 
     <div class="hall">
-        <div class="hall-shuffle">
-            <h6 class="hall-title"><span class="link">Случайная комната</span></h6>
-            <p class="hint">Познакомьтесь с&nbsp;новыми людьми и&nbsp;обсудите неожиданные темы в&nbsp;одной из&nbsp;комнат, выбранной случайно
-        </div>
-        <div class="hall-recent">
-            <h6 class="hall-title">Последние</h6>
-        </div>
-        <div class="hall-my">
-            <h6 class="hall-title">Мои комнаты</h6>
-            <div class="hall-create">
-                <button>Создать комнату</button>
+    <div class="hall-content">
+        <div class="hall-section">
+            <div class="hall-shuffle">
+                <h6 class="hall-title"><span class="link">Случайная комната</span></h6>
+                <p class="hint">Познакомьтесь с&nbsp;новыми людьми и&nbsp;обсудите неожиданные темы в&nbsp;одной из&nbsp;комнат, выбранной случайно
+            </div>
+            <div class="hall-recent">
+                <h6 class="hall-title">Последние</h6>
+                <ul class="rooms-list"></ul>
             </div>
         </div>
+        <div class="hall-section">
+            <div class="hall-my">
+                <h6 class="hall-title">Мои комнаты</h6>
+                <div class="hall-create">
+                    <button>Создать комнату</button>
+                </div>
+                <ul class="rooms-list"></ul>
+            </div>
+        </div>
+    </div>
     </div>
 
     <div class="talk-overlay">
@@ -446,7 +438,7 @@
 </script>
 
 <script type="text/html" id="room-template">
-<li data-hash="{hash}">
+<li class="room" data-hash="{hash}">
     <span class="room-subscribe"></span>
     <a href="/#{hash}">{topic}</a>
 </li>
