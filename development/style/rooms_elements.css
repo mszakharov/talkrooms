@@ -36,9 +36,8 @@
 }
 .about-link {
     color: #FFF;
-    padding: 7px 36px 9px 16px;
+    padding: 7px 16px 9px 16px;
     text-decoration: none;
-    background: url('room/show_rooms.svg') no-repeat 100% 23px;
 }
 .toolbar-title.changing {
     opacity: 0.6;
