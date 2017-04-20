@@ -114,7 +114,7 @@
 $('.about-link').on('click', function(event) {
     if (event.metaKey || event.ctrlKey || event.shiftKey) return;
     event.preventDefault();
-    Room.showHall();
+    Router.push('+');
 });
 
 
