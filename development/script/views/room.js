@@ -83,6 +83,12 @@
         }
     });
 
+    Room.on('hall', function() {
+        if (body.hasClass('visible-side')) {
+            hideSide();
+        }
+    });
+
 })();
 
 // Scrollable toolbar
