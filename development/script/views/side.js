@@ -49,6 +49,10 @@
     }
 
     Room.on('hall', function() {
+        if (lastRoom) {
+            lastRoom = null;
+            updateList();
+        }
         select($other);
     });
 
@@ -70,6 +74,9 @@
             subscribed.push(data);
             subscribed.sort(byAlias);
             isSubscribed[data.hash] = true;
+            if (lastRoom && lastRoom.hash === data.hash) {
+                lastRoom = null;
+            }
             updateList();
         }
     });
