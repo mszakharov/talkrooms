@@ -72,6 +72,16 @@
     margin: 0 -10px 0 4px;
 }
 
+/* One-column hall */
+.hall-content {
+    margin-right: 30px;
+}
+.hall-section {
+    float: none;
+    width: auto;
+    padding-left: 26px;
+}
+
 .entry-text {
     margin: 0;
     padding: 30px 30px 40px;
