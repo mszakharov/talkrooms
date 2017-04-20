@@ -564,6 +564,12 @@ Talk.isForMe = function(mentions) {
         }
     };
 
+    // Стираем сообщения, чтобы не видеть их при загрузке другой комнаты
+    Room.on('hall', function() {
+        archive.reset([]);
+        current.reset([]);
+    });
+
     Room.on('enter', function() {
         Talk.forMeOnly = false;
         Room.promises.push(Talk.loadRecent());
