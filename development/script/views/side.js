@@ -34,6 +34,9 @@
             var room = subscribed[i];
             itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
         }
+        if (Room.hash) {
+            select(itemsIndex[Room.hash]);
+        }
     }
 
     var $selected;
