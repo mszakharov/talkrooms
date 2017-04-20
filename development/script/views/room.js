@@ -201,6 +201,10 @@
         date.addClass('hidden');
     }
 
+    Room.on('hall', function() {
+        showTitleOnly('Комнаты');
+    });
+
     Room.on('leave', function() {
         title.addClass('changing');
     });

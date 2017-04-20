@@ -266,6 +266,12 @@ Room.on('user.photo.updated', function(user) {
 
 })();
 
+// Hall
+Room.showHall = function() {
+    this.leave();
+    this.trigger('hall');
+};
+
 // Create and shuffle
 (function() {
 

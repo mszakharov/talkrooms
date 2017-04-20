@@ -68,7 +68,7 @@
     Socket.on('me.recent_rooms.updated', updateLists);
     Socket.on('me.rooms.updated', updateLists);
 
-    Room.on('lists', function() {
+    Room.on('hall', function() {
         $hall.show();
     });
 
@@ -99,10 +99,5 @@
     });
 
     Me.ready.done(updateLists);
-
-    // Test lists
-    Room.on('ready', function() {
-        $hall.show();
-    });
 
 })();

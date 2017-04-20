@@ -70,6 +70,11 @@ Router.on(/^$/, function(hash) {
     Room.leave();
 });
 
+Router.on(/^\+$/, function(hash) {
+    Room.showHall();
+    Room.toggle(true);
+});
+
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
     Room.enter(hash);
     Room.toggle(true);

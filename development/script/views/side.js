@@ -1,3 +1,106 @@
+// Subscriptions
+(function() {
+
+    var $list = $('.side-subscriptions');
+
+    var $other = $list.find('.subscriptions-other');
+
+    var subscribed = [];
+        isSubscribed = {};
+
+    var lastRoom;
+    var itemsIndex = {};
+
+    var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
+
+    function byAlias(a, b) {
+        if (a.alias > b.alias) return  1;
+        if (a.alias < b.alias) return -1;
+        return 0;
+    }
+
+    // Normalize topic for case-insensitive sorting
+    function setAlias(room) {
+        room.alias = room.topic.toLowerCase();
+    }
+
+    function updateList() {
+        itemsIndex = {};
+        $list.find('.subscription').remove();
+        if (lastRoom) {
+            itemsIndex[lastRoom.hash] = $(renderRoom(lastRoom)).prependTo($list);
+        }
+        for (var i = subscribed.length; i--;) {
+            var room = subscribed[i];
+            itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
+        }
+    }
+
+    var $selected;
+
+    function select($item) {
+        if ($selected) {
+            $selected.removeClass('subscription-selected');
+            $selected = null;
+        }
+        if ($item) {
+            $selected = $item.addClass('subscription-selected');
+        }
+    }
+
+    Room.on('hall', function() {
+        select($other);
+    });
+
+    Room.on('hash.selected', function() {
+        select(itemsIndex[Room.hash]);
+    });
+
+    Room.on('enter', function() {
+        if (!isSubscribed[Room.hash]) {
+            lastRoom = Room.data;
+            updateList();
+            select(itemsIndex[Room.hash]);
+        }
+    });
+
+    Socket.on('me.subscriptions.add', function (data) {
+        setAlias(data);
+        if (!isSubscribed[data.hash]) {
+            subscribed.push(data);
+            subscribed.sort(byAlias);
+            isSubscribed[data.hash] = true;
+            updateList();
+        }
+    });
+
+    Socket.on('me.subscriptions.remove', function(data) {
+        if (isSubscribed[data.hash]) {
+            delete isSubscribed[data.hash];
+            for (var i = subscribed.length; i--;) {
+                if (subscribed[i].hash === data.hash) {
+                    subscribed.splice(i, 1)[0];
+                }
+            }
+            updateList();
+        }
+    });
+
+    Me.ready.done(function() {
+        subscribed = Me.subscriptions.map(function(subscription) {
+            return $.extend({}, subscription.room);
+        });
+        subscribed.forEach(function(room) {
+            setAlias(room);
+            isSubscribed[room.hash] = true;
+        });
+        subscribed.sort(byAlias);
+        updateList();
+    });
+
+})();
+
+
 // Toggle users list
 (function() {
 

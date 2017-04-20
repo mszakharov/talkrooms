@@ -89,6 +89,10 @@ var Talk = {
         Talk.content.addClass('talk-loading');
     });
 
+    Room.on('hall', function() {
+        overlay.hide(); // Show lists instantly
+    });
+
     Room.on('ready', hideOverlay);
 
     Room.on('lost', function() {
