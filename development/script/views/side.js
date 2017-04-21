@@ -39,6 +39,19 @@
         }
     }
 
+    function updateSubscribed() {
+        isSubscribed = {};
+        subscribed = Me.subscriptions.map(function(subscription) {
+            return $.extend({}, subscription.room);
+        });
+        subscribed.forEach(function(room) {
+            setAlias(room);
+            isSubscribed[room.hash] = true;
+        });
+        subscribed.sort(byAlias);
+        updateList();
+    }
+
     var $selected;
 
     function select($item) {
@@ -67,8 +80,21 @@
         if (!isSubscribed[Room.hash]) {
             lastRoom = Room.data;
             updateList();
-            select(itemsIndex[Room.hash]);
         }
+    });
+
+    Room.on('room.topic.updated', function() {
+        subscribed.forEach(function(room) {
+            if (room.hash === Room.data.hash) {
+                room.topic = Room.data.topic;
+            }
+        });
+        updateList();
+    });
+
+    // Reload subscriptions with new hash
+    Room.on('room.hash.updated', function() {
+        Me.reload().then(updateSubscribed);
     });
 
     Socket.on('me.subscriptions.add', function (data) {
@@ -96,17 +122,7 @@
         }
     });
 
-    Me.ready.done(function() {
-        subscribed = Me.subscriptions.map(function(subscription) {
-            return $.extend({}, subscription.room);
-        });
-        subscribed.forEach(function(room) {
-            setAlias(room);
-            isSubscribed[room.hash] = true;
-        });
-        subscribed.sort(byAlias);
-        updateList();
-    });
+    Me.ready.done(updateSubscribed);
 
 })();
 
