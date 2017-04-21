@@ -6,8 +6,11 @@
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width">
     <link rel="stylesheet" href="/style/common.css">
     <link rel="stylesheet" href="/style/main.css">
-    <link rel="stylesheet" href="/style/room_layout.css">
-    <link rel="stylesheet" href="/style/room_elements.css">
+    <link rel="stylesheet" href="/style/about.css">
+    <link rel="stylesheet" href="/style/rooms.css">
+    <link rel="stylesheet" href="/style/rooms_hall.css">
+    <link rel="stylesheet" href="/style/rooms_side.css">
+    <link rel="stylesheet" href="/style/rooms_elements.css">
     <link rel="stylesheet" href="/style/datepicker.css">
     <link rel="stylesheet" href="/style/profile.css">
     <link rel="stylesheet" href="/style/settings.css">
@@ -17,35 +20,35 @@
 </head>
 <body>
 
-<div id="hall" style="display: none;">
-    <div class="hall-header">
+<div id="about" style="display: none;">
+    <div class="about-header">
         <h1>Talkrooms — ваш&nbsp;чат в&nbsp;один&nbsp;клик</h1>
-        <p class="hall-features">Бесплатный, без&nbsp;рекламы, работает на&nbsp;планшетах и&nbsp;смартфонах. Создаётся в&nbsp;один клик и&nbsp;не&nbsp;требует настройки.</p>
+        <p class="about-features">Бесплатный, без&nbsp;рекламы, работает на&nbsp;планшетах и&nbsp;смартфонах. Создаётся в&nbsp;один клик и&nbsp;не&nbsp;требует настройки.</p>
     </div>
-    <div class="hall-create">
-        <div class="hall-content">
-            <p class="hall-text">Создайте свою чат-комнату и&nbsp;опубликуйте ссылку в&nbsp;социальной сети, блоге или форуме, чтобы пригласить собеседников. Войти смогут все, регистрация для этого не&nbsp;требуется. В&nbsp;комнатах есть настройка приватности, чтобы ограничить вход и&nbsp;скрыть переписку от&nbsp;посторонних.</p>
-            <p class="hall-action"><span class="link">Создать комнату</span></p>
-            <p class="hall-failed">Количество новых комнат в день ограничено. Завтра сможете создать ещё.</p>
+    <div class="about-create">
+        <div class="about-content">
+            <p class="about-text">Создайте свою чат-комнату и&nbsp;опубликуйте ссылку в&nbsp;социальной сети, блоге или форуме, чтобы пригласить собеседников. Войти смогут все, регистрация для этого не&nbsp;требуется. В&nbsp;комнатах есть настройка приватности, чтобы ограничить вход и&nbsp;скрыть переписку от&nbsp;посторонних.</p>
+            <p class="about-action"><span class="link">Создать комнату</span></p>
+            <p class="about-failed">Количество новых комнат в день ограничено. Завтра сможете создать ещё.</p>
         </div>
     </div>
-    <div class="hall-shuffle">
-        <div class="hall-content">
-            <p class="hall-text">Познакомьтесь с&nbsp;новыми людьми и&nbsp;обсудите неожиданные темы в&nbsp;одной из&nbsp;комнат, выбранной случайно.</p>
-            <p class="hall-action"><span class="link">Случайная комната</span></p>
-            <p class="hall-failed">К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
-            <div class="hall-recent"></div>
+    <div class="about-shuffle">
+        <div class="about-content">
+            <p class="about-text">Познакомьтесь с&nbsp;новыми людьми и&nbsp;обсудите неожиданные темы в&nbsp;одной из&nbsp;комнат, выбранной случайно.</p>
+            <p class="about-action"><span class="link">Случайная комната</span></p>
+            <p class="about-failed">К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
+            <div class="about-recent"></div>
         </div>
     </div>
 </div>
 
-<div id="room">
+<div id="rooms">
 
 <div id="header">
 <div class="header-side">
-    <div class="header-main"><a class="hall-link" href="/#">Talkrooms</a></div>
+    <div class="header-title"><a class="about-link" href="/#">Talkrooms</a></div>
 </div>
-<div class="header-talk">
+<div class="header-main">
     <div class="header-show-side">
         <svg width="16" height="16"><path d="M0,0h16v2h-16z M0,7h16v2h-16z M0,14h16v2h-16z" fill="currentColor"></svg>
     </div>
@@ -72,22 +75,9 @@
 
 <div id="side">
 <div class="side-content">
-    <div class="side-rooms">
-        <div class="rooms-shuffle">
-            <span class="link">Случайная комната</span>
-        </div>
-        <div class="rooms-lists">
-            <div class="rooms-list rooms-recent">
-                <h6 class="rooms-title">Последние комнаты</h6>
-            </div>
-            <div class="rooms-list rooms-my rooms-folded">
-                <h6 class="rooms-title">Мои комнаты</h6>
-            </div>
-        </div>
-        <div class="rooms-create">
-            <span class="link">Создать комнату</span>
-        </div>
-    </div>
+    <ul class="side-subscriptions">
+        <li class="subscriptions-other"><a href="/#+">Другие комнаты…</a></li>
+    </ul>
     <div class="room-users">
         <div class="users-group users-requests">
             <h6 class="users-title">Ждут приглашения <span class="users-amount"></span></h6>
@@ -105,7 +95,31 @@
 </div>
 </div>
 
-<div id="talk">
+<div id="main">
+
+    <div class="hall">
+    <div class="hall-content">
+        <div class="hall-section">
+            <div class="hall-shuffle">
+                <h6 class="hall-title"><span class="link">Случайная комната</span></h6>
+                <p class="hint">Познакомьтесь с&nbsp;новыми людьми и&nbsp;обсудите неожиданные темы в&nbsp;одной из&nbsp;комнат, выбранной случайно
+            </div>
+            <div class="hall-recent">
+                <h6 class="hall-title">Последние</h6>
+                <ul class="rooms-list"></ul>
+            </div>
+        </div>
+        <div class="hall-section">
+            <div class="hall-my">
+                <h6 class="hall-title">Мои комнаты</h6>
+                <div class="hall-create">
+                    <button>Создать комнату</button>
+                </div>
+                <ul class="rooms-list"></ul>
+            </div>
+        </div>
+    </div>
+    </div>
 
     <div class="talk-overlay">
         <div class="entry-text entry-lost">
@@ -395,7 +409,7 @@
 </div>
 </form>
 
-</div>
+</div><!-- /#rooms -->
 
 <script type="text/html" id="speech-template">
 <div class="speech">
@@ -424,22 +438,29 @@
 </div>
 </script>
 
-<script src="//code.jquery.com/jquery-2.1.3.min.js"></script>
+<script type="text/html" id="room-template">
+<li class="room" data-hash="{hash}">
+    <span class="room-subscribe"></span>
+    <a href="/#{hash}">{topic}</a>
+</li>
+</script>
+
+<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
 <script src="/script/fastclick.min.js"></script>
 <script src="/script/utility.js"></script>
-<script src="/script/collection.js"></script>
 <script src="/script/events.js"></script>
 <script src="/script/rest.js"></script>
 
 <script src="/script/models/main.js"></script>
 <script src="/script/models/room.js"></script>
-<script src="/script/models/users.js"></script>
+<script src="/script/models/roles.js"></script>
 <script src="/script/models/userpics.js"></script>
 
 <script src="/script/views/datepicker.js"></script>
-<script src="/script/views/hall.js"></script>
+<script src="/script/views/about.js"></script>
 <script src="/script/views/room.js"></script>
 <script src="/script/views/side.js"></script>
+<script src="/script/views/hall.js"></script>
 <script src="/script/views/talk.js"></script>
 <script src="/script/views/reply.js"></script>
 <script src="/script/views/profile.js"></script>

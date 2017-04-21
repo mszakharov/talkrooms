@@ -52,6 +52,7 @@ var Talk = {
     content: $('.talk-content')
 };
 
+
 // Talk overlay
 (function() {
 
@@ -86,6 +87,10 @@ var Talk = {
 
     Room.on('leave', function() {
         Talk.content.addClass('talk-loading');
+    });
+
+    Room.on('hall', function() {
+        overlay.hide(); // Show lists instantly
     });
 
     Room.on('ready', hideOverlay);
@@ -559,6 +564,12 @@ Talk.isForMe = function(mentions) {
         }
     };
 
+    // Стираем сообщения, чтобы не видеть их при загрузке другой комнаты
+    Room.on('hall', function() {
+        archive.reset([]);
+        current.reset([]);
+    });
+
     Room.on('enter', function() {
         Talk.forMeOnly = false;
         Room.promises.push(Talk.loadRecent());
@@ -818,7 +829,7 @@ Room.on('user.ignores.updated', function() {
 
     function getRole(elem) {
         var role_id = Number(elem.getAttribute('data-role'));
-        var role = role_id && Room.users.get(role_id);
+        var role = role_id && Room.roles.get(role_id);
         return role || getMessageData(elem.parentNode);
     }
 

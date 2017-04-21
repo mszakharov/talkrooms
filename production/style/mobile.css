@@ -1,42 +1,43 @@
 /* Hall */
-.hall-header {
+.about-header {
     padding: 20px 14px;
 }
-.hall-header > h1 {
+.about-header > h1 {
     margin: 0 0 12px;
     font-size: 30px;
     line-height: 32px;
 }
-.hall-features {
+.about-features {
     padding: 0 14px;
     font-size: 17px;
     line-height: 21px;
 }
-.hall-content {
+.about-content {
     padding: 20px;
 }
 
 /* Smaller header height */
 #header,
 .header-side,
-.header-talk,
+.header-main,
 .header-toolbar {
     height: 48px;
 }
 .side-content,
 .talk-content,
-.talk-overlay {
+.talk-overlay,
+.hall {
     top: 48px;
 }
 
 /* Smaller header font */
-.header-main,
+.header-title,
 .toolbar-title {
     padding: 11px 0;
     font-size: 24px;
     line-height: 26px;
 }
-.hall-link {
+.about-link {
     padding: 8px 36px 8px 16px;
     background-position: 100% 18px;
 }
@@ -69,6 +70,16 @@
 }
 .toolbar-settings {
     margin: 0 -10px 0 4px;
+}
+
+/* One-column hall */
+.hall-content {
+    margin-right: 30px;
+}
+.hall-section {
+    float: none;
+    width: auto;
+    padding-left: 26px;
 }
 
 .entry-text {

@@ -1,102 +1,150 @@
-// Toggle side lists
+// Subscriptions
 (function() {
 
-    var rooms = $('.side-rooms'),
-        users = $('.room-users');
+    var $list = $('.side-subscriptions');
 
-    function showRooms() {
-        users.hide();
-        rooms.show();
+    var $other = $list.find('.subscriptions-other');
+
+    var subscribed = [];
+        isSubscribed = {};
+
+    var lastRoom;
+    var itemsIndex = {};
+
+    var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
+
+    function byAlias(a, b) {
+        if (a.alias > b.alias) return  1;
+        if (a.alias < b.alias) return -1;
+        return 0;
     }
 
-    $('.hall-link').on('click', function(event) {
-        if (event.metaKey || event.ctrlKey || event.shiftKey) return;
-        event.preventDefault();
-        if (rooms.is(':hidden')) {
-            showRooms();
-        } else if (Room.subscription) {
-            rooms.hide();
-            users.show();
+    // Normalize topic for case-insensitive sorting
+    function setAlias(room) {
+        room.alias = room.topic.toLowerCase();
+    }
+
+    function updateList() {
+        itemsIndex = {};
+        $list.find('.subscription').remove();
+        if (lastRoom) {
+            itemsIndex[lastRoom.hash] = $(renderRoom(lastRoom)).prependTo($list);
+        }
+        for (var i = subscribed.length; i--;) {
+            var room = subscribed[i];
+            itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
+        }
+        if (Room.hash) {
+            select(itemsIndex[Room.hash]);
+        }
+    }
+
+    function updateSubscribed() {
+        isSubscribed = {};
+        subscribed = Me.subscriptions.map(function(subscription) {
+            return $.extend({}, subscription.room);
+        });
+        subscribed.forEach(function(room) {
+            setAlias(room);
+            isSubscribed[room.hash] = true;
+        });
+        subscribed.sort(byAlias);
+        updateList();
+    }
+
+    var $selected;
+
+    function select($item) {
+        if ($selected) {
+            $selected.removeClass('subscription-selected');
+            $selected = null;
+        }
+        if ($item) {
+            $selected = $item.addClass('subscription-selected');
+        }
+    }
+
+    Room.on('hall', function() {
+        if (lastRoom) {
+            lastRoom = null;
+            updateList();
+        }
+        select($other);
+    });
+
+    Room.on('hash.selected', function() {
+        select(itemsIndex[Room.hash]);
+    });
+
+    Room.on('enter', function() {
+        if (!isSubscribed[Room.hash]) {
+            lastRoom = Room.data;
+            updateList();
         }
     });
 
+    Room.on('room.topic.updated', function() {
+        subscribed.forEach(function(room) {
+            if (room.hash === Room.data.hash) {
+                room.topic = Room.data.topic;
+            }
+        });
+        updateList();
+    });
+
+    // Reload subscriptions with new hash
+    Room.on('room.hash.updated', function() {
+        Me.reload().then(updateSubscribed);
+    });
+
+    Socket.on('me.subscriptions.add', function (data) {
+        setAlias(data);
+        if (!isSubscribed[data.hash]) {
+            subscribed.push(data);
+            subscribed.sort(byAlias);
+            isSubscribed[data.hash] = true;
+            if (lastRoom && lastRoom.hash === data.hash) {
+                lastRoom = null;
+            }
+            updateList();
+        }
+    });
+
+    Socket.on('me.subscriptions.remove', function(data) {
+        if (isSubscribed[data.hash]) {
+            delete isSubscribed[data.hash];
+            for (var i = subscribed.length; i--;) {
+                if (subscribed[i].hash === data.hash) {
+                    subscribed.splice(i, 1)[0];
+                }
+            }
+            updateList();
+        }
+    });
+
+    Me.ready.done(updateSubscribed);
+
+})();
+
+// Show other rooms on title click
+$('.about-link').on('click', function(event) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+    event.preventDefault();
+    Router.push('+');
+});
+
+
+// Toggle users list
+(function() {
+
+    var users = $('.room-users');
+
     Room.on('ready', function() {
-        rooms.hide();
         users.fadeIn(150);
     });
 
     Room.on('leave', function() {
         users.hide();
-    });
-
-    Room.on('locked', showRooms);
-    Room.on('closed', showRooms);
-    Room.on('lost',   showRooms);
-
-})();
-
-// Room list
-(function() {
-
-    var lists = $('.rooms-lists'),
-        recentList = new List(lists.find('.rooms-recent')),
-        myList     = new List(lists.find('.rooms-my'));
-
-    var renderLink = new Template('<li data-hash="{hash}"><a href="/#{hash}">{topic}</a></li>');
-
-    function List(elem) {
-        this.elem = elem;
-    }
-
-    List.prototype.update = function(rooms) {
-        this.elem.find('ul').remove();
-        if (rooms.length) {
-            this.elem.append('<ul>' + rooms.map(renderLink).join('') + '</ul>');
-            this.elem.show();
-        } else {
-            this.elem.hide();
-        }
-    };
-
-    function updateLists() {
-        recentList.update(Me.recent_rooms);
-        myList.update(Me.rooms);
-        if (Room.hash) {
-            selectCurrent();
-        }
-    }
-
-    function selectCurrent() {
-        lists.find('li[data-hash="' + Room.hash + '"]').addClass('rooms-selected');
-    }
-
-    $('.rooms-shuffle > .link').on('click', function() {
-        Room.shuffle();
-    });
-
-    $('.rooms-create > .link').on('click', function() {
-        Room.create();
-    });
-
-    recentList.elem.find('.rooms-title').on('click', function() {
-        recentList.elem.removeClass('rooms-folded');
-        myList.elem.addClass('rooms-folded');
-    });
-
-    myList.elem.find('.rooms-title').on('click', function() {
-        myList.elem.removeClass('rooms-folded');
-        recentList.elem.addClass('rooms-folded');
-    });
-
-    Socket.on('me.recent_rooms.updated', updateLists);
-    Socket.on('me.rooms.updated', updateLists);
-
-    Me.ready.done(updateLists);
-
-    Room.on('hash.selected', selectCurrent);
-
-    Room.on('leave', function() {
-        lists.find('.rooms-selected').removeClass('rooms-selected');
     });
 
 })();
@@ -176,7 +224,8 @@
 
     function getData(elem) {
         var role_id = Number(elem.attr('data-role'));
-        return Room.users.get(role_id) || Room.requests.get(role_id);
+        return Room.roles.get(role_id) ||
+            (Room.requests ? Room.requests.get(role_id) : undefined);
     }
 
     container.on('click', '.me, .userpic', function(event) {

@@ -51,7 +51,7 @@
 
     var body = $('body'),
         side = $('#side'),
-        talk = $('#talk');
+        main = $('#main');
 
     function showSide() {
         body.addClass('sliding-side').reflow(); // translate talk without transition
@@ -71,13 +71,19 @@
         }
     });
 
-    talk.on('transitionend', function() {
+    main.on('transitionend', function() {
         if (body.hasClass('sliding-side')) {
             body.removeClass('visible-side sliding-side');
         }
     });
 
     Room.on('hash.selected', function() {
+        if (body.hasClass('visible-side')) {
+            hideSide();
+        }
+    });
+
+    Room.on('hall', function() {
         if (body.hasClass('visible-side')) {
             hideSide();
         }
@@ -200,6 +206,10 @@
         tools.addClass('hidden');
         date.addClass('hidden');
     }
+
+    Room.on('hall', function() {
+        showTitleOnly('Комнаты');
+    });
 
     Room.on('leave', function() {
         title.addClass('changing');

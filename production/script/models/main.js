@@ -70,6 +70,11 @@ Router.on(/^$/, function(hash) {
     Room.leave();
 });
 
+Router.on(/^\+$/, function(hash) {
+    Room.showHall();
+    Room.toggle(true);
+});
+
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
     Room.enter(hash);
     Room.toggle(true);
@@ -92,6 +97,7 @@ var Me = {};
         Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
         Me.ignores = data.ignores;
+        Me.subscriptions = data.subscriptions;
         Me.checkVersion(data.talkrooms);
         updateRooms(data);
     }
@@ -113,7 +119,7 @@ var Me = {};
 (function() {
 
     var notice;
-    var version = 34;
+    var version = 35;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')

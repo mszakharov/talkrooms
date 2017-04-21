@@ -20,14 +20,14 @@
 }
 
 /* Titles */
-.header-main,
+.header-title,
 .toolbar-title {
     padding: 14px 0;
     font-weight: normal;
     font-size: 28px;
     line-height: 30px;
 }
-.header-main {
+.header-title {
     margin: 0 10px;
 }
 .toolbar-title {
@@ -42,11 +42,10 @@
     white-space: nowrap;
     transition: opacity .25s;
 }
-.hall-link {
+.about-link {
     color: #FFF;
-    padding: 7px 36px 9px 16px;
+    padding: 7px 16px 9px 16px;
     text-decoration: none;
-    background: url('room/show_rooms.svg') no-repeat 100% 23px;
 }
 .toolbar-title.changing {
     opacity: 0.6;
@@ -216,7 +215,7 @@
     border: 1px solid #000000;
     border: 1px solid rgba(0, 0, 0, .2);
 }
-#talk .userpic {
+#main .userpic {
     width: 38px;
     height: 38px;
     background-size: 40px;
@@ -602,61 +601,6 @@
 }
 .for-me-only .for-me {
     display: block;
-}
-
-/* Rooms lists */
-.side-rooms {
-    display: none;
-    margin-left: 26px;
-    padding: 18px 0 20px;
-}
-.side-rooms a,
-.side-rooms .link {
-    color: #1C768C;
-    padding: 4px 0;
-}
-.rooms-shuffle,
-.rooms-create {
-    line-height: 20px;
-    padding: 6px 20px 6px 0;
-}
-.rooms-list {
-    margin: 13px 0;
-    padding: 1px 0;
-}
-.rooms-title {
-    margin: 0 0 6px;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 16px;
-    color: #858482;
-    cursor: default;
-}
-.rooms-list > ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.rooms-list li {
-    line-height: 20px;
-    padding: 6px 20px 6px 0;
-}
-.rooms-selected {
-    margin-left: -13px;
-    padding-left: 13px !important;
-    border-radius: 8px 0 0 8px;
-    background: #DBD8D7;
-}
-.rooms-selected a {
-    text-decoration: none;
-    cursor: default;
-}
-.rooms-folded .rooms-title {
-    text-decoration: underline;
-    cursor: pointer;
-}
-.rooms-folded > ul {
-    display: none;
 }
 
 /* Users lists */

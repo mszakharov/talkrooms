@@ -1,68 +1,83 @@
 // Requests list
 (function() {
 
-    var requests = new Collection({
-        index: 'role_id',
-        order: 'nickname'
-    });
-
-    function getRequests() {
-        if (Room.moderator && Room.data.level !== 80) {
-            return Rest.roles.get({room_id: Room.data.room_id, come_in: true}).done(reset);
-        } else {
-            requests.raw = [];
-            apply();
-        }
-    }
-
-    function reset(data) {
-        requests.raw = data;
-        requests.raw.forEach(setUserpicUrl);
-        requests.sort();
-        apply();
-    }
-
-    function setUserpicUrl(request) {
-        request.userpicUrl = Userpics.getUrl(request);
+    function setUserpicUrl(role) {
+        role.userpicUrl = Userpics.getUrl(role);
     }
 
     function apply() {
-        Room.trigger('requests.updated', requests.raw);
-    }
-
-    function addRequest(request) {
-        if (!requests.get(request.request_id)) {
-            setUserpicUrl(request);
-            requests.add(request);
-            apply();
-        }
+        Room.trigger('requests.updated', Room.requests.items);
     }
 
     function toggleRequest(role) {
         if (role.come_in) {
-            addRequest(role);
+            setUserpicUrl(role);
+            Room.requests.add(role);
         } else {
-            requests.remove(role.role_id);
+            Room.requests.remove(role.role_id);
+        }
+        apply();
+    }
+
+    function updateRequest(data) {
+        Room.requests.update(data);
+        apply();
+    }
+
+
+    function isEnabled() {
+        var level = Room.data.level;
+        return Room.moderator && level && level !== 80;
+    }
+
+    function enableRequests() {
+        var requests = new Room.Roles({
+            room_id: Room.data.room_id,
+            come_in: true
+        });
+        Room.requests = requests;
+        toggleEvents('on');
+        return requests.fetch().then(function() {
+            requests.items.forEach(setUserpicUrl);
             apply();
+        });
+    }
+
+    function disableRequests() {
+        Room.requests = null;
+        Room.trigger('requests.updated', []);
+        toggleEvents('off');
+    }
+
+    function toggleEvents(toggle) {
+        Room[toggle]('role.come_in.updated', toggleRequest);
+        //Room[toggle]('role.nickname.updated', updateRequest); когда будет поле для имени
+    }
+
+    function toggleRequests() {
+        var enabled = isEnabled();
+        if (enabled && !Room.requests) {
+            enableRequests();
+        }
+        if (!enabled && Room.requests) {
+            disableRequests();
         }
     }
 
-    function toggleList(on) {
-        var mode = on ? 'on' : 'off';
-        Room[mode]('enter', getRequests);
-        Room[mode]('role.come_in.updated', toggleRequest);
-        if (on) {
-            Room.requests = requests;
-            getRequests();
-        } else {
-            Room.requests = null;
-            Room.trigger('requests.updated', []);
+    Room.on('room.level.updated', toggleRequests);
+    Room.on('moderator.changed', toggleRequests);
+
+    Room.on('enter', function() {
+        if (isEnabled()) {
+            this.promises.push(enableRequests());
         }
-    }
+    });
 
-    Room.on('moderator.changed', toggleList);
+    Room.on('leave', function() {
+        this.requests = null;
+    });
 
-    toggleList(Room.moderator);
+    toggleRequests();
 
 })();
 
