@@ -19,9 +19,11 @@
         return 0;
     }
 
+    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+\s*/g
+
     // Normalize topic for case-insensitive sorting
     function setAlias(room) {
-        room.alias = room.topic.toLowerCase();
+        room.alias = room.topic.toLowerCase().replace(emoji, '');
     }
 
     function updateList() {
@@ -87,8 +89,10 @@
         subscribed.forEach(function(room) {
             if (room.hash === Room.data.hash) {
                 room.topic = Room.data.topic;
+                setAlias(room);
             }
         });
+        subscribed.sort(byAlias);
         updateList();
     });
 
