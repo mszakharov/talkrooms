@@ -12,22 +12,24 @@ gulp.task('clean', function() {
 });
 
 
-// Add cache busting timestamp to js/css references
+// Copy vendors folder
+gulp.task('vendors', function() {
+    return gulp
+        .src('development/vendors/**/*')
+        .pipe(gulp.dest('production/vendors/'));
+});
+
+
+// Copy index.html, add cache busting timestamp to js/css references
 gulp.task('html', function() {
 
-    var ref = /(src|href)="(.*?\.(?:js|css))"/g;
-
-    function addTimestamp(match, attr, url) {
-        if (/jquery|fastclick/.test(url)) {
-            return match; // Exclude external scripts
-        } else {
-            return `${attr}="${url}?${timestamp}"`;
-        }
-    }
+    var jsRef  = /src="(\/script\/.*?\.js)"/g;
+        cssRef = /href="(\/style\/.*?\.css)"/g;
 
     return gulp
         .src('development/index.html')
-        .pipe(replace(ref, addTimestamp))
+        .pipe(replace(jsRef, `src="$1?${timestamp}"`))
+        .pipe(replace(cssRef, `href="$1?${timestamp}"`))
         .pipe(gulp.dest('production/'));
 
 });
@@ -80,5 +82,5 @@ gulp.task('images', function() {
 
 
 gulp.task('default', function() {
-    run('clean', ['html', 'index', 'scripts', 'styles', 'images']);
+    run('clean', ['html', 'index', 'vendors', 'scripts', 'styles', 'images']);
 });
