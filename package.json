@@ -9,6 +9,7 @@
     "gulp-postcss": "6.4.0",
     "gulp-replace": "^0.5.4",
     "postcss-cssnext": "2.10.0",
+    "postcss-import": "^9.1.0",
     "run-sequence": "1.2.2"
   }
 }

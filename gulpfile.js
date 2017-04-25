@@ -4,6 +4,7 @@ var gulp      = require('gulp');
 var postcss   = require('gulp-postcss');
 var replace   = require('gulp-replace');
 var cssnext   = require('postcss-cssnext');
+var imports   = require('postcss-import');
 
 var timestamp = Math.round(Date.now() / 1000).toString(36);
 
@@ -51,10 +52,11 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('production/script/'));
 });
 
-// Copy css and add prefixes
+// Copy css, inline @import rules, add prefixes
 gulp.task('styles', function() {
 
     var processors = [
+        imports(),
         cssnext({
             browsers: 'last 5 versions', // for autoprefixer and features list
             autoprefixer: {
@@ -64,7 +66,7 @@ gulp.task('styles', function() {
     ];
 
     return gulp
-        .src('development/style/*.css')
+        .src('development/style/**/[^_]*.css')
         .pipe(postcss(processors))
         .pipe(gulp.dest('production/style/'));
 
@@ -75,7 +77,7 @@ gulp.task('images', function() {
     return gulp
         .src([
             'development/style/**/*',
-            '!development/style/*.css'
+            '!development/style/**/*.css'
         ])
         .pipe(gulp.dest('production/style/'));
 });
