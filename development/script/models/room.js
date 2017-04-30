@@ -14,15 +14,20 @@ Room.handleEvent = function(event) {
 // Enter a room
 (function() {
 
-    function subscribe(data) {
-        Room.id = data.room_id;
-        Room.data = data;
-        Socket.subscribe(Room.hash).done(enter).fail(locked);
+    function subscribe(hash) {
+        return Rest.rooms.create(hash, 'enter', {socket_id: Socket.id});
     }
 
-    function enter(subscription) {
-        Room.myRole = subscription.role;
-        Room.subscription = subscription.subscription_id;
+    function subscribed(data) {
+        Room.id = data.room.room_id;
+        Room.data = data.room;
+        Room.roles = new Room.Roles({
+            room_id: Room.id,
+            num_online_sockets: {'>': 0}
+        });
+        Room.roles.reset(data.roles_online);
+        Room.myRole = data.role;
+        Room.subscription = data.subscription.subscription_id;
         Room.eventsBuffer = [];
         Room.trigger('enter', Room.myRole);
         $.when.apply($, Room.promises).done(ready).fail(error);
@@ -41,23 +46,24 @@ Room.handleEvent = function(event) {
         Room.trigger('error');
     }
 
-    function lost(xhr) {
-        Room.trigger(xhr.status === 404 ? 'lost' : 'error');
+    function denied(xhr) {
+        if (xhr.status === 403) {
+            locked(xhr.responseJSON);
+        } else if (xhr.status === 404) {
+            Room.trigger('lost');
+        } else {
+            Room.trigger('error', xhr.status);
+        }
     }
 
-    function locked(xhr) {
-        if (xhr.status !== 403) {
-            Room.trigger('error', xhr.status);
-        } else if (Room.data.level === 80) {
+    function locked(data) {
+        if (Room.data.level === 80) {
             Room.trigger('closed');
+        } else if (data && data.role_id) {
+            Room.comeIn = data.role_id;
+            Room.trigger('locked', true);
         } else {
-            var data = xhr.responseJSON;
-            if (data && data.role_id) {
-                Room.comeIn = data.role_id;
-                Room.trigger('locked', true);
-            } else {
-                Room.trigger('locked');
-            }
+            Room.trigger('locked');
         }
     }
 
@@ -68,8 +74,8 @@ Room.handleEvent = function(event) {
         this.hash = hash;
         this.promises = [];
         this.trigger('hash.selected');
-        Me.ready.done(function() {
-            Rest.rooms.get(hash).done(subscribe).fail(lost);
+        Socket.ready.done(function() {
+            subscribe(hash).then(subscribed, denied);
         });
     };
 

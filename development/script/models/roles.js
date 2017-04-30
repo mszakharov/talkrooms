@@ -175,12 +175,6 @@
 
     Room.on('enter', function() {
         showIgnored = Room.moderator;
-        var roles = new Room.Roles({
-            room_id: Room.data.room_id,
-            num_online_sockets: {'>': 0}
-        });
-        this.roles = roles;
-        this.promises.push(roles.fetch());
     });
 
     Room.on('ready', function() {
