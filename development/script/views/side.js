@@ -5,26 +5,12 @@
 
     var $other = $list.find('.subscriptions-other');
 
-    var subscribed = [];
-        isSubscribed = {};
-
     var lastRoom;
     var itemsIndex = {};
 
     var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
 
-    function byAlias(a, b) {
-        if (a.alias > b.alias) return  1;
-        if (a.alias < b.alias) return -1;
-        return 0;
-    }
-
-    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+\s*/g
-
-    // Normalize topic for case-insensitive sorting
-    function setAlias(room) {
-        room.alias = room.topic.toLowerCase().replace(emoji, '');
-    }
+    var $selected;
 
     function updateList() {
         itemsIndex = {};
@@ -32,29 +18,15 @@
         if (lastRoom) {
             itemsIndex[lastRoom.hash] = $(renderRoom(lastRoom)).prependTo($list);
         }
-        for (var i = subscribed.length; i--;) {
-            var room = subscribed[i];
+        var rooms = Me.subscriptions.rooms;
+        for (var i = rooms.length; i--;) {
+            var room = rooms[i];
             itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
         }
         if (Room.hash) {
             select(itemsIndex[Room.hash]);
         }
     }
-
-    function updateSubscribed() {
-        isSubscribed = {};
-        subscribed = Me.subscriptions.map(function(subscription) {
-            return $.extend({}, subscription.room);
-        });
-        subscribed.forEach(function(room) {
-            setAlias(room);
-            isSubscribed[room.hash] = true;
-        });
-        subscribed.sort(byAlias);
-        updateList();
-    }
-
-    var $selected;
 
     function select($item) {
         if ($selected) {
@@ -79,7 +51,7 @@
     });
 
     Room.on('enter', function() {
-        if (!isSubscribed[Room.hash]) {
+        if (!Me.subscriptions.isSubscribed(Room.hash)) {
             lastRoom = Room.data;
             updateList();
         }
@@ -98,35 +70,17 @@
 
     // Reload subscriptions with new hash
     Room.on('room.hash.updated', function() {
-        Me.reload().then(updateSubscribed);
+        Me.reload().then(updateList);
     });
 
-    Socket.on('me.subscriptions.add', function (data) {
-        setAlias(data);
-        if (!isSubscribed[data.hash]) {
-            subscribed.push(data);
-            subscribed.sort(byAlias);
-            isSubscribed[data.hash] = true;
-            if (lastRoom && lastRoom.hash === data.hash) {
-                lastRoom = null;
-            }
-            updateList();
+    Me.on('subscriptions.updated', function() {
+        if (lastRoom && Me.subscriptions.isSubscribed(lastRoom.hash)) {
+            lastRoom = null;
         }
+        updateList();
     });
 
-    Socket.on('me.subscriptions.remove', function(data) {
-        if (isSubscribed[data.hash]) {
-            delete isSubscribed[data.hash];
-            for (var i = subscribed.length; i--;) {
-                if (subscribed[i].hash === data.hash) {
-                    subscribed.splice(i, 1)[0];
-                }
-            }
-            updateList();
-        }
-    });
-
-    Me.ready.done(updateSubscribed);
+    Me.ready.done(updateList);
 
 })();
 

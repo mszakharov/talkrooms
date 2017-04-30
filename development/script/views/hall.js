@@ -93,8 +93,8 @@
     });
 
     Me.ready.done(function() {
-        Me.subscriptions.forEach(function(subscription) {
-            subscribed[subscription.room.hash] = true;
+        Me.subscriptions.rooms.forEach(function(room) {
+            subscribed[room.hash] = true;
         });
     });
 
