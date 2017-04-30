@@ -202,7 +202,7 @@ var Me = new Events();
 (function() {
 
     var notice;
-    var version = 35;
+    var version = 36;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
