@@ -40,7 +40,7 @@
     });
 
     Rooms.on('select', function(room) {
-        select(itemsIndex[room.data.hash]);
+        select(index[room.data.hash]);
     });
 
     Rooms.on('updated', updateList);
@@ -57,21 +57,6 @@ $('.about-link').on('click', function(event) {
 });
 
 
-// Toggle users list
-(function() {
-
-    var users = $('.room-users');
-
-    Room.on('ready', function() {
-        users.fadeIn(150);
-    });
-
-    Room.on('leave', function() {
-        users.hide();
-    });
-
-})();
-
 // Format status
 (function() {
 
@@ -79,7 +64,7 @@ $('.about-link').on('click', function(event) {
 
     var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g
 
-    Room.formatStatus = function(status) {
+    Rooms.formatStatus = function(status) {
         var s = status;
         if (~s.indexOf('#')) {
             s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
@@ -90,25 +75,28 @@ $('.about-link').on('click', function(event) {
 
 })();
 
-// Users list
+// Roles list
 (function() {
 
     var container = $('.room-users');
     var template = $.template('#user-template');
 
-    function renderUser(data) {
-        var user = template(data);
+    function renderRole(data) {
+        if (!data.userpicUrl) {
+            data.userpicUrl = Userpics.getUrl(data);
+        }
+        var $role = template(data);
         if (data.status) {
-            user.find('.nickname').append(' <em>' + Room.formatStatus(data.status) + '</em>');
+            $role.find('.nickname').append(' <em>' + Rooms.formatStatus(data.status) + '</em>');
         }
         if (data.role_id === Room.myRole.role_id) {
-            user.addClass('me');
+            $role.addClass('me');
         }
         if (data.annoying) {
-            user.addClass('annoying');
+            $role.addClass('annoying');
         }
-        user.attr('data-role', data.role_id);
-        return user[0];
+        $role.attr('data-role', data.role_id);
+        return $role[0];
     }
 
     function Group(selector) {
@@ -117,32 +105,67 @@ $('.about-link').on('click', function(event) {
         this.amount = this.elem.find('.users-amount');
     }
 
-    Group.prototype.show = function(users, sort) {
+    Group.prototype.show = function(roles) {
         this.list.html('');
         if (users.length) {
-            this.amount.html(users.length);
-            this.list.append(users.map(renderUser));
-            if (sort) {
-                this.list.find('.annoying').appendTo(this.list);
-            }
+            this.amount.html(roles.length);
+            this.list.append(roles.map(renderRole));
             this.elem.show();
         } else {
             this.elem.hide();
         }
     };
 
-    var onlineGroup = new Group('.users-online');
-    var ignoreGroup = new Group('.users-ignored');
+    var onlineGroup  = new Group('.users-online');
+    var ignoredGroup = new Group('.users-ignored');
+    var waitingGroup = new Group('.users-requests');
 
-    Room.on('users.updated', function(online, ignore) {
-        onlineGroup.show(online, Boolean(Room.ignores));
-        ignoreGroup.show(ignore);
+    function showOnline(room) {
+
+        var online  = [],
+            hidden  = [],
+            ignored = [];
+
+        room.rolesOnline.items.forEach(function(role) {
+            if (role.ignored && !room.myRole.ignored) {
+                ignored.push(role);
+            } else if (room.ignores && room.ignores(role)) {
+                hidden.push(role);
+            } else {
+                online.push(role);
+            }
+        });
+
+        online = online.concat(hidden);
+
+        onlineGroup.show(online);
+        ignoredGroup.show(room.myRole.moderator ? ignored : []);
+
+    }
+
+    function showWaiting(room) {
+        waitingGroup.show(room.myRole.moderator ? room.rolesWaiting.items : []);
+    }
+
+    Rooms.on('explore', function() {
+        container.hide();
     });
 
-    var requestsGroup = new Group('.users-requests');
+    Rooms.on('select', function() {
+        container.hide();
+    });
 
-    Room.on('requests.updated', function(requests) {
-        requestsGroup.show(requests);
+    Rooms.on('selected.ready', function(room) {
+        showOnline(room);
+        container.show();
+    });
+
+    Rooms.on('selected.roles.updated', showOnline);
+
+    Rooms.on('selected.rank.changed', showOnline);
+
+    Socket.on('me.ignores.updated', function() {
+        showOnline(Rooms.selected);
     });
 
     function getData(elem) {
