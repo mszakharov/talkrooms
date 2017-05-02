@@ -2,29 +2,26 @@
 (function() {
 
     var $list = $('.side-subscriptions');
-
     var $other = $list.find('.subscriptions-other');
 
-    var lastRoom;
-    var itemsIndex = {};
+    var index = {};
 
     var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
 
     var $selected;
 
     function updateList() {
-        itemsIndex = {};
+        var nodes = [];
+        index = {};
+        Rooms.forEach(function(room) {
+            var $item = $(renderRoom(room.data));
+            nodes.push($item[0]);
+            index[room.data.hash] = $item;
+        });
         $list.find('.subscription').remove();
-        if (lastRoom) {
-            itemsIndex[lastRoom.hash] = $(renderRoom(lastRoom)).prependTo($list);
-        }
-        var rooms = Me.subscriptions.rooms;
-        for (var i = rooms.length; i--;) {
-            var room = rooms[i];
-            itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
-        }
-        if (Room.hash) {
-            select(itemsIndex[Room.hash]);
+        $list.prepend(nodes);
+        if (Rooms.selected) {
+            select(index[Rooms.selected.data.hash]);
         }
     }
 
@@ -38,49 +35,17 @@
         }
     }
 
-    Room.on('hall', function() {
-        if (lastRoom) {
-            lastRoom = null;
-            updateList();
-        }
+    Rooms.on('explore', function() {
         select($other);
     });
 
-    Room.on('hash.selected', function() {
-        select(itemsIndex[Room.hash]);
+    Rooms.on('select', function(room) {
+        select(itemsIndex[room.data.hash]);
     });
 
-    Room.on('enter', function() {
-        if (!Me.subscriptions.isSubscribed(Room.hash)) {
-            lastRoom = Room.data;
-            updateList();
-        }
-    });
+    Rooms.on('updated', updateList);
 
-    Room.on('room.topic.updated', function() {
-        subscribed.forEach(function(room) {
-            if (room.hash === Room.data.hash) {
-                room.topic = Room.data.topic;
-                setAlias(room);
-            }
-        });
-        subscribed.sort(byAlias);
-        updateList();
-    });
-
-    // Reload subscriptions with new hash
-    Room.on('room.hash.updated', function() {
-        Me.reload().then(updateList);
-    });
-
-    Me.on('subscriptions.updated', function() {
-        if (lastRoom && Me.subscriptions.isSubscribed(lastRoom.hash)) {
-            lastRoom = null;
-        }
-        updateList();
-    });
-
-    Me.ready.done(updateList);
+    updateList();
 
 })();
 

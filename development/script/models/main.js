@@ -66,18 +66,15 @@ var Rest = {
 })();
 
 Router.on(/^$/, function(hash) {
-    Room.toggle(false);
-    Room.leave();
+    Rooms.leave();
 });
 
-Router.on(/^\+$/, function(hash) {
-    Room.showHall();
-    Room.toggle(true);
+Router.on(/^\+$/, function() {
+    Rooms.explore();
 });
 
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
-    Room.enter(hash);
-    Room.toggle(true);
+    Rooms.select(hash);
 });
 
 // Redirect after login
@@ -97,7 +94,7 @@ var Me = new Events();
         Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
         Me.ignores = data.ignores;
-        Me.subscriptions.reset(data.subscriptions);
+        Me.subscriptions = data.subscriptions;
         Me.checkVersion(data.talkrooms);
         updateRooms(data);
     }
@@ -115,88 +112,6 @@ var Me = new Events();
 
 })();
 
-/* Subscriptions */
-(function() {
-
-    var extend = Object.assign || $.extend;
-
-    var rooms = [],
-        index = {};
-
-    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+\s*/g;
-
-    // Normalize topic for sorting
-    function setAlias(room) {
-        room.alias = room.topic.toLowerCase().replace(emoji, '');
-    }
-
-    // Compare function for sorting
-    function byAlias(a, b) {
-        if (a.alias > b.alias) return  1;
-        if (a.alias < b.alias) return -1;
-        return 0;
-    }
-
-    function updated() {
-        Me.trigger('subscriptions.updated', rooms);
-    }
-
-    Me.subscriptions = {
-
-        rooms: rooms,
-
-        reset: function(data) {
-            index = {};
-            rooms.length = 0;
-            data.forEach(function(subscription, i) {
-                var room = subscription.room;
-                setAlias(room);
-                index[room.hash] = true;
-                rooms[i] = room;
-            });
-            rooms.sort(byAlias);
-            updated();
-        },
-
-        add: function(data) {
-            if (!index[data.hash]) {
-                setAlias(data);
-                rooms.push(data);
-                rooms.sort(byAlias);
-                index[data.hash] = true;
-            }
-            updated();
-        },
-
-        remove: function(data) {
-            delete index[data.hash];
-            for (var i = rooms.length; i--;) {
-                if (rooms[i].hash === data.hash) {
-                    rooms.splice(i, 1)[0];
-                }
-            }
-            updated();
-        },
-
-        update: function(data) {
-            var room = index[data.hash];
-            if (room) {
-                extend(room, data);
-                if (data.topic) {
-                    setAlias(room);
-                    rooms.sort(byAlias);
-                }
-                updated();
-            }
-        },
-
-        isSubscribed: function(hash) {
-            return index[hash];
-        }
-
-    };
-
-})();
 
 // Talkrooms vesrion
 (function() {
@@ -352,17 +267,6 @@ Socket.on('me.deleted', function() {
     if (Router.hash) {
         Router.push('');
     }
-});
-
-// Update subscriptions
-Socket.on('me.subscriptions.add', function(data) {
-    Me.subscriptions.add(data);
-});
-Socket.on('me.subscriptions.remove', function(data) {
-    Me.subscriptions.remove(data);
-});
-Socket.on('room.topic.updated', function(data) {
-    Me.subscriptions.update(data);
 });
 
 // Update rooms
