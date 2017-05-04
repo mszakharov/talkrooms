@@ -85,48 +85,35 @@ var Talk = {
         402: 'Слишком много одновременных соединений. Такое бывает, если открыть много вкладок или несколько раз подряд обновить страницу.'
     };
 
-    Room.on('leave', function() {
-        Talk.content.addClass('talk-loading');
-    });
-
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
         overlay.hide(); // Show lists instantly
     });
 
-    Room.on('ready', hideOverlay);
-
-    Room.on('lost', function() {
-        showOverlay('.entry-lost');
+    Rooms.on('select', function(room) {
+        if (room.state !== 'ready') {
+            Talk.content.addClass('talk-loading');
+        }
     });
 
-    Room.on('locked', function(wait) {
-        showOverlay(wait ? '.entry-wait' : '.entry-login');
+    Rooms.on('selected.ready', hideOverlay);
+
+    Rooms.on('selected.denied', function(room) {
+        var wait;
+        if (room.state === 'locked') {
+            showOverlay(wait ? '.entry-wait' : '.entry-login');
+        } else {
+            showOverlay('.entry-' + room.state);
+        }
     });
 
-    Room.on('closed', function(wait) {
-        showOverlay('.entry-closed');
-    });
-
-    Room.on('deleted', function() {
-        showOverlay('.entry-deleted');
-    });
-
-    Room.on('shuffle.failed', function() {
-        cancelShuffle.toggle(Boolean(Room.subscription));
+    Rooms.on('shuffle.failed', function() {
         showOverlay('.search-failed');
     });
 
     Socket.on('error', showError);
-    Room.on('error', showError);
-
-    var cancelShuffle = overlay.find('.entry-back');
-
-    cancelShuffle.find('.link').on('click', function() {
-        overlay.hide();
-    });
 
     overlay.find('.entry-search').on('click', function() {
-        Room.shuffle();
+        Rooms.shuffle();
     });
 
 })();
