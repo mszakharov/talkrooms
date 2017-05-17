@@ -58,7 +58,7 @@
     });
 
     $('.hall-shuffle .link').on('click', function() {
-        Room.shuffle();
+        Rooms.shuffle();
     });
 
     $('.hall-create button').on('click', function() {
@@ -68,11 +68,11 @@
     Socket.on('me.recent_rooms.updated', updateLists);
     Socket.on('me.rooms.updated', updateLists);
 
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
         $hall.show();
     });
 
-    Room.on('hash.selected', function() {
+    Rooms.on('select', function() {
         $hall.hide();
     });
 
@@ -93,7 +93,7 @@
     });
 
     Me.ready.done(function() {
-        Me.subscriptions.rooms.forEach(function(room) {
+        Me.subscriptions.forEach(function(room) {
             subscribed[room.hash] = true;
         });
     });
