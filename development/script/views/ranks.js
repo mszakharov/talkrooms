@@ -10,9 +10,8 @@
     var $guestButtons = $('.moder-guest'),
         $rankButton = $('.moder-rank');
 
-    function isSubordinate(role) {
-        var myLevel = Room.myRole.level;
-        return Boolean(myLevel && (!role.level || myLevel > role.level));
+    function isSubordinate(role, me) {
+        return Boolean(me.level && (!role.level || me.level > role.level));
     }
 
     function findInput(level) {
@@ -20,7 +19,7 @@
     }
 
     function getGuestLevel(role) {
-        return Math.max(role.user_id ? 10 : 0, Room.data.level);
+        return Math.max(role.user_id ? 10 : 0, Rooms.selected.data.level);
     }
 
     $inputs.on('click', function() {
@@ -34,7 +33,8 @@
     });
 
     $rankButton.on('click', function() {
-        if (Room.admin && isSubordinate(Profile.role)) {
+        var me = Rooms.selected.myRole;
+        if (me.isAdmin && isSubordinate(Profile.role)) {
             Profile.trigger('moderated', 'ranks');
             Profile.fit();
         }
@@ -55,8 +55,8 @@
         }
     });
 
-    function toggleAdminRank() {
-        $admin.toggle(Room.myRole.level === 80);
+    function toggleAdminRank(room) {
+        $admin.toggle(room.myRole.level === 80);
     }
 
     function toggleButtons(isAdmin) {
@@ -67,15 +67,16 @@
     }
 
     function toggleRankEdit() {
-        $rankButton.toggleClass('moder-rank-editable', Room.admin && isSubordinate(Profile.role));
+        var me = Rooms.selected.myRole;
+        $rankButton.toggleClass('moder-rank-editable', me.isAdmin && isSubordinate(Profile.role, me));
     }
 
-    Room.on('enter', toggleAdminRank);
+    Rooms.on('selected.ready', toggleAdminRank);
 
-    Room.on('admin.changed', toggleButtons);
+    Rooms.on('my.level.changed', toggleButtons);
 
-    toggleButtons(Room.admin);
-    toggleAdminRank();
+    toggleButtons(Rooms.selected.myRole.isAdmin);
+    toggleAdminRank(Rooms.selected);
 
 })();
 

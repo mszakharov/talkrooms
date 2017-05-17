@@ -35,7 +35,7 @@
     }
 
     Profile.show = function(role, context, edit) {
-        var me = Room.isMy(role);
+        var me = Rooms.selected.isMy(role);
         $sections.hide();
         Profile.role = role;
         Profile.socket = role;
