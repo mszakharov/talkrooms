@@ -186,7 +186,8 @@ var Me = new Events();
 
     function socketLost(xhr) {
         if (xhr.status == 404) {
-            Socket.ready = Me.reload().then(createSocket);
+            Socket.id = null;
+            Me.reload().then(createSocket);
         } else {
             connectLater();
         }
@@ -197,9 +198,6 @@ var Me = new Events();
         var delay = closedInstantly > 1 ? getConnectionDelay(tries) : 5;
         connectionTimer = setTimeout(reconnect, delay * 1000);
     }
-
-
-    Socket.ready = Me.ready.then(createSocket);
 
     function createSocket() {
         return Rest.sockets.create().done(socketCreated).fail(socketFailed);
@@ -234,24 +232,27 @@ var Me = new Events();
     }
 
     function onMessage(message) {
-        console.log(message.data);
         var event = JSON.parse(message.data);
         Socket.trigger(event[0], event[1]);
-        Room.handleEvent(event);
     }
 
-    Socket.subscribe = function(hash) {
-        return Socket.ready.then(function() {
-            return Rest.subscriptions.create({
-                socket_id: Socket.id,
-                hash: hash
-            });
-        });
-    };
+    Me.ready.then(createSocket);
 
     $window.on('beforeunload', disconnect);
 
     window.Socket = Socket;
+
+})();
+
+// Debug socket events
+(function() {
+
+    var _trigger = Socket.trigger;
+
+    Socket.trigger = function(name, data) {
+        console.log(name, data);
+        _trigger.call(Socket, name, data);
+    };
 
 })();
 
