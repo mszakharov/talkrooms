@@ -89,7 +89,7 @@ $('.about-link').on('click', function(event) {
         if (data.status) {
             $role.find('.nickname').append(' <em>' + Rooms.formatStatus(data.status) + '</em>');
         }
-        if (data.role_id === Room.myRole.role_id) {
+        if (data.role_id === Rooms.selected.myRole.role_id) {
             $role.addClass('me');
         }
         if (data.annoying) {
@@ -107,7 +107,7 @@ $('.about-link').on('click', function(event) {
 
     Group.prototype.show = function(roles) {
         this.list.html('');
-        if (users.length) {
+        if (roles.length) {
             this.amount.html(roles.length);
             this.list.append(roles.map(renderRole));
             this.elem.show();
@@ -169,9 +169,9 @@ $('.about-link').on('click', function(event) {
     });
 
     function getData(elem) {
+        var room = Rooms.selected;
         var role_id = Number(elem.attr('data-role'));
-        return Room.roles.get(role_id) ||
-            (Room.requests ? Room.requests.get(role_id) : undefined);
+        return room.rolesOnline.get(role_id) || room.rolesWaiting.get(role_id);
     }
 
     container.on('click', '.me, .userpic', function(event) {
