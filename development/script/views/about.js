@@ -54,7 +54,13 @@
 
     Me.ready.done(showRecent);
 
-    Room.toggle = toggleRooms;
+    Rooms.on('select', function() {
+        toggleRooms(true);
+    });
+
+    Rooms.on('leave', function() {
+        toggleRooms(false);
+    });
 
 })();
 
