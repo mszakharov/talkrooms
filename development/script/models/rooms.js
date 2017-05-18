@@ -30,6 +30,7 @@
     }
 
     function subscribed(room) {
+        indexRoom(room); // reindex room_id from response
         if (room === Rooms.selected) {
             Rooms.trigger('selected.ready', room);
         }
