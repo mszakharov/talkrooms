@@ -98,9 +98,8 @@ var Talk = {
     Rooms.on('selected.ready', hideOverlay);
 
     Rooms.on('selected.denied', function(room) {
-        var wait;
         if (room.state === 'locked') {
-            showOverlay(wait ? '.entry-wait' : '.entry-login');
+            showOverlay(room.myRole ? '.entry-wait' : '.entry-login');
         } else {
             showOverlay('.entry-' + room.state);
         }
@@ -142,11 +141,10 @@ Talk.format = function(content) {
 };
 
 // Find me in mentions
-Talk.isForMe = function(mentions) {
+Talk.mentionsMe = function(mentions) {
     if (!mentions) return false;
-    var my = Room.myRole.role_id;
     for (var i = mentions.length; i--;) {
-        if (mentions[i] === my) return true;
+        if (mentions[i] === this.myRoleId) return true;
     }
 };
 
@@ -184,7 +182,7 @@ Talk.isForMe = function(mentions) {
     // Update dates after midnight
     $window.on('date.changed', function() {
         dates.forEach(updateTitle);
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     });
 
 })();
@@ -207,11 +205,11 @@ Talk.isForMe = function(mentions) {
             content: Talk.format(data.content) || '…',
             time: created.toHumanTime(),
         });
-        if (Room.myRole.role_id === data.role_id) {
+        if (data.isMy) {
             if (created.daysAgo() < 2) {
                 message.find('.msg-text').append(edit.cloneNode(true));
             }
-        } else if (Talk.isForMe(data.mentions)) {
+        } else if (data.mentionsMe) {
             message.addClass('with-my-name');
         }
         this.timestamp = created.getTime();
@@ -375,6 +373,8 @@ Talk.isForMe = function(mentions) {
     };
 
     Talk.createMessage = function(data) {
+        data.isMy = Talk.myRoleId === data.role_id;
+        data.mentionsMe = !data.isMy && Talk.mentionsMe(data.mentions);
         return new Message(data);
     };
 
@@ -412,7 +412,7 @@ Talk.isForMe = function(mentions) {
     }
 
     function isVisible(data) {
-        if (Room.isMy(data)) {
+        if (data.role_id === Talk.myRoleId) {
             return true;
         }
         if (Room.ignores && Room.ignores(data)) {
@@ -422,7 +422,7 @@ Talk.isForMe = function(mentions) {
             return false;
         }
         if (Talk.forMeOnly) {
-            return data.recipient_nickname || Talk.isForMe(data.mentions);
+            return data.recipient_nickname || Talk.mentionsMe(data.mentions);
         }
         return true;
     }
@@ -479,13 +479,13 @@ Talk.isForMe = function(mentions) {
         current.setLast();
         Talk.scrollDown();
         Talk.content.removeClass('talk-loading');
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function updateSections(action, data, anchor) {
         var offset = anchor.getBoundingClientRect().top;
         action(data);
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         Talk.restoreOffset(anchor, offset);
     }
 
@@ -502,7 +502,7 @@ Talk.isForMe = function(mentions) {
         if (offset < 0) {
             Talk.restoreOffset(cut.node, offset);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         next();
     }
 
@@ -530,7 +530,7 @@ Talk.isForMe = function(mentions) {
         current.setIgnore(ignore, isVisible);
         current.setLast();
         cleanDates();
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         content.scrollTop = content.scrollHeight - offset;
     };
 
@@ -552,17 +552,21 @@ Talk.isForMe = function(mentions) {
     };
 
     // Стираем сообщения, чтобы не видеть их при загрузке другой комнаты
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
+        Talk.reset();
+    });
+
+    Rooms.on('selected.ready', function() {
+        Talk.forMeOnly = false;
+        Talk.loadRecent();
+    });
+
+    Talk.reset = function() {
         archive.reset([]);
         current.reset([]);
-    });
+    };
 
-    Room.on('enter', function() {
-        Talk.forMeOnly = false;
-        Room.promises.push(Talk.loadRecent());
-    });
-
-    Room.on('message.created', function(data) {
+    Talk.appendMessage = function(data) {
         if (isVisible(data) && data.message_id > current.last.data.message_id) {
             var message = Talk.createMessage(data);
             var lastSpeech = current.last.node && current.last.node.parentNode;
@@ -570,7 +574,7 @@ Talk.isForMe = function(mentions) {
             message.appendTo(current.container, current.last);
             current.messages.push(message);
             if (message.date !== current.last.date) {
-                Room.trigger('dates.changed');
+                Talk.reflowDates();
             }
             current.setLast(message);
             if (current.messages.length > current.capacity + current.overflow) {
@@ -581,11 +585,11 @@ Talk.isForMe = function(mentions) {
             } else if (lastSpeech) {
                 Talk.scrollFurther(lastSpeech.nextSibling);
             }
-            Room.trigger('talk.updated');
+            return true;
         }
-    });
+    };
 
-    Room.on('message.content.updated', function(data) {
+    Talk.updateMessage = function(data) {
         var updated = Talk.find(function(message) {
             return data.message_id === message.data.message_id;
         });
@@ -594,9 +598,9 @@ Talk.isForMe = function(mentions) {
             var edit = text.find('.msg-edit').detach();
             text.html(Talk.format(data.content) || '…').append(edit);
             updated.data.content = data.content;
-            Room.trigger('dates.changed'); // because of new message height
+            Talk.reflowDates(); // because of new message height
         }
-    });
+    };
 
     function toggleArchive(visible) {
         $(archive.container).toggle(visible);
@@ -618,7 +622,7 @@ Talk.isForMe = function(mentions) {
         } else {
             current.prepend(messages);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function showMoreRecent(data) {
@@ -663,7 +667,7 @@ Talk.isForMe = function(mentions) {
         if (archive.messages.length) {
             toggleArchive(true);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function mergeSections(messages) {
@@ -783,15 +787,17 @@ Talk.isForMe = function(mentions) {
         });
     }
 
-    Room.on('message.ignore.updated', function(data) {
-        ignore[data.message_id] = data.ignore;
-        timer = setTimeout(setIgnore, 50);
+    Rooms.pipe('message.ignore.updated', function(room, data) {
+        if (room === Rooms.selected) {
+            ignore[data.message_id] = data.ignore;
+            timer = setTimeout(setIgnore, 50);
+        }
     });
 
 })();
 
 // Apply ignores
-Room.on('user.ignores.updated', function() {
+Socket.on('me.ignores.updated', function() {
     Talk.loadRecent();
 });
 
@@ -816,7 +822,7 @@ Room.on('user.ignores.updated', function() {
 
     function getRole(elem) {
         var role_id = Number(elem.getAttribute('data-role'));
-        var role = role_id && Room.roles.get(role_id);
+        var role = role_id && Rooms.selected.rolesOnline.get(role_id);
         return role || getMessageData(elem.parentNode);
     }
 
@@ -881,24 +887,6 @@ Room.on('user.ignores.updated', function() {
     var dates = [];
     var min, max;
 
-    function update() {
-        var active = dates.length > 1;
-        updateDates();
-        if (dates.length) {
-            toggle(content.scrollTop);
-        } else {
-            value.text('Сегодня');
-        }
-        if (dates.length < 2 && active) {
-            content.removeEventListener('scroll', check, false);
-            window.removeEventListener('resize', update);
-        }
-        if (dates.length > 1 && !active) {
-            content.addEventListener('scroll', check, false);
-            window.addEventListener('resize', update);
-        }
-    }
-
     function getTop(node) {
         return node.getBoundingClientRect().top
     }
@@ -933,7 +921,23 @@ Room.on('user.ignores.updated', function() {
         }
     }
 
-    Room.on('dates.changed', update);
+    Talk.reflowDates = function() {
+        var active = dates.length > 1;
+        updateDates();
+        if (dates.length) {
+            toggle(content.scrollTop);
+        } else {
+            value.text('Сегодня');
+        }
+        if (dates.length < 2 && active) {
+            content.removeEventListener('scroll', check, false);
+            window.removeEventListener('resize', updateDates);
+        }
+        if (dates.length > 1 && !active) {
+            content.addEventListener('scroll', check, false);
+            window.addEventListener('resize', updateDates);
+        }
+    };
 
 })();
 

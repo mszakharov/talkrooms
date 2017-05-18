@@ -6,8 +6,6 @@
     var subscriptions = [];
     var temporary;
 
-    var selected = new Events();
-
     // Compare function for sorting
     function byAlias(a, b) {
         if (a.alias > b.alias) return  1;
@@ -18,11 +16,35 @@
     Rooms.byHash = {};
     Rooms.byId   = {};
 
-    Rooms.index = function(room) {
-        this.byHash[room.data.hash] = room;
+    function indexRoom(room) {
+        Rooms.byHash[room.data.hash] = room;
         if (room.data.room_id) {
-            this.byId[room.data.room_id] = room;
+            Rooms.byId[room.data.room_id] = room;
         }
+    };
+
+    function createRoom(data) {
+        var room = new Rooms.Room(data);
+        indexRoom(room);
+        return room;
+    }
+
+    function subscribed(room) {
+        if (room === Rooms.selected) {
+            Rooms.trigger('selected.ready', room);
+        }
+        Rooms.trigger('updated');
+    }
+
+    function denied(room) {
+        if (room === Rooms.selected) {
+            Rooms.trigger('selected.denied', room);
+        }
+    }
+
+    Rooms.explore = function() {
+        this.selected = null;
+        this.trigger('explore');
     };
 
     Rooms.select = function(hash) {
@@ -31,30 +53,73 @@
 
         // Если такой комнаты ещё нет, создаём её
         if (!room) {
-            room = new Room({hash: hash, topic: '#' + hash});
+            room = createRoom({hash: hash, topic: '#' + hash});
+            // Выходим из предыдущей временной
+            if (temporary) {
+                delete Rooms.byHash[temporary.data.hash];
+                delete Rooms.byId[temporary.data.room_id];
+                if (temporary.subscription) {
+                    temporary.leave();
+                }
+            }
+            temporary = room;
+            if (Socket.id) {
+                room.enter().then(subscribed, denied);
+            }
+            Rooms.trigger('updated');
         }
 
-        selected.room = room;
+        this.selected = room;
         this.trigger('select', room);
+
+        if (room.state === 'ready') {
+            this.trigger('selected.ready', room);
+        } else if (room.state) {
+            this.trigger('selected.denied', room);
+        }
 
     };
 
+
     Rooms.reset = function(data) {
+
+        var existing = this.byHash;
 
         this.byHash = {};
         this.byId   = {};
 
+        // If room already exists, update and use it
         subscriptions = data.map(function(room_data) {
-            var room = new Rooms.Room(room_data);
-            Rooms.index(room);
-            return room;
+            var same = existing[room_data.hash];
+            if (same) {
+                $.extend(same.data, room_data);
+                indexRoom(same);
+                return same;
+            } else {
+                return createRoom(room_data);
+            }
         });
+
+        // Delete temporary room if subscriptions contain the same
+        if (temporary && this.byHash[temporary.data.hash]) {
+            temporary = null;
+        }
+
+        if (this.selected && !this.byHash[this.selected.data.hash]) {
+            indexRoom(this.selected);
+            temporary = this.selected;
+        }
 
         subscriptions.sort(byAlias);
 
         this.trigger('updated');
 
+        this.forEach(function(room) {
+            room.enter().then(subscribed, denied);
+        });
+
     };
+
 
     Rooms.forEach = function(callback) {
         subscriptions.forEach(callback, this);
@@ -64,8 +129,7 @@
     };
 
     Rooms.updateTopic = function(room, topic) {
-        room.data.topic = topic;
-        setAlias(room);
+        room.update(topic);
         subscriptions.sort(byAlias);
         this.trigger('updated');
     };
@@ -77,33 +141,39 @@
         this.trigger('updated');
     };
 
+    Rooms.triggerSelected = function(event, room) {
+        if (this.selected === room) {
+            this.trigger(event, room);
+        }
+    };
+
+
     Socket.on('me.subscriptions.add', function(data) {
 
         var room;
 
         // If subscribed to temporary room, use it
-        if (temporary && temporary.room_id === data.room_id) {
+        if (temporary && temporary.data.hash === data.hash) {
             room = temporary;
             temporary = null;
         } else {
-            room = new Rooms.Room(data);
-            Rooms.index(room);
+            room = createRoom(data);
+            room.enter().then(subscribed, denied);
         }
 
-        subscribed.push(room);
-        subscribed.sort(byAlias);
+        subscriptions.push(room);
+        subscriptions.sort(byAlias);
 
         Rooms.trigger('updated');
 
     });
-
 
     Socket.on('me.subscriptions.remove', function(data) {
         var room = Rooms.byId[data.room_id];
         if (room) {
             delete Rooms.byHash[room.data.hash];
             delete Rooms.byId[data.room_id];
-            subscribed = subscribed.filter(function(s) {
+            subscriptions = subscriptions.filter(function(s) {
                 return s !== room;
             });
             Rooms.trigger('updated');
@@ -146,25 +216,29 @@
         this.subscription = data.subscription;
         this.rolesOnline.reset(data.roles_online);
         this.rolesWaiting.reset(data.roles_waiting || []);
-        this.setState('subscribed');
+        this.setState('ready');
+        return this;
     }
 
     function denied(xhr) {
         if (xhr.status === 404) {
-            this.setState('error');
+            this.setState('lost');
         } else if (xhr.status === 403) {
             var data = xhr.responseJSON;
-            this.myRole = data && data.role;
+            if (data && data.role_id) {
+                this.myRole = data;
+            }
             this.setState('locked');
         } else {
             this.setState('error');
         }
+        throw this;
     }
 
     Room.prototype = {
 
         enter: function() {
-            subscribe(this.data.hash)
+            return subscribe(this.data.hash)
                 .then(subscribed.bind(this))
                 .catch(denied.bind(this));
         },
@@ -188,6 +262,25 @@
             this.trigger('updated', data);
         },
 
+        isMy: function(data) {
+            return data.role_id === this.myRole.role_id;
+        },
+
+        mentionsMe: function(mentions) {
+            var me = this.myRole.role_id;
+            for (var i = mentions.length; i--;) {
+                if (mentions[i] === me) return true;
+            }
+        },
+
+        isForMe: function(message) {
+            if (this.myRole.role_id === message.recipient_role_id) {
+                return true;
+            } else if (message.mentions) {
+                return this.mentionsMe(message.mentions);
+            }
+        }
+
     };
 
     Rooms.Room = Room;
@@ -204,6 +297,11 @@ Rooms.pipe = function(event, callback) {
     });
 };
 
+// Create rooms from me.subscriptions
+Socket.on('created', function() {
+    Rooms.reset(Me.subscriptions);
+});
+
 // Update room data
 (function() {
 
@@ -213,6 +311,7 @@ Rooms.pipe = function(event, callback) {
 
     Rooms.pipe('room.topic.updated', function(room, data) {
         Rooms.updateTopic(room, data.topic);
+        Rooms.trigger('selected.topic.updated', room);
     });
 
     Rooms.pipe('room.hash.updated', function(room, data) {
@@ -232,16 +331,26 @@ Rooms.pipe = function(event, callback) {
 // Update roles
 (function() {
 
+    function updated(room) {
+        Rooms.triggerSelected('selected.roles.updated', room);
+    }
+
     function updateRole(room, data) {
-        room.roles.update(data);
+        room.rolesOnline.update(data);
+        if (room.myRole.role_id === data.role_id) {
+            $.extend(room.myRole, data);
+        }
+        updated(room);
     }
 
     Rooms.pipe('role.online', function(room, data) {
-        room.roles.add(data);
+        room.rolesOnline.add(data);
+        updated(room);
     });
 
     Rooms.pipe('role.offline', function(room, data) {
-        room.roles.remove(data.role_id);
+        room.rolesOnline.remove(data.role_id);
+        updated(room);
     });
 
     Rooms.pipe('role.nickname.updated', updateRole);
@@ -258,7 +367,7 @@ Rooms.pipe = function(event, callback) {
 
     function updateUser(data) {
         Rooms.forEach(function(room) {
-            room.roles.updateUser(data);
+            room.rolesOnline.updateUser(data);
         });
     }
 
@@ -267,7 +376,60 @@ Rooms.pipe = function(event, callback) {
 
 })();
 
-// Create rooms from me.subscriptions
-Socket.on('created', function() {
-    Rooms.reset(Me.subscriptions);
+// Messages
+Rooms.pipe('message.created', function(room, data) {
+    var forMe = room.isForMe(data);
+    if (room === Rooms.selected) {
+        Talk.appendMessage(data);
+    } else if (forMe) {
+        // Show notification in rooms list
+    }
+    if (forMe && Rooms.idle) {
+        // Window title and sound
+    }
+});
+
+Rooms.pipe('message.content.updated', function(room, data) {
+    if (room === Rooms.selected) {
+        Talk.updateMessage(data);
+    }
+});
+
+
+// Check permissions
+(function() {
+
+    function checkRank(role) {
+        var level = role.level || 0;
+        role.isModerator = level >= 50;
+        role.isAdmin = level >= 70;
+    }
+
+    function checkMyRank(room) {
+        var me = room.myRole;
+        checkRank(me);
+        if (me.isModerator) {
+            $.require('views/moderate.js');
+            $.require('views/settings.js');
+        }
+        if (me.isAdmin) {
+            $.require('views/ranks.js');
+        }
+    }
+
+    Rooms.on('my.level.updated', checkMyRank);
+
+    Rooms.on('selected.ready', checkMyRank);
+
+})();
+
+// Deprecated namespace
+var Room = new Events();
+
+// Emulate old enter event
+Rooms.on('selected.ready', function(selected) {
+    Room.data = selected.data;
+    Room.myRole = selected.myRole;
+    Room.moderator = selected.myRole.isModerator;
+    Room.trigger('enter', selected);
 });
