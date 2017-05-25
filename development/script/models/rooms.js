@@ -312,7 +312,7 @@ Socket.on('created', function() {
 
     Rooms.pipe('room.topic.updated', function(room, data) {
         Rooms.updateTopic(room, data.topic);
-        Rooms.trigger('selected.topic.updated', room);
+        Rooms.triggerSelected('selected.topic.updated', room);
     });
 
     Rooms.pipe('room.hash.updated', function(room, data) {
@@ -322,9 +322,13 @@ Socket.on('created', function() {
         Rooms.updateHash(room, data.hash);
     });
 
+    Rooms.pipe('room.level.updated', function(room, data) {
+        room.update(data);
+        Rooms.triggerSelected('selected.level.updated', room);
+    });
+
     Rooms.pipe('room.searchable.updated', updateRoom);
     Rooms.pipe('room.watched.updated', updateRoom);
-    Rooms.pipe('room.level.updated', updateRoom);
     Rooms.pipe('room.min_session_created.updated', updateRoom);
 
 })();
@@ -397,7 +401,7 @@ Rooms.pipe('message.content.updated', function(room, data) {
 });
 
 
-// Check permissions
+// Check my rank and load necessary scripts
 (function() {
 
     function checkRank(role) {
@@ -418,7 +422,12 @@ Rooms.pipe('message.content.updated', function(room, data) {
         }
     }
 
-    Rooms.on('my.level.updated', checkMyRank);
+    Rooms.pipe('role.level.updated', function(room, data) {
+        if (room === Rooms.selected && room.isMy(data)) {
+            checkMyRank(room);
+            Rooms.trigger('my.rank.updated', room);
+        }
+    });
 
     Rooms.on('selected.ready', checkMyRank);
 

@@ -34,7 +34,7 @@
 
     $rankButton.on('click', function() {
         var me = Rooms.selected.myRole;
-        if (me.isAdmin && isSubordinate(Profile.role)) {
+        if (me.isAdmin && isSubordinate(Profile.role, me)) {
             Profile.trigger('moderated', 'ranks');
             Profile.fit();
         }
@@ -60,7 +60,8 @@
     }
 
     function toggleButtons(isAdmin) {
-        $guestButtons.toggleClass('moder-guest-editable', isAdmin);
+        var me = Rooms.selected.myRole;
+        $guestButtons.toggleClass('moder-guest-editable', me.isAdmin);
         if (Profile.role) {
             toggleRankEdit();
         }
@@ -72,11 +73,12 @@
     }
 
     Rooms.on('selected.ready', toggleAdminRank);
+    Rooms.on('selected.ready', toggleButtons);
 
-    Rooms.on('my.level.changed', toggleButtons);
+    Rooms.on('my.rank.updated', toggleButtons);
 
-    toggleButtons(Rooms.selected.myRole.isAdmin);
     toggleAdminRank(Rooms.selected);
+    toggleButtons(Rooms.selected);
 
 })();
 

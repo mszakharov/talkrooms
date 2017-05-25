@@ -31,7 +31,7 @@
     }
 
     function enableRequests() {
-        var requests = new Room.Roles({
+        var requests = new Rooms.Roles({
             room_id: Room.data.room_id,
             come_in: true
         });
@@ -64,10 +64,9 @@
         }
     }
 
-    Room.on('room.level.updated', toggleRequests);
-    Room.on('moderator.changed', toggleRequests);
+    Rooms.on('selected.level.updated', toggleRequests);
 
-    Room.on('enter', function() {
+    Rooms.on('my.rank.updated', function() {
         if (isEnabled()) {
             this.promises.push(enableRequests());
         }
@@ -130,12 +129,13 @@ Profile.send = function(data) {
 // Moderate section
 (function() {
 
-    var $section = $('#profile-moderate');
-
     var MODERATOR = 50;
 
+    var $section = $('#profile-moderate');
+    var isActive = false;
+
     function updateRole(data) {
-        if (Profile.role && Profile.role.role_id === data.role_id) {
+        if (isActive && Profile.role.role_id === data.role_id) {
             var role = $.extend(Profile.role, data);
             Profile.trigger('moderated', getState(role));
             Profile.fit();
@@ -146,7 +146,7 @@ Profile.send = function(data) {
         if (role.level >= MODERATOR) {
             return 'rank';
         }
-        if (role.level < Room.data.level) {
+        if (role.level < Rooms.selected.data.level) {
             return role.come_in === 0 ? 'banished' : 'request';
         }
         if (role.ignored) {
@@ -162,21 +162,8 @@ Profile.send = function(data) {
         }
     }
 
-    function toggleEvents(toggle) {
-
-        Socket[toggle]('role.level.updated', updateRole);
-        Socket[toggle]('role.ignored.updated', updateRole);
-        Socket[toggle]('role.expired.updated', updateRole);
-        Socket[toggle]('role.come_in.updated', updateRole);
-
-        Room[toggle]('room.level.updated', onRoomUpdated);
-
-    }
-
-    var isActive = false;
-
     Profile.on('show', function(role, isMy) {
-        isActive = Boolean(Room.moderator && !isMy);
+        isActive = Boolean(Rooms.selected.myRole.isModerator && !isMy);
         $section.toggle(isActive);
         if (isActive) {
             Profile.trigger('moderated', null);
@@ -189,24 +176,34 @@ Profile.send = function(data) {
         }
     });
 
-    function toggleSection(isModerator) {
-        toggleEvents(isModerator ? 'on' : 'off');
-        if (Profile.role) {
-            if (isModerator) {
-                isActive = isModerator && !Room.isMy(Profile.role);
-                $section.toggle(isActive);
-                if (isActive) {
-                    Profile.trigger('moderated', getState(Profile.role));
-                }
-            } else {
-                isActive = false;
-                $section.hide();
-            }
+    Socket.on('role.level.updated', updateRole);
+    Socket.on('role.ignored.updated', updateRole);
+    Socket.on('role.expired.updated', updateRole);
+    Socket.on('role.come_in.updated', updateRole);
+
+    Rooms.on('selected.level.updated', function() {
+        if (isActive) {
+            Profile.trigger('moderated', getState(Profile.role));
             Profile.fit();
         }
+    });
+
+    function toggleSection(isModerator) {
+        if (!Profile.role) {
+            return false;
+        }
+        var room = Rooms.selected;
+        isActive = room.myRole.isModerator && !room.isMy(Profile.role);
+        if (isActive) {
+            $section.toggle(isActive);
+            Profile.trigger('moderated', getState(Profile.role));
+        } else {
+            $section.hide();
+        }
+        Profile.fit();
     }
 
-    Room.on('moderator.changed', toggleSection);
+    Rooms.on('my.rank.updated', toggleSection);
 
     // Wait for sections initialization below
     setTimeout(function() {
@@ -214,15 +211,6 @@ Profile.send = function(data) {
     }, 100);
 
 })();
-
-
-// Check level
-Profile.isCivilian = function() {
-    var socket = this.socket;
-    if (socket) {
-        return !(socket.level && socket.level >= 50);
-    }
-};
 
 // Profile with request
 (function() {

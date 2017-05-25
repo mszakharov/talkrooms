@@ -218,6 +218,11 @@
         'Скрыть во всех комнатах…'
     ];
 
+    function toggleIgnoreIcon() {
+        $ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
+        $ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
+    }
+
     function toggleIgnored(ignored) {
         $actions.toggle(!ignored);
         $ignored.toggle(ignored);
@@ -271,12 +276,16 @@
         Profile.edit();
     });
 
-    Room.on('moderator.changed', function(isModerator) {
-        ignoreDisabled = isModerator;
-        $ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
-        $ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
-        if (Profile.socket) {
-            toggleIgnored(!isModerator && isIgnored());
+    Rooms.on('selected.ready', function(room) {
+        ignoreDisabled = room.myRole.isModerator;
+        toggleIgnoreIcon();
+    });
+
+    Rooms.on('my.rank.updated', function(room) {
+        ignoreDisabled = room.myRole.isModerator;
+        toggleIgnoreIcon();
+        if (Profile.role) {
+            toggleIgnored(!ignoreDisabled && isIgnored());
         }
     });
 
