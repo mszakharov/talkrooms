@@ -48,6 +48,24 @@
         this.trigger('explore');
     };
 
+    Rooms.leave = function() {
+        this.active = false;
+        this.selected = null;
+        this.forEach(function(room) {
+           room.leave();
+        });
+        this.trigger('leave');
+    };
+
+    Rooms.enter = function() {
+        if (!this.active) {
+            this.active = true;
+            this.forEach(function(room) {
+                room.enter().then(subscribed, denied);
+            });
+        }
+    };
+
     Rooms.select = function(hash) {
 
         var room = this.byHash[hash];
@@ -115,9 +133,11 @@
 
         this.trigger('updated');
 
-        this.forEach(function(room) {
-            room.enter().then(subscribed, denied);
-        });
+        if (this.active) {
+            this.forEach(function(room) {
+                room.enter().then(subscribed, denied);
+            });
+        }
 
     };
 
@@ -159,7 +179,9 @@
             temporary = null;
         } else {
             room = createRoom(data);
-            room.enter().then(subscribed, denied);
+            if (Rooms.active) {
+                room.enter().then(subscribed, denied);
+            }
         }
 
         subscriptions.push(room);

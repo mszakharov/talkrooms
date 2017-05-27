@@ -70,10 +70,12 @@ Router.on(/^$/, function(hash) {
 });
 
 Router.on(/^\+$/, function() {
+    Rooms.enter();
     Rooms.explore();
 });
 
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
+    Rooms.enter();
     Rooms.select(hash);
 });
 
