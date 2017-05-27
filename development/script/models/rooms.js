@@ -217,6 +217,7 @@
         this.subscription = data.subscription;
         this.rolesOnline.reset(data.roles_online);
         this.rolesWaiting.reset(data.roles_waiting || []);
+        this.rolesWaiting.enabled = Boolean(data.roles_waiting);
         this.setState('ready');
         return this;
     }
@@ -423,9 +424,11 @@ Rooms.pipe('message.content.updated', function(room, data) {
     }
 
     Rooms.pipe('role.level.updated', function(room, data) {
-        if (room === Rooms.selected && room.isMy(data)) {
+        if (room.isMy(data)) {
             checkMyRank(room);
-            Rooms.trigger('my.rank.updated', room);
+            if (Rooms.selected) {
+                Rooms.trigger('my.rank.updated', room);
+            }
         }
     });
 

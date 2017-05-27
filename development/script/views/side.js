@@ -144,7 +144,7 @@ $('.about-link').on('click', function(event) {
     }
 
     function showWaiting(room) {
-        waitingGroup.show(room.myRole.moderator ? room.rolesWaiting.items : []);
+        waitingGroup.show(room.myRole.isModerator ? room.rolesWaiting.items : []);
     }
 
     Rooms.on('explore', function() {
@@ -157,12 +157,16 @@ $('.about-link').on('click', function(event) {
 
     Rooms.on('selected.ready', function(room) {
         showOnline(room);
+        showWaiting(room);
         container.show();
     });
 
     Rooms.on('selected.roles.updated', showOnline);
 
-    Rooms.on('selected.rank.changed', showOnline);
+    Rooms.on('selected.waiting.updated', showWaiting);
+
+    // Update ignored and hidden groups
+    Rooms.on('my.rank.changed', showOnline);
 
     Socket.on('me.ignores.updated', function() {
         showOnline(Rooms.selected);
