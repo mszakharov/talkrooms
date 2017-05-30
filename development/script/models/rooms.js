@@ -203,6 +203,28 @@
         }
     });
 
+    // Come in
+    Socket.on('role.come_in.updated', function(data) {
+        Rooms.forEach(function(room) {
+            var isMe = room.myRole && room.myRole.role_id === data.role_id;
+            if (isMe && data.come_in === null) {
+                room.enter().then(subscribed, denied);
+            }
+        });
+    });
+
+    // Leave the room if subscription was deleted
+    Socket.on('subscription.deleted', function(data) {
+        Rooms.forEach(function(room) {
+            var sub = room.subscription;
+            if (sub && sub.subscription_id === data.subscription_id) {
+                room.subscription = null;
+                room.setState(null);
+                room.enter().then(subscribed, denied); // Get new state
+            }
+        });
+    });
+
     window.Rooms = Rooms;
 
 })();
