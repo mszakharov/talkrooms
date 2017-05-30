@@ -416,13 +416,31 @@ Socket.on('created', function() {
 (function() {
 
     function updateUser(data) {
+
+        data.userpicUrl = null;
+
         Rooms.forEach(function(room) {
             room.rolesOnline.updateUser(data);
+            if (room.myRole && room.myRole.user_id === data.user_id) {
+                $.extend(room.myRole, data);
+            }
         });
+
+        if (Rooms.selected && Rooms.selected.subscription) {
+            Rooms.triggerSelected('selected.roles.updated', Rooms.selected);
+        }
+
     }
 
     Socket.on('user.userpic.updated', updateUser);
     Socket.on('user.photo.updated', updateUser);
+
+    Socket.on('user.userpic.updated', function(data) {
+        var me = Rooms.selected && Rooms.selected.myRole;
+        if (me && me.user_id === data.user_id) {
+            Rooms.trigger('my.userpic.updated');
+        }
+    });
 
 })();
 
