@@ -124,6 +124,20 @@
     Roles.insertRole = insertRole;
     Roles.removeRole = removeRole;
 
+    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
+    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g;
+
+    Roles.formatStatus = function(status) {
+        var s = status;
+        if (~s.indexOf('#')) {
+            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
+        }
+        s = s.replace(emoji, '<span class="emoji">$&</span>');
+        return s;
+    };
+
     Rooms.Roles = Roles;
 
 })();
+
+

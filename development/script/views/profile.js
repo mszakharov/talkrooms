@@ -158,15 +158,11 @@
         }
     }
 
-    function formatStatus() {
-
-    }
-
     function showRole(role) {
         $userpic.css('background-image', 'url(' + Userpics.getUrl(role) + ')').show();
         $nickname.text(role.nickname);
         if (role.status) {
-            $status.html(Room.formatStatus(role.status)).show();
+            $status.html(Rooms.Roles.formatStatus(role.status)).show();
         } else {
             $status.hide().text('');
         }

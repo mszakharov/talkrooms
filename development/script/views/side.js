@@ -56,30 +56,15 @@ $('.about-link').on('click', function(event) {
     Router.push('+');
 });
 
-
-// Format status
-(function() {
-
-    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
-
-    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g
-
-    Rooms.formatStatus = function(status) {
-        var s = status;
-        if (~s.indexOf('#')) {
-            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
-        }
-        s = s.replace(emoji, '<span class="emoji">$&</span>');
-        return s;
-    };
-
-})();
-
 // Roles list
 (function() {
 
     var container = $('.room-users');
     var template = $.template('#user-template');
+
+    function renderStatus(status) {
+        return ' <em>' + Rooms.Roles.formatStatus(status) + '</em>';
+    }
 
     function renderRole(data) {
         if (!data.userpicUrl) {
@@ -87,7 +72,7 @@ $('.about-link').on('click', function(event) {
         }
         var $role = template(data);
         if (data.status) {
-            $role.find('.nickname').append(' <em>' + Rooms.formatStatus(data.status) + '</em>');
+            $role.find('.nickname').append(renderStatus(data.status));
         }
         if (data.role_id === Rooms.selected.myRole.role_id) {
             $role.addClass('me');
