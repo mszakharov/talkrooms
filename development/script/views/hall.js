@@ -62,7 +62,7 @@
     });
 
     $('.hall-create button').on('click', function() {
-        Room.create();
+        Rooms.create();
     });
 
     Socket.on('me.recent_rooms.updated', updateLists);

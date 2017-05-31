@@ -115,6 +115,10 @@ var Talk = {
         Rooms.shuffle();
     });
 
+    overlay.find('.search-failed-hall .link').on('click', function() {
+        Rooms.trigger('explore');
+    });
+
 })();
 
 // Format content

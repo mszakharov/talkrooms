@@ -353,6 +353,30 @@ Socket.on('created', function() {
     Rooms.reset(Me.subscriptions);
 });
 
+// New room and shuffle
+(function() {
+
+    function selectRoom(data) {
+        Router.push(data.hash);
+    }
+
+    function shuffleFailed(xhr) {
+        Rooms.trigger('shuffle.failed');
+        throw xhr;
+    }
+
+    Rooms.create = function() {
+        return Rest.rooms.create()
+            .then(selectRoom);
+    };
+
+    Rooms.shuffle = function() {
+        return Rest.rooms.create('search')
+            .then(selectRoom, shuffleFailed);
+    };
+
+})();
+
 // Update room data
 (function() {
 
