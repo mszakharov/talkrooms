@@ -268,13 +268,18 @@
 
     function denied(xhr) {
         if (xhr.status === 404) {
-            this.setState('lost');
+            this.setState(this.isDeleted ? 'deleted' : 'lost');
         } else if (xhr.status === 403) {
             var data = xhr.responseJSON;
-            if (data && data.role_id) {
-                this.myRole = data;
+            this.myRole = data.role;
+            if (data.room) {
+                extend(this.data, data.room);
             }
-            this.setState('locked');
+            if (this.data.level === 80) {
+                this.setState('closed');
+            } else {
+                this.setState('locked');
+            }
         } else {
             this.setState('error');
         }

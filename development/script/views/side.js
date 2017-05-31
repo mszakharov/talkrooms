@@ -161,6 +161,10 @@ $('.about-link').on('click', function(event) {
         container.show();
     });
 
+    Rooms.on('selected.denied', function(room) {
+        container.hide();
+    });
+
     Rooms.on('selected.roles.updated', showOnline);
 
     Rooms.on('selected.waiting.updated', showWaiting);

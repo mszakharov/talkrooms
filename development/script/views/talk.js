@@ -99,7 +99,7 @@ var Talk = {
 
     Rooms.on('selected.denied', function(room) {
         if (room.state === 'locked') {
-            showOverlay(room.myRole ? '.entry-wait' : '.entry-login');
+            showOverlay(room.myRole.come_in != null ? '.entry-wait' : '.entry-login');
         } else {
             showOverlay('.entry-' + room.state);
         }
