@@ -210,43 +210,51 @@
 
     function toggleSettings(room) {
         var me = room.myRole;
-        console.log(me);
         var enabled = Boolean(me.isAdmin || (me.isModerator && room.data.level === 0));
         icon.toggle(enabled);
         if (!enabled) form.hide();
     }
 
-    function toggleAdminSections() {
-        var room = Rooms.selected;
+    function toggleAdminSections(room) {
         form.find('.admin-sections').toggle(room.myRole.isAdmin);
         if (room.myRole.isAdmin) {
             setAdminValues(room.data);
         }
     }
 
-    Room.on('admin.changed', function() {
-        toggleAdminSections();
-        toggleSettings();
+    Rooms.on('my.rank.updated', function(room) {
+        toggleAdminSections(room);
+        toggleSettings(room);
     });
 
-    Room.on('room.min_session_created.updated', function() {
-        if (Room.moderator) showAlarm(Boolean(Room.data.min_session_created));
+    Rooms.on('selected.ready', function(room) {
+        toggleAdminSections(room);
+        toggleSettings(room);
     });
 
-    Room.on('room.level.updated', function() {
-        if (Room.moderator) toggleSettings();
+    Rooms.on('selected.level.updated', function(room) {
+        if (room.myRole.isModerator) {
+            toggleSettings(room);
+        }
     });
 
-    Room.on('moderator.changed', toggleSettings);
+    Rooms.on('selected.alarm.updated', function(room) {
+        if (room.myRole.isModerator) {
+            showAlarm(Boolean(room.data.min_session_created));
+        }
+    });
 
     function hide() {
         form.hide();
     }
 
     Rooms.on('select', hide);
+    Rooms.on('explore', hide);
 
-    toggleAdminSections();
-    toggleSettings(Rooms.selected);
+    if (Rooms.selected && Rooms.selected.myRole) {
+        toggleAdminSections(Rooms.selected);
+        toggleSettings(Rooms.selected);
+    }
 
 })();
 

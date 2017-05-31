@@ -372,9 +372,13 @@ Socket.on('created', function() {
         Rooms.triggerSelected('selected.level.updated', room);
     });
 
+    Rooms.pipe('room.min_session_created.updated', function(room, data) {
+        room.update(data);
+        Rooms.triggerSelected('selected.alarm.updated', room);
+    });
+
     Rooms.pipe('room.searchable.updated', updateRoom);
     Rooms.pipe('room.watched.updated', updateRoom);
-    Rooms.pipe('room.min_session_created.updated', updateRoom);
 
 })();
 
