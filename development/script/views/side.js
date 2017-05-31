@@ -139,7 +139,7 @@ $('.about-link').on('click', function(event) {
         online = online.concat(hidden);
 
         onlineGroup.show(online);
-        ignoredGroup.show(room.myRole.moderator ? ignored : []);
+        ignoredGroup.show(room.myRole.isModerator ? ignored : []);
 
     }
 
