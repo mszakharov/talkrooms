@@ -301,15 +301,15 @@ Profile.send = function(data) {
         return Math.round((date - since) / 60000);
     }
 
-    function canRelease(role) {
-        return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.myRole.role_id);
+    function canRelease(role, me) {
+        return Boolean(me.isAdmin || !role.moderator_id || role.moderator_id === me.role_id);
     }
 
     function showIgnored(role) {
         var date = new Date(role.ignored);
         var term = role.expired && getMinutes(date, new Date(role.expired));
         var past = getMinutes(date, Date.now());
-        var cr = canRelease(role);
+        var cr = canRelease(role, Rooms.selected.myRole);
         var tr = past > 720;
         var expired = term ? past >= term : false;
         if (cr && !tr && !expired) {
