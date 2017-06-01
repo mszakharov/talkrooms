@@ -43,6 +43,17 @@
         }
     }
 
+    function resetTemporary() {
+        if (temporary) {
+            delete Rooms.byHash[temporary.data.hash];
+            delete Rooms.byId[temporary.data.room_id];
+            if (temporary.subscription) {
+                temporary.leave();
+            }
+            temporary = null;
+        }
+    }
+
     Rooms.explore = function() {
         this.selected = null;
         this.trigger('explore');
@@ -73,14 +84,7 @@
         // Если такой комнаты ещё нет, создаём её
         if (!room) {
             room = createRoom({hash: hash, topic: '#' + hash});
-            // Выходим из предыдущей временной
-            if (temporary) {
-                delete Rooms.byHash[temporary.data.hash];
-                delete Rooms.byId[temporary.data.room_id];
-                if (temporary.subscription) {
-                    temporary.leave();
-                }
-            }
+            resetTemporary(); // Выходим из предыдущей временной
             temporary = room;
             if (Socket.id) {
                 room.enter().then(subscribed, denied);
@@ -194,8 +198,14 @@
     Socket.on('me.subscriptions.remove', function(data) {
         var room = Rooms.byId[data.room_id];
         if (room) {
-            delete Rooms.byHash[room.data.hash];
-            delete Rooms.byId[data.room_id];
+            if (room === Rooms.selected) {
+                resetTemporary();
+                temporary = room;
+            } else {
+                room.leave();
+                delete Rooms.byHash[room.data.hash];
+                delete Rooms.byId[data.room_id];
+            }
             subscriptions = subscriptions.filter(function(s) {
                 return s !== room;
             });
