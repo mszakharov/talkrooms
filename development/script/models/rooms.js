@@ -162,7 +162,7 @@
     };
 
     Rooms.updateTopic = function(room, topic) {
-        room.update(topic);
+        room.update({topic: topic});
         subscriptions.sort(byAlias);
         this.trigger('updated');
     };
