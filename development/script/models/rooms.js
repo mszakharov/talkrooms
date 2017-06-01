@@ -68,6 +68,14 @@
         this.trigger('leave');
     };
 
+    Rooms.restore = function(room) {
+        return Rest.rooms
+            .update(room.data.hash, {deleted: false})
+            .then(function() {
+                room.enter().then(subscribed, denied);
+            });
+    };
+
     Rooms.enter = function() {
         if (!this.active) {
             this.active = true;
@@ -386,6 +394,18 @@ Socket.on('created', function() {
     };
 
 })();
+
+// Delete room
+Rooms.pipe('room.deleted.updated', function(room, data) {
+    if (data.deleted && room.myRole.level === 80) {
+        room.leave();
+        room.isDeleted = true;
+        room.state = 'deleted';
+        if (room === Rooms.selected) {
+            Rooms.trigger('selected.denied', room);
+        }
+    }
+});
 
 // Update room data
 (function() {

@@ -186,7 +186,8 @@
     }
 
     function setAlarm(on) {
-        return Rest.rooms.update(Room.data.hash, {
+        var room = Rooms.selected;
+        return Rest.rooms.update(room.data.hash, {
             min_session_created: on
         });
     }
@@ -201,11 +202,13 @@
 
     var remove = content.find('.room-remove');
     remove.find('.link').on('click', function() {
-        Rest.rooms.update(Room.data.hash, {deleted: true});
+        var room = Rooms.selected;
+        Rest.rooms.update(room.data.hash, {deleted: true}).then(hide);
     });
 
     function toggleRemove(visible) {
-        remove.toggle(visible && Room.myRole.level === 80);
+        var me = Rooms.selected.myRole;
+        remove.toggle(visible && me.level === 80);
     }
 
     function toggleSettings(room) {
@@ -260,15 +263,9 @@
 
 // Restore deleted room
 $('.entry-restore').on('click', function() {
-    var hash = Room.data.hash;
-    Rest.rooms
-        .update(hash, {deleted: false})
-        .done(function() {
-            Room.enter(hash);
-        })
-        .fail(function() {
-            Room.leave();
-            Room.trigger('lost');
-            alert('Восстановление уже невозможно');
-        });
+    var room = Rooms.selected;
+    Rooms.restore(room).fail(function() {
+        room.leave();
+        alert('Восстановление уже невозможно');
+    });
 });
