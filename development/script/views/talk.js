@@ -557,8 +557,14 @@ Talk.mentionsMe = function(mentions) {
         }
     };
 
-    // Стираем сообщения, чтобы не видеть их при загрузке другой комнаты
+    // Стираем сообщения последней комнаты,
+    // чтобы не видеть их при загрузке следующей
     Rooms.on('explore', function() {
+        Talk.reset();
+    });
+
+    // То же самое, если комната недоступна
+    Rooms.on('selected.denied', function() {
         Talk.reset();
     });
 
