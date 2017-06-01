@@ -773,9 +773,10 @@ Talk.mentionsMe = function(mentions) {
 
     // Remove obsolete edit icons
     $window.on('date.changed', function() {
+        var room = Rooms.selected;
         var editAfter = (new Date).setHours(0, 0, 0, 0) - (24 * 60 * 60 * 1000);
         current.messages.forEach(function(message) {
-            if (Room.isMy(message.data) && message.timestamp < editAfter) {
+            if (room.isMy(message.data) && message.timestamp < editAfter) {
                 $(message.node).find('.msg-edit').detach();
             };
         });
