@@ -84,3 +84,7 @@
 .hall-create > button {
     padding: 6px 23px;
 }
+.hall-create-failed {
+    display: none;
+    margin: 0;
+}

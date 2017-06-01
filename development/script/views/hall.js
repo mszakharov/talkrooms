@@ -62,7 +62,11 @@
     });
 
     $('.hall-create button').on('click', function() {
-        Rooms.create();
+        var button = this;
+        Rooms.create().catch(function() {
+            $(button).hide();
+            $('.hall-create-failed').show();
+        });
     });
 
     Socket.on('me.recent_rooms.updated', updateLists);
