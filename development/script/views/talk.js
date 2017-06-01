@@ -560,6 +560,10 @@ Talk.mentionsMe = function(mentions) {
         Talk.reset();
     });
 
+    Rooms.on('select', function() {
+        Talk.content.addClass('talk-loading');
+    });
+
     Rooms.on('selected.ready', function() {
         Talk.forMeOnly = false;
         Talk.loadRecent();
