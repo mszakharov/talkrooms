@@ -107,16 +107,22 @@ $('.about-link').on('click', function(event) {
 
     function showOnline(room) {
 
+        var useHidden = !room.myRole.isModerator;
+        var useIgnored = !room.myRole.ignored;
+
         var online  = [],
             hidden  = [],
             ignored = [];
 
         room.rolesOnline.items.forEach(function(role) {
-            if (role.ignored && !room.myRole.ignored) {
+            if (useIgnored && role.ignored) {
+                role.annoying = false;
                 ignored.push(role);
-            } else if (room.ignores && room.ignores(role)) {
+            } else if (useHidden && Me.isHidden(role)) {
+                role.annoying = true;
                 hidden.push(role);
             } else {
+                role.annoying = false;
                 online.push(role);
             }
         });
@@ -157,8 +163,10 @@ $('.about-link').on('click', function(event) {
     // Update ignored and hidden groups
     Rooms.on('my.rank.changed', showOnline);
 
-    Socket.on('me.ignores.updated', function() {
-        showOnline(Rooms.selected);
+    Me.on('ignores.updated', function() {
+        if (Rooms.selected && Rooms.selected.subscription) {
+            showOnline(Rooms.selected);
+        }
     });
 
     function getData(elem) {

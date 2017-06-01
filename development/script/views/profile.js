@@ -244,7 +244,7 @@
     }
 
     function isIgnored() {
-        return Room.ignores ? Room.ignores(Profile.role) : false;
+        return ignoreDisabled ? false : Me.isHidden(Profile.role);
     }
 
     $actions.find('.profile-private').on('click', function() {
@@ -285,7 +285,7 @@
         }
     });
 
-    Room.on('user.ignores.updated', function() {
+    Me.on('ignores.updated', function() {
         if (Profile.role) {
             toggleIgnored(isIgnored());
         }

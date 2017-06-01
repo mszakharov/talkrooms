@@ -114,6 +114,12 @@ var Me = new Events();
 
 })();
 
+// Ignores
+Me.isHidden = function(data) {
+    return Boolean(data.user_id ?
+        Me.ignores[0][data.user_id] :
+        Me.ignores[1][data.session_id]);
+};
 
 // Talkrooms vesrion
 (function() {
@@ -279,3 +285,10 @@ Socket.on('me.recent_rooms.updated', function(data) {
 Socket.on('me.rooms.updated', function(data) {
     Me.rooms = data.rooms || [];
 });
+
+// Update ignores
+Socket.on('me.ignores.updated', function(data) {
+    Me.ignores = data.ignores;
+    Me.trigger('ignores.updated');
+});
+

@@ -531,6 +531,7 @@ Rooms.pipe('message.content.updated', function(room, data) {
 
 })();
 
+
 // Deprecated namespace
 var Room = new Events();
 

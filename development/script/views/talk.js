@@ -389,6 +389,8 @@ Talk.mentionsMe = function(mentions) {
 // Sections
 (function() {
 
+    var myRole;
+
     var previous = $('.talk-previous'),
         recent = $('.talk-recent'),
         next = $('.talk-next');
@@ -416,13 +418,13 @@ Talk.mentionsMe = function(mentions) {
     }
 
     function isVisible(data) {
-        if (data.role_id === Talk.myRoleId) {
+        if (data.role_id === myRole.role_id) {
             return true;
         }
-        if (Room.ignores && Room.ignores(data)) {
+        if (!myRole.isModerator && Me.isHidden(data)) {
             return false;
         }
-        if (data.ignore && !Room.myRole.ignored) {
+        if (data.ignore && !myRole.ignored) {
             return false;
         }
         if (Talk.forMeOnly) {
@@ -469,11 +471,11 @@ Talk.mentionsMe = function(mentions) {
     }
 
     function useIgnores(messages) {
-        return Room.ignores ? messages.filter(notAnnoying) : messages;
+        return myRole.isModerator ? messages : messages.filter(notAnnoying);
     }
 
     function notAnnoying(message) {
-        return !Room.ignores(message);
+        return !Me.isHidden(message);
     }
 
     function showRecent(messages) {
@@ -564,7 +566,8 @@ Talk.mentionsMe = function(mentions) {
         Talk.content.addClass('talk-loading');
     });
 
-    Rooms.on('selected.ready', function() {
+    Rooms.on('selected.ready', function(room) {
+        myRole = room.myRole;
         Talk.forMeOnly = false;
         Talk.loadRecent();
     });
