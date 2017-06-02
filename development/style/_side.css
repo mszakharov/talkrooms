@@ -28,8 +28,10 @@
     content: '+';
 }
 .side-subscriptions a {
+    position: relative; /* Clickabke area above unread icon */
+    z-index: 1;
     display: block;
-    padding: 8px 20px 8px 16px;
+    padding: 8px 40px 8px 16px;
     color: #19778F;
     text-decoration: none;
 }
@@ -44,7 +46,20 @@
     box-shadow:
         0 -1px 0 #EBE9E8,
         0 1px 0 #CFD6D6 inset;
+    cursor: default;
 }
 .subscription-selected::before {
     left: 13px;
+}
+
+.subscription-unread::after {
+    content: '';
+    position: absolute;
+    right: 19px;
+    top: 13px;
+    width: 11px;
+    height: 11px;
+    border: 1px solid #D7AF51;
+    border-radius: 7px;
+    background: #FACF69;
 }

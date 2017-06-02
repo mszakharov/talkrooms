@@ -15,6 +15,9 @@
         index = {};
         Rooms.forEach(function(room) {
             var $item = $(renderRoom(room.data));
+            if (room.unread) {
+                $item.addClass('subscription-unread');
+            }
             nodes.push($item[0]);
             index[room.data.hash] = $item;
         });

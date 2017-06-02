@@ -649,13 +649,13 @@
 }
 .user.me {
     position: relative;
-    padding-right: 45px;
+    padding-right: 40px;
 }
 .user.me:after {
     content: '';
     position: absolute;
     top: 8px;
-    right: 20px;
+    right: 18px;
     margin-top: 3px;
     width: 15px;
     height: 15px;

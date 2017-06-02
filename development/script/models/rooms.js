@@ -100,6 +100,11 @@
             Rooms.trigger('updated');
         }
 
+        if (room.unread) {
+            room.unread = false;
+            this.trigger('updated');
+        }
+
         this.selected = room;
         this.trigger('select', room);
 
@@ -541,8 +546,9 @@ Rooms.pipe('message.created', function(room, data) {
         var forMe = room.isForMe(data);
         if (room === Rooms.selected) {
             Talk.appendMessage(data);
-        } else if (forMe) {
-            // Show notification in rooms list
+        } else if (forMe && !room.unread) {
+            room.unread = true;
+            Rooms.trigger('updated');
         }
         if (forMe) {
             Rooms.trigger('notification');
