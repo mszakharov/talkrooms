@@ -54,7 +54,17 @@
 
     Me.ready.done(showRecent);
 
-    Room.toggle = toggleRooms;
+    Rooms.on('explore', function() {
+        toggleRooms(true);
+    });
+
+    Rooms.on('select', function() {
+        toggleRooms(true);
+    });
+
+    Rooms.on('leave', function() {
+        toggleRooms(false);
+    });
 
 })();
 
@@ -85,7 +95,7 @@
     }
 
     section.find('.about-action .link').on('click', function() {
-        Room.shuffle().fail(failed);
+        Rooms.shuffle().fail(failed);
     });
 
 })();

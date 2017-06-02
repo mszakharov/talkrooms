@@ -66,18 +66,17 @@ var Rest = {
 })();
 
 Router.on(/^$/, function(hash) {
-    Room.toggle(false);
-    Room.leave();
+    Rooms.leave();
 });
 
-Router.on(/^\+$/, function(hash) {
-    Room.showHall();
-    Room.toggle(true);
+Router.on(/^\+$/, function() {
+    Rooms.enter();
+    Rooms.explore();
 });
 
 Router.on(/^[\w\-+]{3,}$/, function(hash) {
-    Room.enter(hash);
-    Room.toggle(true);
+    Rooms.enter();
+    Rooms.select(hash);
 });
 
 // Redirect after login
@@ -88,7 +87,7 @@ $('.login-links').on('click', 'a', function() {
 });
 
 // My session
-var Me = {};
+var Me = new Events();
 
 // Get my session
 (function() {
@@ -115,11 +114,18 @@ var Me = {};
 
 })();
 
+// Ignores
+Me.isHidden = function(data) {
+    return Boolean(data.user_id ?
+        Me.ignores[0][data.user_id] :
+        Me.ignores[1][data.session_id]);
+};
+
 // Talkrooms vesrion
 (function() {
 
     var notice;
-    var version = 35;
+    var version = 36;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
@@ -188,7 +194,8 @@ var Me = {};
 
     function socketLost(xhr) {
         if (xhr.status == 404) {
-            Socket.ready = Me.reload().then(createSocket);
+            Socket.id = null;
+            Me.reload().then(createSocket);
         } else {
             connectLater();
         }
@@ -199,9 +206,6 @@ var Me = {};
         var delay = closedInstantly > 1 ? getConnectionDelay(tries) : 5;
         connectionTimer = setTimeout(reconnect, delay * 1000);
     }
-
-
-    Socket.ready = Me.ready.then(createSocket);
 
     function createSocket() {
         return Rest.sockets.create().done(socketCreated).fail(socketFailed);
@@ -236,26 +240,34 @@ var Me = {};
     }
 
     function onMessage(message) {
-        console.log(message.data);
         var event = JSON.parse(message.data);
         Socket.trigger(event[0], event[1]);
-        Room.handleEvent(event);
     }
 
-    Socket.subscribe = function(hash) {
-        return Socket.ready.then(function() {
-            return Rest.subscriptions.create({
-                socket_id: Socket.id,
-                hash: hash
-            });
-        });
-    };
+    Me.ready.then(createSocket);
 
     $window.on('beforeunload', disconnect);
 
     window.Socket = Socket;
 
 })();
+
+// Debug socket events
+(function() {
+
+    if (localStorage.getItem('debug')) {
+
+        var _trigger = Socket.trigger;
+
+        Socket.trigger = function(name, data) {
+            console.log(name, data);
+            _trigger.call(Socket, name, data);
+        };
+
+    }
+
+})();
+
 
 // Login in other tab
 Socket.on('me.user_id.updated', function() {
@@ -278,3 +290,10 @@ Socket.on('me.recent_rooms.updated', function(data) {
 Socket.on('me.rooms.updated', function(data) {
     Me.rooms = data.rooms || [];
 });
+
+// Update ignores
+Socket.on('me.ignores.updated', function(data) {
+    Me.ignores = data.ignores;
+    Me.trigger('ignores.updated');
+});
+

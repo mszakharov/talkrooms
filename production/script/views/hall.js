@@ -58,21 +58,25 @@
     });
 
     $('.hall-shuffle .link').on('click', function() {
-        Room.shuffle();
+        Rooms.shuffle();
     });
 
     $('.hall-create button').on('click', function() {
-        Room.create();
+        var button = this;
+        Rooms.create().catch(function() {
+            $(button).hide();
+            $('.hall-create-failed').show();
+        });
     });
 
     Socket.on('me.recent_rooms.updated', updateLists);
     Socket.on('me.rooms.updated', updateLists);
 
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
         $hall.show();
     });
 
-    Room.on('hash.selected', function() {
+    Rooms.on('select', function() {
         $hall.hide();
     });
 
@@ -93,8 +97,8 @@
     });
 
     Me.ready.done(function() {
-        Me.subscriptions.forEach(function(subscription) {
-            subscribed[subscription.room.hash] = true;
+        Me.subscriptions.forEach(function(room) {
+            subscribed[room.hash] = true;
         });
     });
 

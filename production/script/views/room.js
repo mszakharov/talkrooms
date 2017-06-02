@@ -53,6 +53,8 @@
         side = $('#side'),
         main = $('#main');
 
+    var icon = $('.header-show-side');
+
     function showSide() {
         body.addClass('sliding-side').reflow(); // translate talk without transition
         body.addClass('visible-side');
@@ -63,7 +65,7 @@
         body.addClass('sliding-side');
     }
 
-    $('.header-show-side').on('click', function(event) {
+    icon.on('click', function(event) {
         if (body.hasClass('visible-side')) {
             hideSide();
         } else {
@@ -77,16 +79,24 @@
         }
     });
 
-    Room.on('hash.selected', function() {
+    Rooms.on('select', function() {
         if (body.hasClass('visible-side')) {
             hideSide();
         }
     });
 
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
         if (body.hasClass('visible-side')) {
             hideSide();
         }
+    });
+
+    Rooms.on('updated', function() {
+        var unread = false;
+        Rooms.forEach(function(room) {
+            if (room.unread) unread = true;
+        });
+        icon.toggleClass('header-side-unread', unread);
     });
 
 })();
@@ -193,55 +203,50 @@
         tools = $('.toolbar-tools'),
         date  = $('.header-date');
 
-    function showTopic() {
-        title.html(Room.data.topic);
+    function getTitle(room) {
+        if (room.state === 'lost') {
+            return 'Комната не найдена';
+        }
+        if (room.state === 'deleted') {
+            return '<span class="toolbar-deleted">' + room.data.topic + '</span>';
+        }
+        return room.data.topic;
     }
 
-    function showTopicOnly() {
-        showTitleOnly(Room.data.topic);
+    function showTopic(room) {
+        title.html(room.data.topic);
     }
 
-    function showTitleOnly(text) {
+    function showTitle(text) {
+        toggleToolbar(false);
         title.html(text);
-        tools.addClass('hidden');
-        date.addClass('hidden');
     }
 
-    Room.on('hall', function() {
-        showTitleOnly('Комнаты');
+    function toggleToolbar(ready) {
+        title.toggleClass('changing', !ready);
+        tools.toggleClass('hidden', !ready);
+        date.toggleClass('hidden', !ready);
+    }
+
+    Rooms.on('explore', function() {
+        showTitle('Комнаты');
     });
 
-    Room.on('leave', function() {
-        title.addClass('changing');
+    Rooms.on('select', function(room) {
+        showTitle(getTitle(room));
+        toggleToolbar(room.state === 'ready');
     });
 
-    Room.on('ready', function() {
-        title.removeClass('changing');
-        tools.removeClass('hidden');
-        date.removeClass('hidden');
+    Rooms.on('selected.ready', function(room) {
+        showTitle(getTitle(room));
+        toggleToolbar(true);
     });
 
-    Room.on('room.topic.updated', showTopic);
-    Room.on('enter', showTopic);
-
-    Room.on('locked', showTopicOnly);
-    Room.on('closed', showTopicOnly);
-
-    Room.on('lost', function() {
-        showTitleOnly('Комната не найдена');
+    Rooms.on('selected.denied', function(room) {
+        showTitle(getTitle(room));
     });
 
-    Room.on('deleted', function() {
-        showTitleOnly('<span class="toolbar-deleted">' + Room.data.topic + '</span>');
-    });
-
-    Room.on('shuffle.failed', function() {
-        if (!Room.subscription) showTitleOnly('Нет подходящей комнаты');
-    });
-
-    Room.on('error', function() {
-        showTitleOnly('Возникла проблема');
-    });
+    Rooms.on('selected.topic.updated', showTopic);
 
 })();
 
@@ -249,30 +254,41 @@
 (function() {
 
     var mainTitle = document.title;
-    var mark = String.fromCharCode(9733);
+    var unreadMark = String.fromCharCode(9733);
 
-    Room.on('enter', function() {
-        document.title = Room.data.topic;
+    Rooms.on('explore', function(room) {
+        document.title = 'Комнаты';
     });
 
-    Room.on('leave', function() {
+    Rooms.on('select', function(room) {
+        document.title = room.data.topic;
+    });
+
+    Rooms.on('selected.state.change', function(room) {
+        document.title = room.data.topic;
+    });
+
+    Rooms.on('selected.topic.updated', function(room) {
+        if (!Room.idle) document.title = room.data.topic;
+    });
+
+    Rooms.on('leave', function() {
         document.title = mainTitle;
     });
 
-    Room.on('lost', function() {
-        document.title = 'Комната не найдена';
+    // Show notification mark in inactive tab
+    Rooms.on('notification', function() {
+        if (Rooms.idle) {
+            document.title = unreadMark + ' ' + Room.data.topic;
+        }
     });
 
-    Room.on('room.topic.updated', function() {
-        if (!Room.idle) document.title = Room.data.topic;
-    });
-
-    Room.on('talk.updated', function() {
-        if (Room.idle) document.title = mark + ' ' + Room.data.topic;
-    });
-
+    // Hide notification mark
     $window.on('focus', function() {
-        if (Room.data) document.title = Room.data.topic;
+        var room = Rooms.selected;
+        if (room) {
+            document.title = room.data.topic;
+        }
     });
 
 })();
@@ -314,10 +330,10 @@
                 mp3: '/script/sound/message.mp3',
                 ogg: '/script/sound/message.ogg'
             });
-            Room.on('talk.updated', notify);
+            //Room.on('talk.updated', notify);
             control.addClass('toolbar-sound-on');
         } else {
-            Room.off('talk.updated', notify);
+            //Room.off('talk.updated', notify);
             control.removeClass('toolbar-sound-on');
         }
         soundEnabled = enabled;
@@ -327,9 +343,11 @@
         if (Room.idle) sound.play();
     }
 
-    Room.on('ready', function() {
-        var stored = localStorage.getItem('sound_in_' + Room.data.room_id);
-        toggleSound(Boolean(stored));
+    Rooms.on('select', function(room) {
+        if (room.data.room_id) {
+            var stored = localStorage.getItem('sound_in_' + room.data.room_id);
+            toggleSound(Boolean(stored));
+        }
     });
 
     control.on('click', function() {

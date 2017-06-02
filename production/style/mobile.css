@@ -15,7 +15,6 @@
 .about-content {
     padding: 20px;
 }
-
 /* Smaller header height */
 #header,
 .header-side,
@@ -29,7 +28,6 @@
 .hall {
     top: 48px;
 }
-
 /* Smaller header font */
 .header-title,
 .toolbar-title {
@@ -41,7 +39,6 @@
     padding: 8px 36px 8px 16px;
     background-position: 100% 18px;
 }
-
 /* Smaller toolbar elements */
 .header-toolbar {
     margin-left: 46px;
@@ -71,7 +68,6 @@
 .toolbar-settings {
     margin: 0 -10px 0 4px;
 }
-
 /* One-column hall */
 .hall-content {
     margin-right: 30px;
@@ -81,12 +77,10 @@
     width: auto;
     padding-left: 26px;
 }
-
 .entry-text {
     margin: 0;
     padding: 30px 30px 40px;
 }
-
 .talk-previous,
 .talk-next,
 .talk-recent {
@@ -103,7 +97,6 @@
     width: 64px;
     background-position: 23px 21px;
 }
-
 .speech {
     margin-right: 45px;
     margin-left: 6px;
@@ -126,7 +119,6 @@
 .with-ny-name:after {
     left: -70px;
 }
-
 /* Smaller reply form height */
 .reply-form {
     padding: 4px 0;
@@ -160,7 +152,6 @@
 .reply-send {
     display: none;
 }
-
 /* Datepicker */
 #datepicker {
     top: 18px;
@@ -171,7 +162,6 @@
 .dp-calendar {
     max-height: 270px;
 }
-
 /* Settings */
 #room-settings {
     right: 20px;
@@ -180,7 +170,6 @@
 #room-settings .popup-content {
     width: 320px;
 }
-
 .updated-notice {
     padding: 12px 0;
 }
@@ -192,7 +181,6 @@
 .updated-text {
     padding: 0 14px;
 }
-
 @media (max-width: 360px) {
 
     #profile {

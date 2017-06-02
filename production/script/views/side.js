@@ -2,59 +2,34 @@
 (function() {
 
     var $list = $('.side-subscriptions');
-
     var $other = $list.find('.subscriptions-other');
 
-    var subscribed = [];
-        isSubscribed = {};
+    var $exit = $('<span class="subscription-exit" title="Выйти из комнаты"></span>');
 
-    var lastRoom;
-    var itemsIndex = {};
+    var index = {};
 
     var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
 
-    function byAlias(a, b) {
-        if (a.alias > b.alias) return  1;
-        if (a.alias < b.alias) return -1;
-        return 0;
-    }
-
-    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+\s*/g
-
-    // Normalize topic for case-insensitive sorting
-    function setAlias(room) {
-        room.alias = room.topic.toLowerCase().replace(emoji, '');
-    }
+    var $selected;
 
     function updateList() {
-        itemsIndex = {};
+        var nodes = [];
+        index = {};
+        Rooms.forEach(function(room) {
+            var $item = $(renderRoom(room.data));
+            if (room.unread) {
+                $item.addClass('subscription-unread');
+            }
+            nodes.push($item[0]);
+            index[room.data.hash] = $item;
+        });
+        $exit.detach();
         $list.find('.subscription').remove();
-        if (lastRoom) {
-            itemsIndex[lastRoom.hash] = $(renderRoom(lastRoom)).prependTo($list);
-        }
-        for (var i = subscribed.length; i--;) {
-            var room = subscribed[i];
-            itemsIndex[room.hash] = $(renderRoom(room)).prependTo($list);
-        }
-        if (Room.hash) {
-            select(itemsIndex[Room.hash]);
+        $list.prepend(nodes);
+        if (Rooms.selected) {
+            select(index[Rooms.selected.data.hash]);
         }
     }
-
-    function updateSubscribed() {
-        isSubscribed = {};
-        subscribed = Me.subscriptions.map(function(subscription) {
-            return $.extend({}, subscription.room);
-        });
-        subscribed.forEach(function(room) {
-            setAlias(room);
-            isSubscribed[room.hash] = true;
-        });
-        subscribed.sort(byAlias);
-        updateList();
-    }
-
-    var $selected;
 
     function select($item) {
         if ($selected) {
@@ -64,69 +39,30 @@
         if ($item) {
             $selected = $item.addClass('subscription-selected');
         }
+        if ($item && $item !== $other) {
+            $exit.appendTo($item);
+        } else {
+            $exit.detach();
+        }
     }
 
-    Room.on('hall', function() {
-        if (lastRoom) {
-            lastRoom = null;
-            updateList();
-        }
+    $exit.on('click', function() {
+        var room = Rooms.selected;
+        Rooms.explore();
+        Rooms.remove(room);
+    });
+
+    Rooms.on('explore', function() {
         select($other);
     });
 
-    Room.on('hash.selected', function() {
-        select(itemsIndex[Room.hash]);
+    Rooms.on('select', function(room) {
+        select(index[room.data.hash]);
     });
 
-    Room.on('enter', function() {
-        if (!isSubscribed[Room.hash]) {
-            lastRoom = Room.data;
-            updateList();
-        }
-    });
+    Rooms.on('updated', updateList);
 
-    Room.on('room.topic.updated', function() {
-        subscribed.forEach(function(room) {
-            if (room.hash === Room.data.hash) {
-                room.topic = Room.data.topic;
-                setAlias(room);
-            }
-        });
-        subscribed.sort(byAlias);
-        updateList();
-    });
-
-    // Reload subscriptions with new hash
-    Room.on('room.hash.updated', function() {
-        Me.reload().then(updateSubscribed);
-    });
-
-    Socket.on('me.subscriptions.add', function (data) {
-        setAlias(data);
-        if (!isSubscribed[data.hash]) {
-            subscribed.push(data);
-            subscribed.sort(byAlias);
-            isSubscribed[data.hash] = true;
-            if (lastRoom && lastRoom.hash === data.hash) {
-                lastRoom = null;
-            }
-            updateList();
-        }
-    });
-
-    Socket.on('me.subscriptions.remove', function(data) {
-        if (isSubscribed[data.hash]) {
-            delete isSubscribed[data.hash];
-            for (var i = subscribed.length; i--;) {
-                if (subscribed[i].hash === data.hash) {
-                    subscribed.splice(i, 1)[0];
-                }
-            }
-            updateList();
-        }
-    });
-
-    Me.ready.done(updateSubscribed);
+    updateList();
 
 })();
 
@@ -137,59 +73,32 @@ $('.about-link').on('click', function(event) {
     Router.push('+');
 });
 
-
-// Toggle users list
-(function() {
-
-    var users = $('.room-users');
-
-    Room.on('ready', function() {
-        users.fadeIn(150);
-    });
-
-    Room.on('leave', function() {
-        users.hide();
-    });
-
-})();
-
-// Format status
-(function() {
-
-    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
-
-    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g
-
-    Room.formatStatus = function(status) {
-        var s = status;
-        if (~s.indexOf('#')) {
-            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
-        }
-        s = s.replace(emoji, '<span class="emoji">$&</span>');
-        return s;
-    };
-
-})();
-
-// Users list
+// Roles list
 (function() {
 
     var container = $('.room-users');
     var template = $.template('#user-template');
 
-    function renderUser(data) {
-        var user = template(data);
-        if (data.status) {
-            user.find('.nickname').append(' <em>' + Room.formatStatus(data.status) + '</em>');
+    function renderStatus(status) {
+        return ' <em>' + Rooms.Roles.formatStatus(status) + '</em>';
+    }
+
+    function renderRole(data) {
+        if (!data.userpicUrl) {
+            data.userpicUrl = Userpics.getUrl(data);
         }
-        if (data.role_id === Room.myRole.role_id) {
-            user.addClass('me');
+        var $role = template(data);
+        if (data.status) {
+            $role.find('.nickname').append(renderStatus(data.status));
+        }
+        if (data.role_id === Rooms.selected.myRole.role_id) {
+            $role.addClass('me');
         }
         if (data.annoying) {
-            user.addClass('annoying');
+            $role.addClass('annoying');
         }
-        user.attr('data-role', data.role_id);
-        return user[0];
+        $role.attr('data-role', data.role_id);
+        return $role[0];
     }
 
     function Group(selector) {
@@ -198,38 +107,89 @@ $('.about-link').on('click', function(event) {
         this.amount = this.elem.find('.users-amount');
     }
 
-    Group.prototype.show = function(users, sort) {
+    Group.prototype.show = function(roles) {
         this.list.html('');
-        if (users.length) {
-            this.amount.html(users.length);
-            this.list.append(users.map(renderUser));
-            if (sort) {
-                this.list.find('.annoying').appendTo(this.list);
-            }
+        if (roles.length) {
+            this.amount.html(roles.length);
+            this.list.append(roles.map(renderRole));
             this.elem.show();
         } else {
             this.elem.hide();
         }
     };
 
-    var onlineGroup = new Group('.users-online');
-    var ignoreGroup = new Group('.users-ignored');
+    var onlineGroup  = new Group('.users-online');
+    var ignoredGroup = new Group('.users-ignored');
+    var waitingGroup = new Group('.users-requests');
 
-    Room.on('users.updated', function(online, ignore) {
-        onlineGroup.show(online, Boolean(Room.ignores));
-        ignoreGroup.show(ignore);
+    function showOnline(room) {
+
+        var useHidden = !room.myRole.isModerator;
+        var useIgnored = !room.myRole.ignored;
+
+        var online  = [],
+            hidden  = [],
+            ignored = [];
+
+        room.rolesOnline.items.forEach(function(role) {
+            if (useIgnored && role.ignored) {
+                role.annoying = false;
+                ignored.push(role);
+            } else if (useHidden && Me.isHidden(role)) {
+                role.annoying = true;
+                hidden.push(role);
+            } else {
+                role.annoying = false;
+                online.push(role);
+            }
+        });
+
+        online = online.concat(hidden);
+
+        onlineGroup.show(online);
+        ignoredGroup.show(room.myRole.isModerator ? ignored : []);
+
+    }
+
+    function showWaiting(room) {
+        waitingGroup.show(room.myRole.isModerator ? room.rolesWaiting.items : []);
+    }
+
+    Rooms.on('explore', function() {
+        container.hide();
     });
 
-    var requestsGroup = new Group('.users-requests');
+    Rooms.on('select', function() {
+        container.hide();
+    });
 
-    Room.on('requests.updated', function(requests) {
-        requestsGroup.show(requests);
+    Rooms.on('selected.ready', function(room) {
+        showOnline(room);
+        showWaiting(room);
+        container.show();
+    });
+
+    Rooms.on('selected.denied', function(room) {
+        container.hide();
+    });
+
+    Rooms.on('selected.roles.updated', showOnline);
+
+    Rooms.on('selected.waiting.updated', showWaiting);
+
+    // Update ignored and hidden groups
+    Rooms.on('my.rank.changed', showOnline);
+
+    Me.on('ignores.updated', function() {
+        if (Rooms.selected && Rooms.selected.subscription) {
+            showOnline(Rooms.selected);
+        }
     });
 
     function getData(elem) {
+        var room = Rooms.selected;
         var role_id = Number(elem.attr('data-role'));
-        return Room.roles.get(role_id) ||
-            (Room.requests ? Room.requests.get(role_id) : undefined);
+        return room.rolesOnline.get(role_id) || room.rolesWaiting.get(role_id);
     }
 
     container.on('click', '.me, .userpic', function(event) {

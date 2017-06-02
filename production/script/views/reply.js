@@ -200,12 +200,18 @@
         }
     });
 
-    Room.on('ready', showUserpic);
-    Room.on('ready', function() {
+    Rooms.on('selected.ready', showUserpic);
+    Rooms.on('selected.ready', function() {
         if (autofocus) field.focus();
     });
 
-    Room.on('my.userpic.updated', showUserpic);
+    Rooms.on('my.userpic.updated', showUserpic);
+
+    Rooms.on('select', function() {
+        $warning.hide();
+        sendButton.removeClass('send-overflow');
+        mentionsIndex = {};
+    });
 
     Room.on('replies.overflow', function() {
         sendButton.addClass('send-overflow');
@@ -213,12 +219,6 @@
 
     Room.on('replies.empty', function() {
         sendButton.removeClass('send-overflow');
-    });
-
-    Room.on('leave', function() {
-        $warning.hide();
-        sendButton.removeClass('send-overflow');
-        mentionsIndex = {};
     });
 
     Room.reply = function() {
@@ -380,9 +380,9 @@
 
     hint.find('.nickname-hint-close').on('click', hideHint);
 
-    Room.on('enter', function() {
+    Rooms.on('selected.ready', function(room) {
         if (Me.rand_nickname && window.localStorage && !localStorage.getItem('nickname_hint_hidden')) {
-            showHint(Room.myRole.nickname);
+            showHint(room.myRole.nickname);
         }
     });
 

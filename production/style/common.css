@@ -13,20 +13,17 @@
     src: url('https://fonts.gstatic.com/s/ptserif/v8/3Nwg9VzlwLXPq3fNKwVRML3hpw3pgy2gAi-Ip7WPMi0.woff') format('woff2');
     /* local('PT Serif Italic'), local('PTSerif-Italic') */
 }
-
 /* Remove default margin */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
-
 /* Remove tap color */
 html {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     -webkit-tap-highlight-color: transparent;
 }
-
 /* Base font and colors */
 body {
     background: #ebe9e8;
@@ -36,7 +33,6 @@ body {
 p {
     margin: 0;
 }
-
 /* Normalize links */
 a {
     color: #1270b2;
@@ -51,7 +47,6 @@ a:hover {
     text-decoration: underline;
     cursor: pointer;
 }
-
 /* Normalize forms */
 button,
 input,
@@ -84,7 +79,6 @@ textarea {
     overflow: auto;
     resize: vertical;
 }
-
 /* Hint */
 .hint {
     margin-top: 8px;
@@ -92,7 +86,6 @@ textarea {
     line-height: 17px;
     color: #707070;
 }
-
 /* Textfield */
 .textfield {
     margin: 14px 0;
@@ -123,7 +116,6 @@ textarea {
     margin: 8px 0 0;
     color: #ca3c30;
 }
-
 /* Invalid field */
 input.invalid {
     border-color: #ca3c30 !important;
@@ -131,7 +123,6 @@ input.invalid {
 input.invalid ~ .hint {
     color: #ca3c30;
 }
-
 /* Checkbox */
 .checkbox {
     margin: 14px 0;
@@ -148,7 +139,6 @@ input.invalid ~ .hint {
     top: -1px;
     left: 0;
 }
-
 /* Button */
 button {
     border: 1px solid #CDCDCD;
@@ -164,7 +154,6 @@ button {
 button:focus {
     border-color: #129FEA;
 }
-
 /* Popup */
 .popup {
     display: none;
@@ -188,7 +177,6 @@ button:focus {
         0 0 0 1px rgba(0, 0, 0, .05);
     overflow: hidden;
 }
-
 /* Login links */
 .login-links > .login-fb {
     color: #3b5998;
@@ -199,7 +187,6 @@ button:focus {
 .login-links > .login-ok {
     color: #eb722e;
 }
-
 /* Dropdown animation */
 @-webkit-keyframes dropdown {
     from { opacity: 0; -webkit-transform: scale(0.8, 0.6); transform: scale(0.8, 0.6); }
@@ -209,7 +196,6 @@ button:focus {
     from { opacity: 0; -webkit-transform: scale(0.8, 0.6); transform: scale(0.8, 0.6); }
       to { opacity: 1; -webkit-transform: none; transform: none; }
 }
-
 /* Fade animation */
 @-webkit-keyframes fade-in {
     from { opacity: 0; }

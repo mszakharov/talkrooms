@@ -4,17 +4,14 @@
     <meta charset="utf-8">
     <title>Talkrooms</title>
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width">
-    <link rel="stylesheet" href="/style/common.css">
-    <link rel="stylesheet" href="/style/main.css">
-    <link rel="stylesheet" href="/style/about.css">
-    <link rel="stylesheet" href="/style/rooms.css">
-    <link rel="stylesheet" href="/style/rooms_hall.css">
-    <link rel="stylesheet" href="/style/rooms_side.css">
-    <link rel="stylesheet" href="/style/rooms_elements.css">
-    <link rel="stylesheet" href="/style/datepicker.css">
-    <link rel="stylesheet" href="/style/profile.css">
-    <link rel="stylesheet" href="/style/settings.css">
-    <link rel="stylesheet" href="/style/mobile.css" media="(max-width: 500px)">
+    <link rel="stylesheet" href="/style/common.css?oqxe5k">
+    <link rel="stylesheet" href="/style/main.css?oqxe5k">
+    <link rel="stylesheet" href="/style/about.css?oqxe5k">
+    <link rel="stylesheet" href="/style/rooms.css?oqxe5k">
+    <link rel="stylesheet" href="/style/datepicker.css?oqxe5k">
+    <link rel="stylesheet" href="/style/profile.css?oqxe5k">
+    <link rel="stylesheet" href="/style/settings.css?oqxe5k">
+    <link rel="stylesheet" href="/style/mobile.css?oqxe5k" media="(max-width: 500px)">
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">
 </head>
@@ -114,6 +111,7 @@
                 <h6 class="hall-title">Мои комнаты</h6>
                 <div class="hall-create">
                     <button>Создать комнату</button>
+                    <p class="hint hall-create-failed">Количество новых комнат в&nbsp;день ограничено. Завтра сможете создать ещё.</p>
                 </div>
                 <ul class="rooms-list"></ul>
             </div>
@@ -127,7 +125,7 @@
         </div>
         <div class="entry-text search-failed">
             <p>К&nbsp;сожалению, в&nbsp;других комнатах сейчас нет&nbsp;собеседников. Так&nbsp;бывает, потому что&nbsp;сайт новый, и&nbsp;подходящих комнат пока мало.</p>
-            <p class="entry-back"><span class="link">Вернуться</span></p>
+            <p class="search-failed-hall"><span class="link">Другие комнаты</span></p>
         </div>
         <div class="entry-text entry-login">
             <p class="login-links">Для входа в эту комнату нужна авторизация. Войдите через
@@ -446,24 +444,25 @@
 </script>
 
 <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
-<script src="/script/fastclick.min.js"></script>
-<script src="/script/utility.js"></script>
-<script src="/script/events.js"></script>
-<script src="/script/rest.js"></script>
+<script src="/vendors/fastclick.min.js"></script>
 
-<script src="/script/models/main.js"></script>
-<script src="/script/models/room.js"></script>
-<script src="/script/models/roles.js"></script>
-<script src="/script/models/userpics.js"></script>
+<script src="/script/utility.js?oqxe5k"></script>
+<script src="/script/events.js?oqxe5k"></script>
+<script src="/script/rest.js?oqxe5k"></script>
 
-<script src="/script/views/datepicker.js"></script>
-<script src="/script/views/about.js"></script>
-<script src="/script/views/room.js"></script>
-<script src="/script/views/side.js"></script>
-<script src="/script/views/hall.js"></script>
-<script src="/script/views/talk.js"></script>
-<script src="/script/views/reply.js"></script>
-<script src="/script/views/profile.js"></script>
+<script src="/script/models/main.js?oqxe5k"></script>
+<script src="/script/models/rooms.js?oqxe5k"></script>
+<script src="/script/models/roles.js?oqxe5k"></script>
+<script src="/script/models/userpics.js?oqxe5k"></script>
+
+<script src="/script/views/datepicker.js?oqxe5k"></script>
+<script src="/script/views/about.js?oqxe5k"></script>
+<script src="/script/views/room.js?oqxe5k"></script>
+<script src="/script/views/side.js?oqxe5k"></script>
+<script src="/script/views/hall.js?oqxe5k"></script>
+<script src="/script/views/talk.js?oqxe5k"></script>
+<script src="/script/views/reply.js?oqxe5k"></script>
+<script src="/script/views/profile.js?oqxe5k"></script>
 
 <script>
 FastClick.attach(document.body);

@@ -12,7 +12,6 @@
     -webkit-animation: .08s ease-out profile-zoom;
             animation: .08s ease-out profile-zoom;
 }
-
 /* Profile animation */
 @-webkit-keyframes profile-zoom {
     from { opacity: 0; -webkit-transform: scale(0.9); transform: scale(0.9); }
@@ -22,7 +21,6 @@
     from { opacity: 0; -webkit-transform: scale(0.9); transform: scale(0.9); }
       to { opacity: 1; -webkit-transform: none; transform: none; }
 }
-
 /* Sections */
 .profile-section {
     display: none;
@@ -47,7 +45,6 @@
 #profile-moderate {
     margin-top: -10px;
 }
-
 /* Elements */
 #profile p {
     margin: 0;
@@ -62,7 +59,6 @@
     font-size: 15px;
     line-height: 17px;
 }
-
 /* Social icon */
 .profile-social {
 	position: absolute;
@@ -86,7 +82,6 @@
 	background-image: url('profile/ok.svg');
 	background-color: #F4731C;
 }
-
 /* Close */
 .profile-close {
 	position: absolute;
@@ -101,7 +96,6 @@
 	background-color: rgba(255, 255, 255, .5);
 	cursor: pointer;
 }
-
 /* Photo */
 .profile-photo {
 	margin: 0 0 18px;
@@ -111,7 +105,6 @@
 	width: 320px;
 	height: auto;
 }
-
 /* Pseudo-shadow (inset shadow doesn't work for image, z-index hack disables image context menu) */
 .profile-photo:after {
     content: '';
@@ -122,7 +115,6 @@
     background: #000000;
     background: rgba(0, 0, 0, .15);
 }
-
 /* Userpic */
 .profile-userpic {
 	margin: 28px auto 10px;
@@ -135,7 +127,6 @@
     border: 1px solid #000000;
     border: 1px solid rgba(0, 0, 0, .2);
 }
-
 /* Nickname and status */
 .profile-nickname {
 	margin: 0 20px;
@@ -152,7 +143,6 @@
 .profile-status .emoji {
 	font-style: normal;
 }
-
 /* Actions */
 .profile-actions {
 	position: relative;
@@ -186,7 +176,6 @@
 	color: #DEDEDE;
 	cursor: default;
 }
-
 /* Ignore */
 .profile-ignore {
     display: none;
@@ -205,7 +194,6 @@
 .profile-ignore .hint {
 	margin-top: 12px !important;
 }
-
 /* Ignored */
 .profile-ignored {
 	display: none;
@@ -227,7 +215,6 @@
     background: url('profile/cancel.svg') no-repeat 9px 9px;
     cursor: pointer;
 }
-
 /* Edit bitton */
 .profile-edit-button {
 	display: none;
@@ -242,7 +229,6 @@
 	padding-left: 20px;
 	background: url('room/edit_role.svg') no-repeat 0 4px;
 }
-
 /* Edit section */
 .my-photo {
     padding-top: 160px;
@@ -282,13 +268,11 @@
 	width: 100%;
     padding: 7px 13px;
 }
-
 /* Moderate section */
 #profile-moderate {
 	min-height: 60px;
 	background: #FAFAFA;
 }
-
 /* Rank */
 .moder-rank {
 	padding: 10px 20px 0;
@@ -301,7 +285,6 @@
     background: url('profile/select.svg') no-repeat 100% 32px;
 	cursor: pointer;
 }
-
 /* Moderator buttons */
 .moder-guest button,
 .moder-request button {
@@ -347,7 +330,6 @@
 .moder-promote {
 	color: #448F39;
 }
-
 /* Ignored and banished */
 .moder-sanction {
     position: relative;
@@ -366,12 +348,10 @@
     background: url('profile/cancel.svg') no-repeat 9px 9px;
     cursor: pointer;
 }
-
 /* Ignored */
 .moder-ignored {
 	margin-bottom: 16px;
 }
-
 /* Ignored term */
 .moder-term-editable {
     cursor: pointer;
@@ -409,7 +389,6 @@
 .moder-term-select > .moder-term-options {
     display: block;
 }
-
 /* Ignored hints */
 #profile .ignored-hint-active,
 #profile .ignored-hint-expired {
@@ -422,7 +401,6 @@
 .moder-ignored-expired .ignored-hint-expired {
     display: block;
 }
-
 /* Erase messages */
 .moder-erase {
 	margin: 16px 20px 0;
@@ -435,7 +413,6 @@
     font-size: 14px;
     line-height: 16px;
 }
-
 /* Ranks */
 .moder-ranks {
 	display: none;

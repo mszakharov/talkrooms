@@ -6,22 +6,27 @@ body {
     position: relative;
     height: 100%;
 }
+
 #rooms {
     display: none;
 }
 
 /* Visible room */
+
 body.in-rooms {
     background: #F6F6F6;
 }
+
 .in-rooms #about {
     display: none;
 }
+
 .in-rooms #rooms {
     display: block;
 }
 
 /* Talkrooms update */
+
 .updated-notice {
     position: absolute;
     z-index: 10;
@@ -32,12 +37,14 @@ body.in-rooms {
     background: #f5efdc;
     box-shadow: 0 5px 15px rgba(0, 0, 0, .2), 0 1px 0 rgba(0, 0, 0, .2);
 }
+
 .updated-title {
     max-width: 920px;
     margin: 0 auto;
     padding: 0 40px;
     color: #403e39;
 }
+
 .updated-reload {
     padding: 10px 0;
     color: #1270b2;
@@ -45,6 +52,7 @@ body.in-rooms {
     white-space: nowrap;
     cursor: pointer;
 }
+
 .updated-text {
     max-width: 920px;
     margin: 8px auto 0;

@@ -1,83 +1,67 @@
 // Requests list
 (function() {
 
-    function setUserpicUrl(role) {
-        role.userpicUrl = Userpics.getUrl(role);
-    }
-
-    function apply() {
-        Room.trigger('requests.updated', Room.requests.items);
-    }
-
-    function toggleRequest(role) {
-        if (role.come_in) {
-            setUserpicUrl(role);
-            Room.requests.add(role);
-        } else {
-            Room.requests.remove(role.role_id);
+    function apply(room) {
+        if (room === Rooms.selected) {
+            Rooms.trigger('selected.waiting.updated', room);
         }
-        apply();
     }
 
-    function updateRequest(data) {
-        Room.requests.update(data);
-        apply();
+    function toggleRole(room, data) {
+        if (data.come_in) {
+            room.rolesWaiting.add(data);
+        } else {
+            room.rolesWaiting.remove(data.role_id);
+        }
+        apply(room);
     }
 
-
-    function isEnabled() {
-        var level = Room.data.level;
-        return Room.moderator && level && level !== 80;
+    function isWaitingEnabled(room) {
+        return Boolean(room.myRole.isModerator && room.data.level);
     }
 
-    function enableRequests() {
-        var requests = new Room.Roles({
-            room_id: Room.data.room_id,
+    function fetchWaiting(room) {
+        return Rest.roles.get({
+            room_id: room.data.room_id,
             come_in: true
         });
-        Room.requests = requests;
-        toggleEvents('on');
-        return requests.fetch().then(function() {
-            requests.items.forEach(setUserpicUrl);
-            apply();
-        });
     }
 
-    function disableRequests() {
-        Room.requests = null;
-        Room.trigger('requests.updated', []);
-        toggleEvents('off');
-    }
-
-    function toggleEvents(toggle) {
-        Room[toggle]('role.come_in.updated', toggleRequest);
-        //Room[toggle]('role.nickname.updated', updateRequest); когда будет поле для имени
-    }
-
-    function toggleRequests() {
-        var enabled = isEnabled();
-        if (enabled && !Room.requests) {
-            enableRequests();
-        }
-        if (!enabled && Room.requests) {
-            disableRequests();
+    function toggleWaiting(room) {
+        var enabled = isWaitingEnabled(room);
+        if (enabled !== room.rolesWaiting.enabled) {
+            room.rolesWaiting.enabled = enabled;
+            if (enabled) {
+                fetchWaiting(room).then(function(roles) {
+                    room.rolesWaiting.reset(roles || []);
+                    apply(room);
+                });
+            } else {
+                room.rolesWaiting.reset([]);
+                apply(room);
+            }
         }
     }
 
-    Room.on('room.level.updated', toggleRequests);
-    Room.on('moderator.changed', toggleRequests);
-
-    Room.on('enter', function() {
-        if (isEnabled()) {
-            this.promises.push(enableRequests());
+    Rooms.pipe('role.come_in.updated', function(room, data) {
+        if (room.rolesWaiting.enabled) {
+            toggleRole(room, data);
         }
     });
 
-    Room.on('leave', function() {
-        this.requests = null;
+    Rooms.pipe('role.level.updated', function(room, data) {
+        if (room.isMy(data)) {
+            toggleWaiting(room);
+        }
     });
 
-    toggleRequests();
+    Rooms.pipe('room.level.updated', function(room, data) {
+        toggleWaiting(room);
+    });
+
+    Rooms.forEach(function(room) {
+        toggleWaiting(room);
+    });
 
 })();
 
@@ -130,12 +114,13 @@ Profile.send = function(data) {
 // Moderate section
 (function() {
 
-    var $section = $('#profile-moderate');
-
     var MODERATOR = 50;
 
+    var $section = $('#profile-moderate');
+    var isActive = false;
+
     function updateRole(data) {
-        if (Profile.role && Profile.role.role_id === data.role_id) {
+        if (isActive && Profile.role.role_id === data.role_id) {
             var role = $.extend(Profile.role, data);
             Profile.trigger('moderated', getState(role));
             Profile.fit();
@@ -146,7 +131,7 @@ Profile.send = function(data) {
         if (role.level >= MODERATOR) {
             return 'rank';
         }
-        if (role.level < Room.data.level) {
+        if (role.level < Rooms.selected.data.level) {
             return role.come_in === 0 ? 'banished' : 'request';
         }
         if (role.ignored) {
@@ -162,21 +147,8 @@ Profile.send = function(data) {
         }
     }
 
-    function toggleEvents(toggle) {
-
-        Socket[toggle]('role.level.updated', updateRole);
-        Socket[toggle]('role.ignored.updated', updateRole);
-        Socket[toggle]('role.expired.updated', updateRole);
-        Socket[toggle]('role.come_in.updated', updateRole);
-
-        Room[toggle]('room.level.updated', onRoomUpdated);
-
-    }
-
-    var isActive = false;
-
     Profile.on('show', function(role, isMy) {
-        isActive = Boolean(Room.moderator && !isMy);
+        isActive = Boolean(Rooms.selected.myRole.isModerator && !isMy);
         $section.toggle(isActive);
         if (isActive) {
             Profile.trigger('moderated', null);
@@ -189,24 +161,34 @@ Profile.send = function(data) {
         }
     });
 
-    function toggleSection(isModerator) {
-        toggleEvents(isModerator ? 'on' : 'off');
-        if (Profile.role) {
-            if (isModerator) {
-                isActive = isModerator && !Room.isMy(Profile.role);
-                $section.toggle(isActive);
-                if (isActive) {
-                    Profile.trigger('moderated', getState(Profile.role));
-                }
-            } else {
-                isActive = false;
-                $section.hide();
-            }
+    Socket.on('role.level.updated', updateRole);
+    Socket.on('role.ignored.updated', updateRole);
+    Socket.on('role.expired.updated', updateRole);
+    Socket.on('role.come_in.updated', updateRole);
+
+    Rooms.on('selected.level.updated', function() {
+        if (isActive) {
+            Profile.trigger('moderated', getState(Profile.role));
             Profile.fit();
         }
+    });
+
+    function toggleSection(isModerator) {
+        if (!Profile.role) {
+            return false;
+        }
+        var room = Rooms.selected;
+        isActive = room.myRole.isModerator && !room.isMy(Profile.role);
+        if (isActive) {
+            $section.toggle(isActive);
+            Profile.trigger('moderated', getState(Profile.role));
+        } else {
+            $section.hide();
+        }
+        Profile.fit();
     }
 
-    Room.on('moderator.changed', toggleSection);
+    Rooms.on('my.rank.updated', toggleSection);
 
     // Wait for sections initialization below
     setTimeout(function() {
@@ -214,15 +196,6 @@ Profile.send = function(data) {
     }, 100);
 
 })();
-
-
-// Check level
-Profile.isCivilian = function() {
-    var socket = this.socket;
-    if (socket) {
-        return !(socket.level && socket.level >= 50);
-    }
-};
 
 // Profile with request
 (function() {
@@ -328,15 +301,15 @@ Profile.isCivilian = function() {
         return Math.round((date - since) / 60000);
     }
 
-    function canRelease(role) {
-        return Boolean(Room.admin || !role.moderator_id || role.moderator_id === Room.myRole.role_id);
+    function canRelease(role, me) {
+        return Boolean(me.isAdmin || !role.moderator_id || role.moderator_id === me.role_id);
     }
 
     function showIgnored(role) {
         var date = new Date(role.ignored);
         var term = role.expired && getMinutes(date, new Date(role.expired));
         var past = getMinutes(date, Date.now());
-        var cr = canRelease(role);
+        var cr = canRelease(role, Rooms.selected.myRole);
         var tr = past > 720;
         var expired = term ? past >= term : false;
         if (cr && !tr && !expired) {

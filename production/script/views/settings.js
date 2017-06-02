@@ -5,15 +5,8 @@
 
     var form = $.popup('#room-settings', function() {
         form.find('.error').remove();
-        if (Room.admin) {
-            setAdminValues();
-        }
-        toggleAlarm(Room.data.level === 0);
-        showAlarm(Boolean(Room.data.min_session_created));
-        toggleRemove(Room.data.level === 80);
-        hash.parent().toggle(Boolean(Room.myRole.level === 80 && Room.myRole.user_id));
-        closed.toggle(Room.myRole.level === 80);
         submit.prop('disabled', false);
+        toggleControls(Rooms.selected);
         this.fadeIn(120);
         fitPopup();
     });
@@ -33,14 +26,27 @@
         }
     }
 
-    function setAdminValues() {
-        form.find('.settings-login').toggle(!Me.authorized && Room.myRole.level === 80);
-        topic.val(Room.data.topic);
-        hash.val(Room.data.hash).removeClass('invalid');
-        searchable.prop('checked', Room.data.searchable);
-        watched.prop('checked', Room.data.watched);
-        levels.filter('[value="' + Room.data.level + '"]').prop('checked', true);
-        toggleSearchable(Room.data.level < 20);
+    function toggleControls(room) {
+        var myRole = room.myRole;
+        var isCreator = myRole.level === 80;
+        if (myRole.isAdmin) {
+            setAdminValues(room.data, isCreator);
+        }
+        toggleAlarm(room.data.level === 0);
+        showAlarm(Boolean(room.data.min_session_created));
+        toggleRemove(room.data.level === 80);
+        hash.parent().toggle(Boolean(isCreator && myRole.user_id));
+        closed.toggle(isCreator);
+    }
+
+    function setAdminValues(data, isCreator) {
+        form.find('.settings-login').toggle(!Me.authorized && isCreator);
+        topic.val(data.topic);
+        hash.val(data.hash).removeClass('invalid');
+        searchable.prop('checked', data.searchable);
+        watched.prop('checked', data.watched);
+        levels.filter('[value="' + data.level + '"]').prop('checked', true);
+        toggleSearchable(data.level < 20);
     }
 
     function validateHash(value, full) {
@@ -91,19 +97,19 @@
 
     form.on('submit', function(event) {
         event.preventDefault();
-        if (!Room.admin) {
+        if (!Rooms.selected.myRole.isAdmin) {
             form.hide();
         } else if (!submit.prop('disabled')) {
-            updateRoom();
+            updateRoom(Rooms.selected);
         }
     });
 
-    function filterChanged(data) {
+    function filterChanged(current, data) {
         var empty = true;
         var changed = {};
         for (var key in data) {
             var value = data[key];
-            if (value !== Room.data[key]) {
+            if (value !== current[key]) {
                 changed[key] = value;
                 empty = false;
             }
@@ -113,8 +119,8 @@
         }
     }
 
-    function updateRoom() {
-        var data = filterChanged({
+    function updateRoom(room) {
+        var data = filterChanged(room.data, {
             topic: topic.val(),
             hash: hash.val(),
             searchable: searchable.prop('checked') ? 1 : 0,
@@ -130,7 +136,7 @@
         } else {
             submit.prop('disabled', true);
             Rest.rooms
-                .update(Room.data.hash, data)
+                .update(room.data.hash, data)
                 .always(function() {
                     submit.prop('disabled', false);
                 })
@@ -180,7 +186,8 @@
     }
 
     function setAlarm(on) {
-        return Rest.rooms.update(Room.data.hash, {
+        var room = Rooms.selected;
+        return Rest.rooms.update(room.data.hash, {
             min_session_created: on
         });
     }
@@ -195,64 +202,70 @@
 
     var remove = content.find('.room-remove');
     remove.find('.link').on('click', function() {
-        Rest.rooms.update(Room.data.hash, {deleted: true});
+        var room = Rooms.selected;
+        Rest.rooms.update(room.data.hash, {deleted: true}).then(hide);
     });
 
     function toggleRemove(visible) {
-        remove.toggle(visible && Room.myRole.level === 80);
+        var me = Rooms.selected.myRole;
+        remove.toggle(visible && me.level === 80);
     }
 
-    function toggleSettings() {
-        var enabled = Boolean(Room.admin || (Room.moderator && Room.data.level === 0));
+    function toggleSettings(room) {
+        var me = room.myRole;
+        var enabled = Boolean(me.isAdmin || (me.isModerator && room.data.level === 0));
         icon.toggle(enabled);
         if (!enabled) form.hide();
     }
 
-    function toggleAdminSections() {
-        form.find('.admin-sections').toggle(Room.admin === true);
-        if (Room.admin) {
-            setAdminValues();
+    function toggleAdminSections(room) {
+        form.find('.admin-sections').toggle(room.myRole.isAdmin);
+        if (room.myRole.isAdmin) {
+            setAdminValues(room.data);
         }
     }
 
-    Room.on('admin.changed', function() {
-        toggleAdminSections();
-        toggleSettings();
+    Rooms.on('my.rank.updated', function(room) {
+        toggleAdminSections(room);
+        toggleSettings(room);
     });
 
-    Room.on('room.min_session_created.updated', function() {
-        if (Room.moderator) showAlarm(Boolean(Room.data.min_session_created));
+    Rooms.on('selected.ready', function(room) {
+        toggleAdminSections(room);
+        toggleSettings(room);
     });
 
-    Room.on('room.level.updated', function() {
-        if (Room.moderator) toggleSettings();
+    Rooms.on('selected.level.updated', function(room) {
+        if (room.myRole.isModerator) {
+            toggleSettings(room);
+        }
     });
 
-    Room.on('moderator.changed', toggleSettings);
+    Rooms.on('selected.alarm.updated', function(room) {
+        if (room.myRole.isModerator) {
+            showAlarm(Boolean(room.data.min_session_created));
+        }
+    });
 
     function hide() {
         form.hide();
     }
 
-    Room.on('leave', hide);
-    Room.on('closed', hide);
+    Rooms.on('select', hide);
+    Rooms.on('explore', hide);
 
-    toggleAdminSections();
-    toggleSettings();
+    if (Rooms.selected && Rooms.selected.myRole) {
+        toggleAdminSections(Rooms.selected);
+        toggleSettings(Rooms.selected);
+    }
 
 })();
 
 // Restore deleted room
 $('.entry-restore').on('click', function() {
-    var hash = Room.data.hash;
-    Rest.rooms
-        .update(hash, {deleted: false})
-        .done(function() {
-            Room.enter(hash);
-        })
-        .fail(function() {
-            Room.leave();
-            Room.trigger('lost');
-            alert('Восстановление уже невозможно');
-        });
+    var room = Rooms.selected;
+    Rooms.restore(room).fail(function() {
+        room.leave();
+        alert('Восстановление уже невозможно');
+    });
 });

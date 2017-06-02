@@ -37,26 +37,12 @@
 
 
     // Collection constructor
-    function Roles(fetchOptions) {
+    function Roles() {
         this.index = {};
         this.items = [];
-        this.fetchOptions = fetchOptions;
     }
 
     Roles.prototype = {
-
-        trigger: function() {
-
-        },
-
-        fetch: function() {
-            var that = this;
-            return Rest.roles
-                .get(this.fetchOptions)
-                .then(function(roles) {
-                    that.reset(roles);
-                });
-        },
 
         reset: function(roles) {
             this.index = {};
@@ -77,7 +63,6 @@
                 setAlias(data);
                 insertRole(this.items, data);
                 this.index[data.role_id] = data;
-                //this.trigger('added', data);
             }
         },
 
@@ -86,7 +71,6 @@
             if (role) {
                 removeRole(this.items, role);
                 delete this.index[roleId];
-                //this.trigger('removed', role);
             }
         },
 
@@ -99,7 +83,6 @@
                     removeRole(this.items, role); // Reinsert role to
                     insertRole(this.items, role); // keep items sorted
                 }
-                //this.trigger('updated', role);
             }
         },
 
@@ -108,7 +91,6 @@
             for (var i = roles.length; i--;) {
                 if (roles[i].user_id === data.user_id) {
                     extend(roles[i], data);
-                    //this.trigger('updated', roles[i]);
                     return;
                 }
             }
@@ -124,106 +106,20 @@
     Roles.insertRole = insertRole;
     Roles.removeRole = removeRole;
 
-    Room.Roles = Roles;
+    var roomUrl = /(^|\s)(#[\w\-+]+)\b/g;
+    var emoji = /[\uD800-\uDBFF\uDC00-\uDFFF\u200D]+/g;
 
-})();
-
-/* Users cache */
-(function() {
-
-    var showIgnored;
-
-    function notIgnored(role) {
-        var ignored = role.ignored && !Room.myRole.ignored;
-        if (ignored && showIgnored) this.push(role);
-        return !ignored;
-    }
-
-    function apply() {
-        var ignore = [];
-        Room.trigger('users.updated', Room.roles.items.filter(notIgnored, ignore), ignore);
-    }
-
-    function setAnnoying(role) {
-        role.annoying = Room.ignores && Room.ignores(role);
-    }
-
-    function setUserpicUrl(role) {
-        role.userpicUrl = Userpics.getUrl(role);
-    }
-
-    function addRole(role) {
-        this.roles.add(role);
-        setAnnoying(role);
-        setUserpicUrl(role);
-        apply();
-    }
-
-    function removeRole(role) {
-        this.roles.remove(role.role_id);
-        apply();
-    }
-
-    function updateRole(data) {
-        this.roles.update(data);
-        apply();
-    }
-
-    function updateSilent(data) {
-        this.roles.update(data);
-    }
-
-    Room.on('enter', function() {
-        showIgnored = Room.moderator;
-        var roles = new Room.Roles({
-            room_id: Room.data.room_id,
-            num_online_sockets: {'>': 0}
-        });
-        this.roles = roles;
-        this.promises.push(roles.fetch());
-    });
-
-    Room.on('ready', function() {
-        this.roles.items.forEach(setAnnoying);
-        this.roles.items.forEach(setUserpicUrl);
-        apply();
-    });
-
-    Room.on('leave', function() {
-        this.roles = null;
-    });
-
-    Room.on('moderator.changed', function() {
-        showIgnored = Room.moderator;
-        if (this.roles) {
-            this.roles.items.forEach(setAnnoying);
-            apply();
+    Roles.formatStatus = function(status) {
+        var s = status;
+        if (~s.indexOf('#')) {
+            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
         }
-    });
+        s = s.replace(emoji, '<span class="emoji">$&</span>');
+        return s;
+    };
 
-    Room.on('me.ignores.updated', function() {
-        this.roles.items.forEach(setAnnoying);
-        apply();
-    });
-
-    Room.on('role.online', addRole);
-    Room.on('role.offline', removeRole);
-
-    Room.on('role.nickname.updated', updateRole);
-    Room.on('role.status.updated', updateRole);
-    Room.on('role.ignored.updated', updateRole);
-
-    Room.on('user.userpic.updated', function(data) {
-        this.roles.updateUser(data);
-        apply();
-    });
-
-    // This events don't affect the view
-    Room.on('role.level.updated', updateSilent);
-    Room.on('role.expired.updated', updateSilent);
-
-    Room.on('user.photo.updated', function(data) {
-        this.roles.updateUser(data);
-    });
+    Rooms.Roles = Roles;
 
 })();
+
+

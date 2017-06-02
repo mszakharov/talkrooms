@@ -11,7 +11,6 @@
     padding: 2px 20px;
     border-bottom: 1px solid #E0E0E0;
 }
-
 /* Controls */
 #room-settings .textfield {
     margin-right: 16px;
@@ -22,7 +21,6 @@
 #room-settings .checkbox .hint {
     margin-top: 2px;
 }
-
 /* Fileds */
 #edit-room-topic {
     font-size: 24px;
@@ -35,7 +33,6 @@
 #room-settings button {
     padding: 5px 25px;
 }
-
 /* Login */
 #room-settings .settings-login {
     padding: 14px 20px;
@@ -49,7 +46,6 @@
     margin: 8px 0 0;
     color: #66645e;
 }
-
 /* Remove */
 .room-remove {
     padding: 14px 20px;
@@ -61,7 +57,6 @@
 .room-remove .link {
     color: #ca3c30;
 }
-
 /* Alarm */
 .alarm-on,
 .alarm-off {

@@ -35,7 +35,7 @@
     }
 
     Profile.show = function(role, context, edit) {
-        var me = Room.isMy(role);
+        var me = Rooms.selected.isMy(role);
         $sections.hide();
         Profile.role = role;
         Profile.socket = role;
@@ -158,15 +158,11 @@
         }
     }
 
-    function formatStatus() {
-
-    }
-
     function showRole(role) {
         $userpic.css('background-image', 'url(' + Userpics.getUrl(role) + ')').show();
         $nickname.text(role.nickname);
         if (role.status) {
-            $status.html(Room.formatStatus(role.status)).show();
+            $status.html(Rooms.Roles.formatStatus(role.status)).show();
         } else {
             $status.hide().text('');
         }
@@ -218,6 +214,11 @@
         'Скрыть во всех комнатах…'
     ];
 
+    function toggleIgnoreIcon() {
+        $ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
+        $ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
+    }
+
     function toggleIgnored(ignored) {
         $actions.toggle(!ignored);
         $ignored.toggle(ignored);
@@ -243,7 +244,7 @@
     }
 
     function isIgnored() {
-        return Room.ignores ? Room.ignores(Profile.role) : false;
+        return ignoreDisabled ? false : Me.isHidden(Profile.role);
     }
 
     $actions.find('.profile-private').on('click', function() {
@@ -271,16 +272,20 @@
         Profile.edit();
     });
 
-    Room.on('moderator.changed', function(isModerator) {
-        ignoreDisabled = isModerator;
-        $ignoreIcon.toggleClass('profile-ignore-disabled', ignoreDisabled);
-        $ignoreIcon.attr('title', ignoreTitles[ignoreDisabled ? 0 : 1]);
-        if (Profile.socket) {
-            toggleIgnored(!isModerator && isIgnored());
+    Rooms.on('selected.ready', function(room) {
+        ignoreDisabled = room.myRole.isModerator;
+        toggleIgnoreIcon();
+    });
+
+    Rooms.on('my.rank.updated', function(room) {
+        ignoreDisabled = room.myRole.isModerator;
+        toggleIgnoreIcon();
+        if (Profile.role) {
+            toggleIgnored(!ignoreDisabled && isIgnored());
         }
     });
 
-    Room.on('user.ignores.updated', function() {
+    Me.on('ignores.updated', function() {
         if (Profile.role) {
             toggleIgnored(isIgnored());
         }

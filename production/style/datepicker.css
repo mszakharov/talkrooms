@@ -18,7 +18,6 @@
     -webkit-animation: .12s ease-out dropdown;
             animation: .12s ease-out dropdown;
 }
-
 /* Close */
 .dp-close {
     position: absolute;
@@ -31,7 +30,6 @@
     cursor: pointer;
     -webkit-user-select: none;
 }
-
 /* Search date */
 .dp-search {
     position: relative;
@@ -52,7 +50,6 @@
 .dp-missing {
     color: #ca3c30;
 }
-
 /* Calendar */
 .dp-calendar {
     width: 325px;
@@ -70,7 +67,6 @@
     cursor: default;
     -webkit-user-select: none;
 }
-
 /* Calendar months */
 .dp-month {
     clear: left;
@@ -92,7 +88,6 @@
     padding: 0 10px;
     background: #FFF;
 }
-
 /* Calendar days */
 .dp-hidden {
     visibility: hidden;

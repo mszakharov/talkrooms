@@ -85,48 +85,38 @@ var Talk = {
         402: 'Слишком много одновременных соединений. Такое бывает, если открыть много вкладок или несколько раз подряд обновить страницу.'
     };
 
-    Room.on('leave', function() {
-        Talk.content.addClass('talk-loading');
-    });
-
-    Room.on('hall', function() {
+    Rooms.on('explore', function() {
         overlay.hide(); // Show lists instantly
     });
 
-    Room.on('ready', hideOverlay);
-
-    Room.on('lost', function() {
-        showOverlay('.entry-lost');
+    Rooms.on('select', function(room) {
+        if (room.state !== 'ready') {
+            Talk.content.addClass('talk-loading');
+        }
     });
 
-    Room.on('locked', function(wait) {
-        showOverlay(wait ? '.entry-wait' : '.entry-login');
+    Rooms.on('selected.ready', hideOverlay);
+
+    Rooms.on('selected.denied', function(room) {
+        if (room.state === 'locked') {
+            showOverlay(room.myRole.come_in != null ? '.entry-wait' : '.entry-login');
+        } else {
+            showOverlay('.entry-' + room.state);
+        }
     });
 
-    Room.on('closed', function(wait) {
-        showOverlay('.entry-closed');
-    });
-
-    Room.on('deleted', function() {
-        showOverlay('.entry-deleted');
-    });
-
-    Room.on('shuffle.failed', function() {
-        cancelShuffle.toggle(Boolean(Room.subscription));
+    Rooms.on('shuffle.failed', function() {
         showOverlay('.search-failed');
     });
 
     Socket.on('error', showError);
-    Room.on('error', showError);
-
-    var cancelShuffle = overlay.find('.entry-back');
-
-    cancelShuffle.find('.link').on('click', function() {
-        overlay.hide();
-    });
 
     overlay.find('.entry-search').on('click', function() {
-        Room.shuffle();
+        Rooms.shuffle();
+    });
+
+    overlay.find('.search-failed-hall .link').on('click', function() {
+        Rooms.trigger('explore');
     });
 
 })();
@@ -152,15 +142,6 @@ Talk.format = function(content) {
         s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
     }
     return s.replace(/\n/g, '<br>');
-};
-
-// Find me in mentions
-Talk.isForMe = function(mentions) {
-    if (!mentions) return false;
-    var my = Room.myRole.role_id;
-    for (var i = mentions.length; i--;) {
-        if (mentions[i] === my) return true;
-    }
 };
 
 // Dates
@@ -197,7 +178,7 @@ Talk.isForMe = function(mentions) {
     // Update dates after midnight
     $window.on('date.changed', function() {
         dates.forEach(updateTitle);
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     });
 
 })();
@@ -220,11 +201,11 @@ Talk.isForMe = function(mentions) {
             content: Talk.format(data.content) || '…',
             time: created.toHumanTime(),
         });
-        if (Room.myRole.role_id === data.role_id) {
+        if (data.isMy) {
             if (created.daysAgo() < 2) {
                 message.find('.msg-text').append(edit.cloneNode(true));
             }
-        } else if (Talk.isForMe(data.mentions)) {
+        } else if (data.mentionsMe) {
             message.addClass('with-my-name');
         }
         this.timestamp = created.getTime();
@@ -388,6 +369,11 @@ Talk.isForMe = function(mentions) {
     };
 
     Talk.createMessage = function(data) {
+        var room = Rooms.selected;
+        data.isMy = room.isMy(data);
+        if (!data.isMy && data.mentions) {
+            data.mentionsMe = room.mentionsMe(data.mentions);
+        }
         return new Message(data);
     };
 
@@ -397,6 +383,8 @@ Talk.isForMe = function(mentions) {
 
 // Sections
 (function() {
+
+    var myRole;
 
     var previous = $('.talk-previous'),
         recent = $('.talk-recent'),
@@ -425,19 +413,7 @@ Talk.isForMe = function(mentions) {
     }
 
     function isVisible(data) {
-        if (Room.isMy(data)) {
-            return true;
-        }
-        if (Room.ignores && Room.ignores(data)) {
-            return false;
-        }
-        if (data.ignore && !Room.myRole.ignored) {
-            return false;
-        }
-        if (Talk.forMeOnly) {
-            return data.recipient_nickname || Talk.isForMe(data.mentions);
-        }
-        return true;
+        return Rooms.selected.isVisible(data);
     }
 
     function getMessages(conditions) {
@@ -478,11 +454,11 @@ Talk.isForMe = function(mentions) {
     }
 
     function useIgnores(messages) {
-        return Room.ignores ? messages.filter(notAnnoying) : messages;
+        return myRole.isModerator ? messages : messages.filter(notAnnoying);
     }
 
     function notAnnoying(message) {
-        return !Room.ignores(message);
+        return !Me.isHidden(message);
     }
 
     function showRecent(messages) {
@@ -492,13 +468,13 @@ Talk.isForMe = function(mentions) {
         current.setLast();
         Talk.scrollDown();
         Talk.content.removeClass('talk-loading');
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function updateSections(action, data, anchor) {
         var offset = anchor.getBoundingClientRect().top;
         action(data);
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         Talk.restoreOffset(anchor, offset);
     }
 
@@ -515,7 +491,7 @@ Talk.isForMe = function(mentions) {
         if (offset < 0) {
             Talk.restoreOffset(cut.node, offset);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         next();
     }
 
@@ -543,7 +519,7 @@ Talk.isForMe = function(mentions) {
         current.setIgnore(ignore, isVisible);
         current.setLast();
         cleanDates();
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
         content.scrollTop = content.scrollHeight - offset;
     };
 
@@ -564,26 +540,41 @@ Talk.isForMe = function(mentions) {
         }
     };
 
-    // Стираем сообщения, чтобы не видеть их при загрузке другой комнаты
-    Room.on('hall', function() {
+    // Стираем сообщения последней комнаты,
+    // чтобы не видеть их при загрузке следующей
+    Rooms.on('explore', function() {
+        Talk.reset();
+    });
+
+    // То же самое, если комната недоступна
+    Rooms.on('selected.denied', function() {
+        Talk.reset();
+    });
+
+    Rooms.on('select', function() {
+        Talk.content.addClass('talk-loading');
+    });
+
+    Rooms.on('selected.ready', function(room) {
+        myRole = room.myRole;
+        Talk.forMeOnly = room.forMeOnly || false;
+        Talk.loadRecent();
+    });
+
+    Talk.reset = function() {
         archive.reset([]);
         current.reset([]);
-    });
+    };
 
-    Room.on('enter', function() {
-        Talk.forMeOnly = false;
-        Room.promises.push(Talk.loadRecent());
-    });
-
-    Room.on('message.created', function(data) {
-        if (isVisible(data) && data.message_id > current.last.data.message_id) {
+    Talk.appendMessage = function(data) {
+        if (data.message_id > current.last.data.message_id) {
             var message = Talk.createMessage(data);
             var lastSpeech = current.last.node && current.last.node.parentNode;
             Talk.fixScroll();
             message.appendTo(current.container, current.last);
             current.messages.push(message);
             if (message.date !== current.last.date) {
-                Room.trigger('dates.changed');
+                Talk.reflowDates();
             }
             current.setLast(message);
             if (current.messages.length > current.capacity + current.overflow) {
@@ -594,11 +585,11 @@ Talk.isForMe = function(mentions) {
             } else if (lastSpeech) {
                 Talk.scrollFurther(lastSpeech.nextSibling);
             }
-            Room.trigger('talk.updated');
+            return true;
         }
-    });
+    };
 
-    Room.on('message.content.updated', function(data) {
+    Talk.updateMessage = function(data) {
         var updated = Talk.find(function(message) {
             return data.message_id === message.data.message_id;
         });
@@ -607,9 +598,9 @@ Talk.isForMe = function(mentions) {
             var edit = text.find('.msg-edit').detach();
             text.html(Talk.format(data.content) || '…').append(edit);
             updated.data.content = data.content;
-            Room.trigger('dates.changed'); // because of new message height
+            Talk.reflowDates(); // because of new message height
         }
-    });
+    };
 
     function toggleArchive(visible) {
         $(archive.container).toggle(visible);
@@ -631,7 +622,7 @@ Talk.isForMe = function(mentions) {
         } else {
             current.prepend(messages);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function showMoreRecent(data) {
@@ -676,7 +667,7 @@ Talk.isForMe = function(mentions) {
         if (archive.messages.length) {
             toggleArchive(true);
         }
-        Room.trigger('dates.changed');
+        Talk.reflowDates();
     }
 
     function mergeSections(messages) {
@@ -771,9 +762,10 @@ Talk.isForMe = function(mentions) {
 
     // Remove obsolete edit icons
     $window.on('date.changed', function() {
+        var room = Rooms.selected;
         var editAfter = (new Date).setHours(0, 0, 0, 0) - (24 * 60 * 60 * 1000);
         current.messages.forEach(function(message) {
-            if (Room.isMy(message.data) && message.timestamp < editAfter) {
+            if (room.isMy(message.data) && message.timestamp < editAfter) {
                 $(message.node).find('.msg-edit').detach();
             };
         });
@@ -796,15 +788,17 @@ Talk.isForMe = function(mentions) {
         });
     }
 
-    Room.on('message.ignore.updated', function(data) {
-        ignore[data.message_id] = data.ignore;
-        timer = setTimeout(setIgnore, 50);
+    Rooms.pipe('message.ignore.updated', function(room, data) {
+        if (room === Rooms.selected) {
+            ignore[data.message_id] = data.ignore;
+            timer = setTimeout(setIgnore, 50);
+        }
     });
 
 })();
 
 // Apply ignores
-Room.on('user.ignores.updated', function() {
+Socket.on('me.ignores.updated', function() {
     Talk.loadRecent();
 });
 
@@ -829,7 +823,7 @@ Room.on('user.ignores.updated', function() {
 
     function getRole(elem) {
         var role_id = Number(elem.getAttribute('data-role'));
-        var role = role_id && Room.roles.get(role_id);
+        var role = role_id && Rooms.selected.rolesOnline.get(role_id);
         return role || getMessageData(elem.parentNode);
     }
 
@@ -894,24 +888,6 @@ Room.on('user.ignores.updated', function() {
     var dates = [];
     var min, max;
 
-    function update() {
-        var active = dates.length > 1;
-        updateDates();
-        if (dates.length) {
-            toggle(content.scrollTop);
-        } else {
-            value.text('Сегодня');
-        }
-        if (dates.length < 2 && active) {
-            content.removeEventListener('scroll', check, false);
-            window.removeEventListener('resize', update);
-        }
-        if (dates.length > 1 && !active) {
-            content.addEventListener('scroll', check, false);
-            window.addEventListener('resize', update);
-        }
-    }
-
     function getTop(node) {
         return node.getBoundingClientRect().top
     }
@@ -946,7 +922,23 @@ Room.on('user.ignores.updated', function() {
         }
     }
 
-    Room.on('dates.changed', update);
+    Talk.reflowDates = function() {
+        var active = dates.length > 1;
+        updateDates();
+        if (dates.length) {
+            toggle(content.scrollTop);
+        } else {
+            value.text('Сегодня');
+        }
+        if (dates.length < 2 && active) {
+            content.removeEventListener('scroll', check, false);
+            window.removeEventListener('resize', updateDates);
+        }
+        if (dates.length > 1 && !active) {
+            content.addEventListener('scroll', check, false);
+            window.addEventListener('resize', updateDates);
+        }
+    };
 
 })();
 
@@ -956,16 +948,42 @@ Room.on('user.ignores.updated', function() {
     var toolbar = $('.header-toolbar'),
         control = $('.filter-my');
 
-    Room.on('enter', function() {
-        control.removeClass('filter-my-selected');
+    Rooms.on('selected.ready', function(room) {
+        control.toggleClass('filter-my-selected', room.forMeOnly === true);
     });
 
     control.on('click', function() {
         if (toolbar.data('wasDragged')) return;
-        Talk.forMeOnly = !Talk.forMeOnly;
+        var room = Rooms.selected;
+        room.forMeOnly = !room.forMeOnly;
+        Talk.forMeOnly = room.forMeOnly;
         control.toggleClass('filter-my-selected', Talk.forMeOnly);
         Talk.content.addClass('talk-loading');
         Talk.loadRecent();
+    });
+
+})();
+
+// Notifications switch
+(function() {
+
+    var toolbar = $('.header-toolbar'),
+        control = $('.toolbar-sound');
+
+    if (!Rooms.soundEnabled) {
+        control.hide();
+        return false;
+    }
+
+    Rooms.on('selected.ready', function(room) {
+        control.toggleClass('toolbar-sound-on', room.soundOn);
+    });
+
+    control.on('click', function() {
+        if (toolbar.data('wasDragged')) return;
+        var room = Rooms.selected;
+        room.toggleSound();
+        control.toggleClass('toolbar-sound-on', room.soundOn);
     });
 
 })();
