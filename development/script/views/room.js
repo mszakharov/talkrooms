@@ -53,6 +53,8 @@
         side = $('#side'),
         main = $('#main');
 
+    var icon = $('.header-show-side');
+
     function showSide() {
         body.addClass('sliding-side').reflow(); // translate talk without transition
         body.addClass('visible-side');
@@ -63,7 +65,7 @@
         body.addClass('sliding-side');
     }
 
-    $('.header-show-side').on('click', function(event) {
+    icon.on('click', function(event) {
         if (body.hasClass('visible-side')) {
             hideSide();
         } else {
@@ -87,6 +89,14 @@
         if (body.hasClass('visible-side')) {
             hideSide();
         }
+    });
+
+    Rooms.on('updated', function() {
+        var unread = false;
+        Rooms.forEach(function(room) {
+            if (room.unread) unread = true;
+        });
+        icon.toggleClass('header-side-unread', unread);
     });
 
 })();

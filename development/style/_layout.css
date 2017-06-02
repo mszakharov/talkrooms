@@ -50,6 +50,16 @@ html.in-rooms {
     color: #A0A0A0;
     transform: translateX(0); /* Fix blurry svg in Firefox */
 }
+.header-side-unread::after {
+    content: '';
+    position: absolute;
+    margin: -2px 0 0 -9px;
+    width: 11px;
+    height: 11px;
+    border: 1px solid #D7AF51;
+    border-radius: 7px;
+    background: #FACF69;
+}
 
 /* Columns */
 #side,

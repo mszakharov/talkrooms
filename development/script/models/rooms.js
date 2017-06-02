@@ -551,7 +551,7 @@ Rooms.pipe('message.created', function(room, data) {
             Rooms.trigger('updated');
         }
         if (forMe) {
-            Rooms.trigger('notification');
+            Rooms.trigger('notification', room);
         }
     }
 });
@@ -613,8 +613,8 @@ Rooms.pipe('message.content.updated', function(room, data) {
         ogg: '/script/sound/message.ogg'
     });
 
-    Rooms.on('notification', function() {
-        if (Rooms.idle) {
+    Rooms.on('notification', function(room) {
+        if (Rooms.idle && room.soundOn) {
             sound.play();
         }
     });
