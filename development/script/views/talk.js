@@ -144,14 +144,6 @@ Talk.format = function(content) {
     return s.replace(/\n/g, '<br>');
 };
 
-// Find me in mentions
-Talk.mentionsMe = function(mentions) {
-    if (!mentions) return false;
-    for (var i = mentions.length; i--;) {
-        if (mentions[i] === this.myRoleId) return true;
-    }
-};
-
 // Dates
 (function() {
 
@@ -377,8 +369,11 @@ Talk.mentionsMe = function(mentions) {
     };
 
     Talk.createMessage = function(data) {
-        data.isMy = Talk.myRoleId === data.role_id;
-        data.mentionsMe = !data.isMy && Talk.mentionsMe(data.mentions);
+        var room = Rooms.selected;
+        data.isMy = room.isMy(data);
+        if (!data.isMy && data.mentions) {
+            data.mentionsMe = room.mentionsMe(data.mentions);
+        }
         return new Message(data);
     };
 
