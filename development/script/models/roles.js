@@ -37,26 +37,12 @@
 
 
     // Collection constructor
-    function Roles(fetchOptions) {
+    function Roles() {
         this.index = {};
         this.items = [];
-        this.fetchOptions = fetchOptions;
     }
 
     Roles.prototype = {
-
-        trigger: function() {
-
-        },
-
-        fetch: function() {
-            var that = this;
-            return Rest.roles
-                .get(this.fetchOptions)
-                .then(function(roles) {
-                    that.reset(roles);
-                });
-        },
 
         reset: function(roles) {
             this.index = {};
@@ -77,7 +63,6 @@
                 setAlias(data);
                 insertRole(this.items, data);
                 this.index[data.role_id] = data;
-                //this.trigger('added', data);
             }
         },
 
@@ -86,7 +71,6 @@
             if (role) {
                 removeRole(this.items, role);
                 delete this.index[roleId];
-                //this.trigger('removed', role);
             }
         },
 
@@ -99,7 +83,6 @@
                     removeRole(this.items, role); // Reinsert role to
                     insertRole(this.items, role); // keep items sorted
                 }
-                //this.trigger('updated', role);
             }
         },
 
@@ -108,7 +91,6 @@
             for (var i = roles.length; i--;) {
                 if (roles[i].user_id === data.user_id) {
                     extend(roles[i], data);
-                    //this.trigger('updated', roles[i]);
                     return;
                 }
             }
