@@ -829,7 +829,7 @@ Socket.on('me.ignores.updated', function() {
 
     function replyPersonal(elem) {
         var role = getRole(elem);
-        if (Room.isMy(role)) {
+        if (Rooms.selected.isMy(role)) {
             Room.replyPrivate(parseRecipient(elem));
         } else {
             Room.replyPrivate(role);
