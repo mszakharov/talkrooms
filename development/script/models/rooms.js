@@ -348,6 +348,24 @@
             } else if (message.mentions) {
                 return this.mentionsMe(message.mentions);
             }
+        },
+
+        isVisible: function(message) {
+            var me = this.myRole;
+            if (message.role_id === me.role_id) {
+                return true;
+            }
+            if (!me.isModerator && Me.isHidden(message)) {
+                return false;
+            }
+            if (message.ignore && !me.ignored) {
+                return false;
+            }
+            if (this.forMeOnly) {
+                return message.recipient_nickname ||
+                    message.mentions && this.mentionsMe(message.mentions);
+            }
+            return true;
         }
 
     };
@@ -509,14 +527,16 @@ Rooms.pipe('room.deleted.updated', function(room, data) {
 
 // Messages
 Rooms.pipe('message.created', function(room, data) {
-    var forMe = room.isForMe(data);
-    if (room === Rooms.selected) {
-        Talk.appendMessage(data);
-    } else if (forMe) {
-        // Show notification in rooms list
-    }
-    if (forMe && Rooms.idle) {
-        // Window title and sound
+    if (room.isVisible(data)) {
+        var forMe = room.isForMe(data);
+        if (room === Rooms.selected) {
+            Talk.appendMessage(data);
+        } else if (forMe) {
+            // Show notification in rooms list
+        }
+        if (forMe && Rooms.idle) {
+            // Window title and sound
+        }
     }
 });
 

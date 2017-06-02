@@ -418,19 +418,7 @@ Talk.mentionsMe = function(mentions) {
     }
 
     function isVisible(data) {
-        if (data.role_id === myRole.role_id) {
-            return true;
-        }
-        if (!myRole.isModerator && Me.isHidden(data)) {
-            return false;
-        }
-        if (data.ignore && !myRole.ignored) {
-            return false;
-        }
-        if (Talk.forMeOnly) {
-            return data.recipient_nickname || Talk.mentionsMe(data.mentions);
-        }
-        return true;
+        return Rooms.selected.isVisible(data);
     }
 
     function getMessages(conditions) {
@@ -584,7 +572,7 @@ Talk.mentionsMe = function(mentions) {
     };
 
     Talk.appendMessage = function(data) {
-        if (isVisible(data) && data.message_id > current.last.data.message_id) {
+        if (data.message_id > current.last.data.message_id) {
             var message = Talk.createMessage(data);
             var lastSpeech = current.last.node && current.last.node.parentNode;
             Talk.fixScroll();
