@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+    <meta charset="utf-8">
+    <title>Коллекция комнат</title>
+</head>
+<body>
+
+<script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script src="/script/events.js"></script>
+<script src="/script/rest.js"></script>
+<script>
+var Rest = {
+    rooms:         $.Rest('/api/rooms'),
+    subscriptions: $.Rest('/api/subscriptions')
+};
+var Socket = new Events();
+var Me = {
+    subscriptions: [
+        {"room_id":10,"hash":"garage","topic":"Гараж"},
+        {"room_id":5,"topic":"Испытательный стенд","hash":"max"},
+        {"room_id":1,"hash":"lab","topic":"Лаборатория"}
+    ]
+};
+var Room = {
+    on: $.noop
+};
+</script>
+
+<script src="/script/models/rooms.js"></script>
+<script src="/script/models/roles.js"></script>
+
+<script>
+Socket.trigger('created');
+</script>
+
+</body>
+</html>
