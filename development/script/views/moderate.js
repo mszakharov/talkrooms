@@ -60,7 +60,9 @@
     });
 
     Rooms.forEach(function(room) {
-        toggleWaiting(room);
+        if (room.subscription) {
+            toggleWaiting(room);
+        }
     });
 
 })();
