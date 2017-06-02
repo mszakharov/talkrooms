@@ -128,7 +128,7 @@
         subscriptions = data.map(function(room_data) {
             var same = existing[room_data.hash];
             if (same) {
-                $.extend(same.data, room_data);
+                same.update(room_data);
                 indexRoom(same);
                 return same;
             } else {
