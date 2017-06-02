@@ -574,7 +574,7 @@ Talk.mentionsMe = function(mentions) {
 
     Rooms.on('selected.ready', function(room) {
         myRole = room.myRole;
-        Talk.forMeOnly = false;
+        Talk.forMeOnly = room.forMeOnly || false;
         Talk.loadRecent();
     });
 
@@ -965,13 +965,15 @@ Socket.on('me.ignores.updated', function() {
     var toolbar = $('.header-toolbar'),
         control = $('.filter-my');
 
-    Room.on('enter', function() {
-        control.removeClass('filter-my-selected');
+    Rooms.on('selected.ready', function(room) {
+        control.toggleClass('filter-my-selected', room.forMeOnly === true);
     });
 
     control.on('click', function() {
         if (toolbar.data('wasDragged')) return;
-        Talk.forMeOnly = !Talk.forMeOnly;
+        var room = Rooms.selected;
+        room.forMeOnly = !room.forMeOnly;
+        Talk.forMeOnly = room.forMeOnly;
         control.toggleClass('filter-my-selected', Talk.forMeOnly);
         Talk.content.addClass('talk-loading');
         Talk.loadRecent();
