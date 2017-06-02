@@ -969,6 +969,30 @@ Socket.on('me.ignores.updated', function() {
 
 })();
 
+// Notifications switch
+(function() {
+
+    var toolbar = $('.header-toolbar'),
+        control = $('.toolbar-sound');
+
+    if (!Rooms.soundEnabled) {
+        control.hide();
+        return false;
+    }
+
+    Rooms.on('selected.ready', function(room) {
+        control.toggleClass('toolbar-sound-on', room.soundOn);
+    });
+
+    control.on('click', function() {
+        if (toolbar.data('wasDragged')) return;
+        var room = Rooms.selected;
+        room.toggleSound();
+        control.toggleClass('toolbar-sound-on', room.soundOn);
+    });
+
+})();
+
 // Talk scrolling
 (function() {
 

@@ -280,6 +280,7 @@
         this.rolesOnline.reset(data.roles_online);
         this.rolesWaiting.reset(data.roles_waiting || []);
         this.rolesWaiting.enabled = Boolean(data.roles_waiting);
+        this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.setState('ready');
         return this;
     }
@@ -366,6 +367,15 @@
                     message.mentions && this.mentionsMe(message.mentions);
             }
             return true;
+        },
+
+        toggleSound: function() {
+            this.soundOn = !this.soundOn;
+            if (this.soundOn) {
+                localStorage.setItem('sound_in_' + this.data.room_id, 1);
+            } else {
+                localStorage.removeItem('sound_in_' + this.data.room_id);
+            }
         }
 
     };
@@ -534,8 +544,8 @@ Rooms.pipe('message.created', function(room, data) {
         } else if (forMe) {
             // Show notification in rooms list
         }
-        if (forMe && Rooms.idle) {
-            // Window title and sound
+        if (forMe) {
+            Rooms.trigger('notification');
         }
     }
 });
@@ -578,6 +588,44 @@ Rooms.pipe('message.content.updated', function(room, data) {
     });
 
     Rooms.on('selected.ready', checkMyRank);
+
+})();
+
+
+// Notification sound
+(function() {
+
+    // Disable sound on mobile devices because of audio limitations
+    if (/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent)) {
+        return false;
+    } else {
+        Rooms.soundEnabled = true;
+    }
+
+    var sound = new Sound({
+        mp3: '/script/sound/message.mp3',
+        ogg: '/script/sound/message.ogg'
+    });
+
+    Rooms.on('notification', function() {
+        if (Rooms.idle) {
+            sound.play();
+        }
+    });
+
+})();
+
+
+// Inactive window detection
+(function() {
+
+    $window.on('blur', function() {
+        Rooms.idle = true;
+    });
+
+    $window.on('focus', function() {
+        Rooms.idle = false;
+    });
 
 })();
 
