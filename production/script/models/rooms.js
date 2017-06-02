@@ -159,20 +159,12 @@
     };
 
     Rooms.remove = function(room) {
-        if (room === Rooms.selected) {
+        if (room === temporary) {
             resetTemporary();
-            temporary = room;
-        } else if (room === temporary) {
-            resetTemporary();
+            Rooms.trigger('updated');
         } else {
-            room.leave();
-            delete Rooms.byHash[room.data.hash];
-            delete Rooms.byId[room.data.room_id];
+            Rest.rooms.create(room.data.hash, 'unsubscribe');
         }
-        subscriptions = subscriptions.filter(function(s) {
-            return s !== room;
-        });
-        Rooms.trigger('updated');
     };
 
 
@@ -228,7 +220,18 @@
     Socket.on('me.subscriptions.remove', function(data) {
         var room = Rooms.byId[data.room_id];
         if (room) {
-            Rooms.remove(room);
+            if (room === Rooms.selected) {
+                resetTemporary();
+                temporary = room;
+            } else {
+                room.leave();
+                delete Rooms.byHash[room.data.hash];
+                delete Rooms.byId[room.data.room_id];
+            }
+            subscriptions = subscriptions.filter(function(s) {
+                return s !== room;
+            });
+            Rooms.trigger('updated');
         }
     });
 

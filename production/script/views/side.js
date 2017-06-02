@@ -48,7 +48,7 @@
 
     $exit.on('click', function() {
         var room = Rooms.selected;
-        Rooms.explore();
+        Router.push('+');
         Rooms.remove(room);
     });
 
