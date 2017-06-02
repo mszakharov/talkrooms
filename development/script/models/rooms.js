@@ -554,7 +554,7 @@ Rooms.pipe('message.created', function(room, data) {
         var forMe = room.isForMe(data);
         if (room === Rooms.selected) {
             Talk.appendMessage(data);
-        } else if (forMe && !room.unread) {
+        } else if (!room.unread && !room.isMy(data)) {
             room.unread = true;
             Rooms.trigger('updated');
         }
