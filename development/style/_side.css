@@ -46,10 +46,12 @@
     box-shadow:
         0 -1px 0 #EBE9E8,
         0 1px 0 #CFD6D6 inset;
-    cursor: default;
 }
 .subscription-selected::before {
     left: 13px;
+}
+.subscription-selected a {
+    cursor: default;
 }
 
 .subscription-unread::after {
@@ -62,4 +64,16 @@
     border: 1px solid #D7AF51;
     border-radius: 7px;
     background: #FACF69;
+}
+
+.subscription-exit {
+    position: absolute;
+    z-index: 2;
+    right: 14px;
+    top: 8px;
+    width: 23px;
+    height: 23px;
+    border-radius: 11px;
+    background: url('room/exit.svg') no-repeat 5px 5px;
+    cursor: pointer;
 }

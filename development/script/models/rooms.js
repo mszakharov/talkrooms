@@ -158,6 +158,23 @@
 
     };
 
+    Rooms.remove = function(room) {
+        if (room === Rooms.selected) {
+            resetTemporary();
+            temporary = room;
+        } else if (room === temporary) {
+            resetTemporary();
+        } else {
+            room.leave();
+            delete Rooms.byHash[room.data.hash];
+            delete Rooms.byId[room.data.room_id];
+        }
+        subscriptions = subscriptions.filter(function(s) {
+            return s !== room;
+        });
+        Rooms.trigger('updated');
+    };
+
 
     Rooms.forEach = function(callback) {
         subscriptions.forEach(callback, this);
@@ -211,18 +228,7 @@
     Socket.on('me.subscriptions.remove', function(data) {
         var room = Rooms.byId[data.room_id];
         if (room) {
-            if (room === Rooms.selected) {
-                resetTemporary();
-                temporary = room;
-            } else {
-                room.leave();
-                delete Rooms.byHash[room.data.hash];
-                delete Rooms.byId[data.room_id];
-            }
-            subscriptions = subscriptions.filter(function(s) {
-                return s !== room;
-            });
-            Rooms.trigger('updated');
+            Rooms.remove(room);
         }
     });
 
@@ -319,8 +325,10 @@
         },
 
         leave: function() {
-            Rest.subscriptions.destroy(this.subscription.subscription_id);
-            this.subscription = null;
+            if (this.subscription) {
+                Rest.subscriptions.destroy(this.subscription.subscription_id);
+                this.subscription = null;
+            }
             this.setState(null);
         },
 

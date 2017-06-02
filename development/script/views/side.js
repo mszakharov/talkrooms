@@ -4,6 +4,8 @@
     var $list = $('.side-subscriptions');
     var $other = $list.find('.subscriptions-other');
 
+    var $exit = $('<span class="subscription-exit" title="Выйти из комнаты"></span>');
+
     var index = {};
 
     var renderRoom = new Template('<li class="subscription"><a href="/#{hash}">{topic}</a></li>');
@@ -21,6 +23,7 @@
             nodes.push($item[0]);
             index[room.data.hash] = $item;
         });
+        $exit.detach();
         $list.find('.subscription').remove();
         $list.prepend(nodes);
         if (Rooms.selected) {
@@ -36,7 +39,18 @@
         if ($item) {
             $selected = $item.addClass('subscription-selected');
         }
+        if ($item && $item !== $other) {
+            $exit.appendTo($item);
+        } else {
+            $exit.detach();
+        }
     }
+
+    $exit.on('click', function() {
+        var room = Rooms.selected;
+        Rooms.explore();
+        Rooms.remove(room);
+    });
 
     Rooms.on('explore', function() {
         select($other);
