@@ -255,14 +255,19 @@ Me.isHidden = function(data) {
 // Debug socket events
 (function() {
 
-    var _trigger = Socket.trigger;
+    if (localStorage.getItem('debug')) {
 
-    Socket.trigger = function(name, data) {
-        console.log(name, data);
-        _trigger.call(Socket, name, data);
-    };
+        var _trigger = Socket.trigger;
+
+        Socket.trigger = function(name, data) {
+            console.log(name, data);
+            _trigger.call(Socket, name, data);
+        };
+
+    }
 
 })();
+
 
 // Login in other tab
 Socket.on('me.user_id.updated', function() {
