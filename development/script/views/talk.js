@@ -136,7 +136,7 @@ Talk.format = function(content) {
         s = s.replace(/\b(http\S+[^.,)?!\s])/g, '<a href="$1" target="_blank">$1</a>')
     }
     if (~s.indexOf('#')) {
-        s = s.replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2" target="_blank">$2</a>');
+        s = s.replace(/(^|\s)(#[\w\-+]+)\b/g, '$1<a href="/$2">$2</a>');
     }
     if (~s.indexOf('~~')) {
         s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');

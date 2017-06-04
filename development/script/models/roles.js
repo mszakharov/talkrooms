@@ -112,7 +112,7 @@
     Roles.formatStatus = function(status) {
         var s = status;
         if (~s.indexOf('#')) {
-            s = s.replace(roomUrl, '$1<a class="room-link" target="_blank" href="/$2">$2</a>');
+            s = s.replace(roomUrl, '$1<a class="room-link" href="/$2">$2</a>');
         }
         s = s.replace(emoji, '<span class="emoji">$&</span>');
         return s;
