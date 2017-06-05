@@ -38,7 +38,6 @@
         var me = Rooms.selected.isMy(role);
         $sections.hide();
         Profile.role = role;
-        Profile.socket = role;
         Profile.context = context;
         Profile.trigger(edit ? 'edit' : 'show', role, me);
         if (!context.nickname) {
@@ -65,7 +64,6 @@
     Profile.hide = function() {
         Profile.role = null;
         Profile.context = null;
-        Profile.socket = null;
         $popup.hide();
     };
 
@@ -84,11 +82,12 @@
     };
 
     Profile.edit = function(target) {
+        var role = Rooms.selected.myRole;
         if (target) {
-            this.show(Room.myRole, {target: target}, true);
+            this.show(role, {target: target}, true);
         } else {
             $sections.hide();
-            this.trigger('edit', Room.myRole, true);
+            this.trigger('edit', role, true);
             this.fit();
         }
     };
@@ -125,13 +124,21 @@
     Socket.on('user.photo.updated', updateByUser);
     Socket.on('user.userpic.updated', updateByUser);
 
-    Room.on('leave', function() {
+    Rooms.on('select', function() {
         Profile.hide();
     });
 
     window.Profile = Profile;
 
 })();
+
+// Update current role
+Profile.send = function(data) {
+    var role = this.role;
+    if (role) {
+        return Rest.roles.update(role.role_id, data);
+    }
+};
 
 /* Role details */
 (function() {
@@ -166,7 +173,7 @@
         } else {
             $status.hide().text('');
         }
-        if (role.profile_url && Room.myRole.user_id) {
+        if (role.profile_url && Me.authorized) {
             $social.attr('href', role.profile_url);
             $social.attr('title', matchTitle(role.profile_url));
             $social.show();
@@ -326,7 +333,7 @@
 
     function addChanged(values, field, name) {
         var value = $.trim(field.val());
-        if (value !== Profile.socket[name]) {
+        if (value !== Profile.role[name]) {
             if (value || name === 'status') values[name] = value;
         }
     }
@@ -337,17 +344,17 @@
         if ($.isEmptyObject(values)) {
             Profile.hide();
         } else {
-            Rest.roles.update(Room.myRole.role_id, values).done(Profile.hide);
+            Profile.send(values).then(Profile.hide);
         }
     });
 
     Profile.on('edit', function() {
-        var data = Room.myRole;
-        nickname.val(data.nickname);
-        status.val(data.status);
-        if (data.profile_url) {
-            photo.find('a').attr('href', '/api/login/' + data.profile_url.match(login)[1]);
-            photo.css('background-image', data.photo ? String.mix('url("/photos/$1")', data.photo) : '');
+        var role = Profile.role;
+        nickname.val(role.nickname);
+        status.val(role.status);
+        if (role.profile_url) {
+            photo.find('a').attr('href', '/api/login/' + role.profile_url.match(login)[1]);
+            photo.css('background-image', role.photo ? String.mix('url("/photos/$1")', role.photo) : '');
             photo.show();
         } else {
             photo.hide();
@@ -364,7 +371,7 @@
         logout = $('#profile-logout');
 
     Profile.on('edit', function() {
-        (Room.myRole.user_id ? logout : login).show();
+        (Me.authorized ? logout : login).show();
     });
 
 })();

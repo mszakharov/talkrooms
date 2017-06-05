@@ -296,10 +296,16 @@
         this.rolesWaiting.enabled = Boolean(data.roles_waiting);
         this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.setState('ready');
+        for (var i = 0; i < this.eventsBuffer.length; i++) {
+            var event = this.eventsBuffer[i];
+            event[0].call(Rooms, this, event[1]);
+        }
+        this.eventsBuffer = null;
         return this;
     }
 
     function denied(xhr) {
+        this.eventsBuffer = null;
         if (xhr.status === 404) {
             this.setState(this.isDeleted ? 'deleted' : 'lost');
         } else if (xhr.status === 403) {
@@ -322,6 +328,7 @@
     Room.prototype = {
 
         enter: function() {
+            this.eventsBuffer = [];
             return subscribe(this.data.hash)
                 .then(subscribed.bind(this))
                 .catch(denied.bind(this));
@@ -405,7 +412,11 @@ Rooms.pipe = function(event, callback) {
     Socket.on(event, function(data) {
         var room = Rooms.byId[data.room_id];
         if (room) {
-            callback.call(Rooms, room, data);
+            if (room.eventsBuffer) {
+                room.eventsBuffer.push([callback, data]);
+            } else {
+                callback.call(Rooms, room, data);
+            }
         }
     });
 };

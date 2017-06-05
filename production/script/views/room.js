@@ -264,7 +264,7 @@
         document.title = room.data.topic;
     });
 
-    Rooms.on('selected.state.change', function(room) {
+    Rooms.on('selected.ready', function(room) {
         document.title = room.data.topic;
     });
 

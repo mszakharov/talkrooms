@@ -33,7 +33,7 @@
             setAdminValues(room.data, isCreator);
         }
         toggleAlarm(room.data.level === 0);
-        showAlarm(Boolean(room.data.min_session_created));
+        showAlarm(room, Boolean(room.data.min_session_created));
         toggleRemove(room.data.level === 80);
         hash.parent().toggle(Boolean(isCreator && myRole.user_id));
         closed.toggle(isCreator);
@@ -125,7 +125,7 @@
             hash: hash.val(),
             searchable: searchable.prop('checked') ? 1 : 0,
             watched: watched.prop('checked') ? 1 : 0,
-            level: Number(levels.filter(':checked').attr('value') || Room.data.level)
+            level: Number(levels.filter(':checked').attr('value') || room.data.level)
         });
         if (!data) {
             form.hide();
@@ -169,20 +169,20 @@
         return iso ? 'с ' + (new Date(iso)).toHumanTime() : '';
     }
 
-    function showAlarm(on) {
+    function showAlarm(room, on) {
         alarmOff.toggle(!on);
         alarmOn.toggle(on);
         if (on) {
-            alarmOn.find('.alarm-time').text(getHumanTime(Room.data.min_session_created));
+            alarmOn.find('.alarm-time').text(getHumanTime(room.data.min_session_created));
         }
     }
 
     function showAlarmOn() {
-        showAlarm(true);
+        showAlarm(Rooms.selected, true);
     }
 
     function showAlarmOff() {
-        showAlarm(false);
+        showAlarm(Rooms.selected, false);
     }
 
     function setAlarm(on) {

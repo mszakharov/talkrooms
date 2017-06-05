@@ -67,14 +67,6 @@
 
 })();
 
-// Update current role
-Profile.send = function(data) {
-    var role = this.role;
-    if (role) {
-        return Rest.roles.update(role.role_id, data);
-    }
-};
-
 // Whip sound
 (function() {
 
@@ -85,31 +77,21 @@ Profile.send = function(data) {
         ogg: '/script/sound/whip.ogg'
     });
 
-    function playWhip(role) {
-        if (role.ignored) {
-            console.log(whippedByMe);
-            if (role.role_id === whippedByMe) {
-                whippedByMe = null;
-            } else {
-                whipSound.play(0.25);
-            }
-        }
-    }
-
-    function toggleEvent(toggle) {
-        Socket[toggle ? 'on' : 'off']('role.ignored.updated', playWhip);
-    }
-
+    // Play sound instantly and save role to skip related event
     Profile.whip = function() {
         whippedByMe = Profile.role.role_id;
         whipSound.play(0.5);
     };
 
-    Room.on('moderator.changed', function(isModerator) {
-        toggleEvent(isModerator);
+    Rooms.pipe('role.ignored.updated', function(room, data) {
+        if (data.ignored && room.myRole.isModerator) {
+            if (data.role_id === whippedByMe) {
+                whippedByMe = null;
+            } else {
+                whipSound.play(room === Rooms.selected ? 0.25 : 0.1);
+            }
+        }
     });
-
-    toggleEvent(Room.moderator);
 
 })();
 
@@ -175,11 +157,10 @@ Profile.send = function(data) {
         }
     });
 
-    function toggleSection(isModerator) {
+    function toggleSection(room) {
         if (!Profile.role) {
             return false;
         }
-        var room = Rooms.selected;
         isActive = room.myRole.isModerator && !room.isMy(Profile.role);
         if (isActive) {
             $section.toggle(isActive);
@@ -194,7 +175,7 @@ Profile.send = function(data) {
 
     // Wait for sections initialization below
     setTimeout(function() {
-        toggleSection(Room.moderator);
+        toggleSection(Rooms.selected);
     }, 100);
 
 })();
@@ -205,11 +186,17 @@ Profile.send = function(data) {
     var $request = $('.moder-request');
 
     $request.find('.moder-reject').on('click', function() {
-        Profile.send({come_in: false});
+        Profile.send({
+            come_in: false
+        });
     });
 
     $request.find('.moder-invite').on('click', function() {
-        Profile.send({level: Room.data.level, come_in: null});
+        var room = Rooms.selected;
+        Profile.send({
+            level: room.data.level,
+            come_in: null
+        });
     });
 
     Profile.on('moderated', function(state) {
@@ -266,8 +253,9 @@ Profile.send = function(data) {
     });
 
     Profile.on('moderated', function(state) {
+        var room = Rooms.selected;
         if (state === 'guest') {
-            var useIgnore = Room.data.level < 20;
+            var useIgnore = room.data.level < 20;
             $ignore.toggle(useIgnore);
             $banish.toggle(!useIgnore);
             $guest.show();
@@ -373,8 +361,9 @@ Profile.send = function(data) {
     var $banished = $('.moder-banished');
 
     $banished.find('.moder-release').on('click', function() {
+        var room = Rooms.selected;
         Profile.send({
-            level: Room.data.level,
+            level: room.data.level,
             come_in: null
         });
     });
