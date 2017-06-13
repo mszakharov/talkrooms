@@ -280,6 +280,7 @@
         this.myRole = data.role;
         this.subscription = data.subscription;
         this.rolesOnline.reset(data.roles_online);
+        this.rolesOnline.add(data.role);
         this.rolesWaiting.reset(data.roles_waiting || []);
         this.rolesWaiting.enabled = Boolean(data.roles_waiting);
         this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
