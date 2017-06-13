@@ -253,8 +253,13 @@ Me.isHidden = function(data) {
         500: 'Ведутся технические работы'
     };
 
-    function prepare() {
-        Me.fetch().then(Socket.create).catch(showError);
+    function prepare(saveSelected) {
+        Me.fetch()
+            .then(Socket.create)
+            .then(function() {
+                Rooms.reset(Me.subscriptions, saveSelected);
+            })
+            .catch(showError);
     }
 
     function showError(xhr) {
@@ -264,10 +269,12 @@ Me.isHidden = function(data) {
     }
 
     // when the page loads
-    prepare();
+    prepare(true);
 
     // if socket has expired
-    Socket.on('lost', prepare);
+    Socket.on('lost', function() {
+        prepare();
+    });
 
 })();
 

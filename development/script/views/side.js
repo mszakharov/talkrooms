@@ -47,9 +47,7 @@
     }
 
     $exit.on('click', function() {
-        var room = Rooms.selected;
-        Router.push('+');
-        Rooms.remove(room);
+        Rooms.unsubscribe(Rooms.selected);
     });
 
     Rooms.on('explore', function() {

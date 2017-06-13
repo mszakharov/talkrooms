@@ -4,7 +4,6 @@
     var Rooms = new Events();
 
     var subscriptions = [];
-    var temporary;
 
     // Compare function for sorting
     function byAlias(a, b) {
@@ -40,17 +39,6 @@
     function denied(room) {
         if (room === Rooms.selected) {
             Rooms.trigger('selected.denied', room);
-        }
-    }
-
-    function resetTemporary() {
-        if (temporary) {
-            delete Rooms.byHash[temporary.data.hash];
-            delete Rooms.byId[temporary.data.room_id];
-            if (temporary.subscription) {
-                temporary.leave();
-            }
-            temporary = null;
         }
     }
 
@@ -91,13 +79,7 @@
 
         // Если такой комнаты ещё нет, создаём её
         if (!room) {
-            room = createRoom({hash: hash, topic: '#' + hash});
-            resetTemporary(); // Выходим из предыдущей временной
-            temporary = room;
-            if (Socket.id) {
-                room.enter().then(subscribed, denied);
-            }
-            Rooms.trigger('updated');
+            room = this.add({hash: hash, topic: '#' + hash});
         }
 
         if (room.unread) {
@@ -117,7 +99,7 @@
     };
 
 
-    Rooms.reset = function(data) {
+    Rooms.reset = function(data, saveSelected) {
 
         var existing = this.byHash;
 
@@ -136,14 +118,14 @@
             }
         });
 
-        // Delete temporary room if subscriptions contain the same
-        if (temporary && this.byHash[temporary.data.hash]) {
-            temporary = null;
-        }
-
+        // If selected room was removed
         if (this.selected && !this.byHash[this.selected.data.hash]) {
-            indexRoom(this.selected);
-            temporary = this.selected;
+            if (saveSelected) {
+                subscriptions.push(this.selected);
+                indexRoom(this.selected);
+            } else {
+                this.explore();
+            }
         }
 
         subscriptions.sort(byAlias);
@@ -158,21 +140,8 @@
 
     };
 
-    Rooms.remove = function(room) {
-        if (room === temporary) {
-            resetTemporary();
-            Rooms.trigger('updated');
-        } else {
-            Rest.rooms.create(room.data.hash, 'unsubscribe');
-        }
-    };
-
-
     Rooms.forEach = function(callback) {
         subscriptions.forEach(callback, this);
-        if (temporary) {
-            callback.call(this, temporary);
-        }
     };
 
     Rooms.updateTopic = function(room, topic) {
@@ -195,19 +164,16 @@
     };
 
 
-    Socket.on('me.subscriptions.add', function(data) {
+    Rooms.add = function(data) {
 
-        var room;
+        if (this.byHash[data.hash]) {
+            return;
+        }
 
-        // If subscribed to temporary room, use it
-        if (temporary && temporary.data.hash === data.hash) {
-            room = temporary;
-            temporary = null;
-        } else {
-            room = createRoom(data);
-            if (Rooms.active) {
-                room.enter().then(subscribed, denied);
-            }
+        var room = createRoom(data);
+
+        if (Socket.id && Rooms.active) {
+            room.enter().then(subscribed, denied);
         }
 
         subscriptions.push(room);
@@ -215,24 +181,46 @@
 
         Rooms.trigger('updated');
 
+        return room;
+
+    };
+
+    Rooms.remove = function(room_id) {
+
+        var room = this.byId[room_id];
+
+        if (!room) {
+            return false;
+        }
+
+        room.leave();
+        delete this.byHash[room.data.hash];
+        delete this.byId[room.data.room_id];
+
+        subscriptions = subscriptions.filter(function(s) {
+            return s !== room;
+        });
+
+        if (room === this.selected) {
+            this.explore();
+        }
+
+        this.trigger('updated');
+
+    };
+
+    Rooms.unsubscribe = function(room) {
+        Rest.rooms.create(room.data.hash, 'unsubscribe');
+        this.remove(room.data.room_id);
+    };
+
+
+    Socket.on('me.subscriptions.add', function(data) {
+        Rooms.add(data);
     });
 
     Socket.on('me.subscriptions.remove', function(data) {
-        var room = Rooms.byId[data.room_id];
-        if (room) {
-            if (room === Rooms.selected) {
-                resetTemporary();
-                temporary = room;
-            } else {
-                room.leave();
-                delete Rooms.byHash[room.data.hash];
-                delete Rooms.byId[room.data.room_id];
-            }
-            subscriptions = subscriptions.filter(function(s) {
-                return s !== room;
-            });
-            Rooms.trigger('updated');
-        }
+        Rooms.remove(data.room_id);
     });
 
     // Come in
@@ -420,11 +408,6 @@ Rooms.pipe = function(event, callback) {
         }
     });
 };
-
-// Create rooms from me.subscriptions
-Socket.on('created', function() {
-    Rooms.reset(Me.subscriptions);
-});
 
 // New room and shuffle
 (function() {
