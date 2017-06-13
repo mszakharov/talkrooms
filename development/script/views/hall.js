@@ -25,7 +25,7 @@
 
     List.prototype.update = function(rooms) {
         this.list.empty();
-        if (rooms.length) {
+        if (rooms.length || this === myList) {
             this.list.append(rooms.map(renderRoom));
             this.elem.show();
         } else {
