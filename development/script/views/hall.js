@@ -49,14 +49,6 @@
 
     }
 
-    $hall.on('click', '.room-subscribe', function() {
-        var $room = $(this.parentNode);
-        var hash = $room.attr('data-hash');
-        var action = subscribed[hash] ? 'unsubscribe' : 'subscribe';
-        $room.addClass('room-subscribing');
-        Rest.rooms.create(hash, action);
-    });
-
     $('.hall-shuffle .link').on('click', function() {
         Rooms.shuffle();
     });
@@ -82,7 +74,6 @@
 
     function toggleSubscribed(hash, isSubscribed) {
         var $room = $hall.find('.room[data-hash="' + hash + '"]');
-        $room.removeClass('room-subscribing');
         $room.toggleClass('room-subscribed', isSubscribed);
     }
 
