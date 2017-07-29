@@ -25,6 +25,7 @@
     function createRoom(data) {
         var room = new Rooms.Room(data);
         indexRoom(room);
+        room.checkUnread();
         return room;
     }
 
@@ -111,6 +112,7 @@
             var same = existing[room_data.hash];
             if (same) {
                 same.update(room_data);
+                same.checkUnread();
                 indexRoom(same);
                 return same;
             } else {
@@ -279,11 +281,11 @@
         this.update(data.room);
         this.myRole = data.role;
         this.subscription = data.subscription;
+        this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.rolesOnline.reset(data.roles_online);
         this.rolesOnline.add(data.role);
         this.rolesWaiting.reset(data.roles_waiting || []);
         this.rolesWaiting.enabled = Boolean(data.roles_waiting);
-        this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.setState('ready');
         for (var i = 0; i < this.eventsBuffer.length; i++) {
             var event = this.eventsBuffer[i];
@@ -342,6 +344,14 @@
                 setAlias(this);
             }
             this.trigger('updated', data);
+        },
+
+        checkUnread: function() {
+            var seen = this.data.seen_message_id;
+            var last = this.data.room_last_message_id;
+            if (seen && seen < last) {
+                this.unread = true;
+            }
         },
 
         isMy: function(data) {
@@ -479,6 +489,16 @@ Rooms.pipe('room.deleted.updated', function(room, data) {
     Rooms.pipe('room.watched.updated', updateRoom);
 
 })();
+
+// Update unread messages
+Rooms.pipe('role.seen_message_id.updated', function(room, data) {
+    var wasUnread = room.unread;
+    room.data.seen_message_id = data.seen_message_id;
+    room.checkUnread();
+    if (room.unread !== wasUnread) {
+        Rooms.trigger('updated');
+    }
+});
 
 // Update roles
 (function() {
