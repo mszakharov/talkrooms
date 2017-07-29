@@ -204,16 +204,11 @@
         });
 
         if (room === this.selected) {
-            this.explore();
+            Router.push('+');
         }
 
         this.trigger('updated');
 
-    };
-
-    Rooms.unsubscribe = function(room) {
-        Rest.rooms.create(room.data.hash, 'unsubscribe');
-        this.remove(room.data.room_id);
     };
 
 

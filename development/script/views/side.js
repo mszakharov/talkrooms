@@ -47,7 +47,7 @@
     }
 
     $exit.on('click', function() {
-        Rooms.unsubscribe(Rooms.selected);
+        Rooms.remove(Rooms.selected.data.room_id);
     });
 
     Rooms.on('explore', function() {
