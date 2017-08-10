@@ -345,7 +345,9 @@
 
         checkUnread: function() {
             var seen = this.data.seen_message_id;
-            var last = this.data.room_last_message_id;
+            var last = this.filterUnread ?
+                this.data.role_last_message_id :
+                this.data.room_last_message_id;
             if (seen && seen < last) {
                 this.unread = true;
             }

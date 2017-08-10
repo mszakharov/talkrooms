@@ -49,6 +49,34 @@
 
 })();
 
+// Unread messages
+(function() {
+
+    var $options = $('#settings-subscription').find('input[name="unread-notification"]');
+
+    $options.on('click', function() {
+        var room = Rooms.selected;
+        var key = 'filter_unread_in_' + room.data.room_id;
+        if (this.value === 'me') {
+            localStorage.setItem(key, 1);
+            room.filterUnread = true;
+        } else {
+            localStorage.removeItem(key);
+            room.filterUnread = false;
+        }
+    });
+
+    Rooms.on('selected.ready', function(room) {
+        $options.eq(room.filterUnread ? 1 : 0).prop('checked', true);
+    });
+
+    Rooms.on('subscribed', function(room) {
+        var stored = localStorage.getItem('filter_unread_in_' + room.data.room_id);
+        room.filterUnread = Boolean(stored);
+    });
+
+})();
+
 // New message sound
 (function() {
 
