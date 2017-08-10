@@ -7,9 +7,12 @@
 #room-settings .popup-content {
     width: 400px;
 }
-#room-settings .section {
+.settings-section {
     padding: 2px 20px;
     border-bottom: 1px solid #E0E0E0;
+}
+.settings-section-last {
+    border-bottom: none;
 }
 /* Controls */
 #room-settings .textfield {
@@ -21,11 +24,35 @@
 #room-settings .checkbox .hint {
     margin-top: 2px;
 }
+/* Subscriptions settings */
+#settings-subscription {
+    position: relative;
+	z-index: 1;
+    border-radius: 5px;
+    background: #FFF;
+	overflow: hidden;
+	border-bottom: none;
+    box-shadow:
+    	0 0 0 1px rgba(0, 0, 0, .05),
+    	0 2px 8px rgba(0, 0, 0, .18);
+}
+#settings-subscription .settings-section {
+    border-bottom: none;
+}
+#settings-subscription .subscription-sound {
+    border-top: 1px solid #E0E0E0;
+}
+/* Admin and moderator sections */
+#settings-admin,
+#settings-alarm {
+    display: none;
+}
 /* Fileds */
 #edit-room-topic {
     font-size: 24px;
 }
 #room-settings .submit {
+    display: none;
     background: #F8F8F8;
     padding: 12px 20px;
     text-align: right;
@@ -33,8 +60,11 @@
 #room-settings button {
     padding: 5px 25px;
 }
+.settings-admin-submit {
+    display: none;
+}
 /* Login */
-#room-settings .settings-login {
+.settings-login {
     padding: 14px 20px;
     background: #f5efdc;
     border-bottom: 1px solid #d6d2c5;
@@ -48,6 +78,7 @@
 }
 /* Remove */
 .room-remove {
+    display: none;
     padding: 14px 20px;
     border-top: 1px solid #d6d2c5;
     background: #f5efdc;

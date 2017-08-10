@@ -4,7 +4,6 @@
     var Rooms = new Events();
 
     var subscriptions = [];
-    var temporary;
 
     // Compare function for sorting
     function byAlias(a, b) {
@@ -31,8 +30,11 @@
 
     function subscribed(room) {
         indexRoom(room); // reindex room_id from response
+        Rooms.trigger('subscribed', room);
         if (room === Rooms.selected) {
             Rooms.trigger('selected.ready', room);
+        } else {
+            room.checkUnread();
         }
         Rooms.trigger('updated');
     }
@@ -40,17 +42,6 @@
     function denied(room) {
         if (room === Rooms.selected) {
             Rooms.trigger('selected.denied', room);
-        }
-    }
-
-    function resetTemporary() {
-        if (temporary) {
-            delete Rooms.byHash[temporary.data.hash];
-            delete Rooms.byId[temporary.data.room_id];
-            if (temporary.subscription) {
-                temporary.leave();
-            }
-            temporary = null;
         }
     }
 
@@ -91,13 +82,7 @@
 
         // Если такой комнаты ещё нет, создаём её
         if (!room) {
-            room = createRoom({hash: hash, topic: '#' + hash});
-            resetTemporary(); // Выходим из предыдущей временной
-            temporary = room;
-            if (Socket.id) {
-                room.enter().then(subscribed, denied);
-            }
-            Rooms.trigger('updated');
+            room = this.add({hash: hash, topic: '#' + hash});
         }
 
         if (room.unread) {
@@ -117,7 +102,7 @@
     };
 
 
-    Rooms.reset = function(data) {
+    Rooms.reset = function(data, saveSelected) {
 
         var existing = this.byHash;
 
@@ -129,6 +114,7 @@
             var same = existing[room_data.hash];
             if (same) {
                 same.update(room_data);
+                same.checkUnread();
                 indexRoom(same);
                 return same;
             } else {
@@ -136,14 +122,14 @@
             }
         });
 
-        // Delete temporary room if subscriptions contain the same
-        if (temporary && this.byHash[temporary.data.hash]) {
-            temporary = null;
-        }
-
+        // If selected room was removed
         if (this.selected && !this.byHash[this.selected.data.hash]) {
-            indexRoom(this.selected);
-            temporary = this.selected;
+            if (saveSelected) {
+                subscriptions.push(this.selected);
+                indexRoom(this.selected);
+            } else {
+                this.explore();
+            }
         }
 
         subscriptions.sort(byAlias);
@@ -158,21 +144,8 @@
 
     };
 
-    Rooms.remove = function(room) {
-        if (room === temporary) {
-            resetTemporary();
-            Rooms.trigger('updated');
-        } else {
-            Rest.rooms.create(room.data.hash, 'unsubscribe');
-        }
-    };
-
-
     Rooms.forEach = function(callback) {
         subscriptions.forEach(callback, this);
-        if (temporary) {
-            callback.call(this, temporary);
-        }
     };
 
     Rooms.updateTopic = function(room, topic) {
@@ -195,19 +168,16 @@
     };
 
 
-    Socket.on('me.subscriptions.add', function(data) {
+    Rooms.add = function(data) {
 
-        var room;
+        if (this.byHash[data.hash]) {
+            return;
+        }
 
-        // If subscribed to temporary room, use it
-        if (temporary && temporary.data.hash === data.hash) {
-            room = temporary;
-            temporary = null;
-        } else {
-            room = createRoom(data);
-            if (Rooms.active) {
-                room.enter().then(subscribed, denied);
-            }
+        var room = createRoom(data);
+
+        if (Socket.id && Rooms.active) {
+            room.enter().then(subscribed, denied);
         }
 
         subscriptions.push(room);
@@ -215,24 +185,41 @@
 
         Rooms.trigger('updated');
 
+        return room;
+
+    };
+
+    Rooms.remove = function(room_id) {
+
+        var room = this.byId[room_id];
+
+        if (!room || room.isDeleted) {
+            return false;
+        }
+
+        room.leave();
+        delete this.byHash[room.data.hash];
+        delete this.byId[room.data.room_id];
+
+        subscriptions = subscriptions.filter(function(s) {
+            return s !== room;
+        });
+
+        if (room === this.selected) {
+            Router.push('+');
+        }
+
+        this.trigger('updated');
+
+    };
+
+
+    Socket.on('me.subscriptions.add', function(data) {
+        Rooms.add(data);
     });
 
     Socket.on('me.subscriptions.remove', function(data) {
-        var room = Rooms.byId[data.room_id];
-        if (room) {
-            if (room === Rooms.selected) {
-                resetTemporary();
-                temporary = room;
-            } else {
-                room.leave();
-                delete Rooms.byHash[room.data.hash];
-                delete Rooms.byId[room.data.room_id];
-            }
-            subscriptions = subscriptions.filter(function(s) {
-                return s !== room;
-            });
-            Rooms.trigger('updated');
-        }
+        Rooms.remove(data.room_id);
     });
 
     // Come in
@@ -291,10 +278,11 @@
         this.update(data.room);
         this.myRole = data.role;
         this.subscription = data.subscription;
+        this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.rolesOnline.reset(data.roles_online);
+        this.rolesOnline.add(data.role);
         this.rolesWaiting.reset(data.roles_waiting || []);
         this.rolesWaiting.enabled = Boolean(data.roles_waiting);
-        this.soundOn = Boolean(localStorage.getItem('sound_in_' + this.data.room_id));
         this.setState('ready');
         for (var i = 0; i < this.eventsBuffer.length; i++) {
             var event = this.eventsBuffer[i];
@@ -353,6 +341,16 @@
                 setAlias(this);
             }
             this.trigger('updated', data);
+        },
+
+        checkUnread: function() {
+            var seen = this.data.seen_message_id;
+            var last = this.filterUnread ?
+                this.data.role_last_message_id :
+                this.data.room_last_message_id;
+            if (seen && seen < last) {
+                this.unread = true;
+            }
         },
 
         isMy: function(data) {
@@ -420,11 +418,6 @@ Rooms.pipe = function(event, callback) {
         }
     });
 };
-
-// Create rooms from me.subscriptions
-Socket.on('created', function() {
-    Rooms.reset(Me.subscriptions);
-});
 
 // New room and shuffle
 (function() {
@@ -496,6 +489,16 @@ Rooms.pipe('room.deleted.updated', function(room, data) {
 
 })();
 
+// Update unread messages
+Rooms.pipe('role.seen_message_id.updated', function(room, data) {
+    var wasUnread = room.unread;
+    room.data.seen_message_id = data.seen_message_id;
+    room.checkUnread();
+    if (room.unread !== wasUnread) {
+        Rooms.trigger('updated');
+    }
+});
+
 // Update roles
 (function() {
 
@@ -565,14 +568,14 @@ Rooms.pipe('room.deleted.updated', function(room, data) {
 // Messages
 Rooms.pipe('message.created', function(room, data) {
     if (room.isVisible(data)) {
-        var forMe = room.isForMe(data);
+        var unread = room.filterUnread ? room.isForMe(data) : !room.isMy(data);
         if (room === Rooms.selected) {
             Talk.appendMessage(data);
-        } else if (!room.unread && !room.isMy(data)) {
+        } else if (!room.unread && unread) {
             room.unread = true;
             Rooms.trigger('updated');
         }
-        if (forMe) {
+        if (unread) {
             Rooms.trigger('notification', room);
         }
     }
@@ -599,9 +602,9 @@ Rooms.pipe('message.content.updated', function(room, data) {
         checkRank(me);
         if (me.isModerator) {
             $.require('views/moderate.js');
-            $.require('views/settings.js');
         }
         if (me.isAdmin) {
+            $.require('views/admin.js');
             $.require('views/ranks.js');
         }
     }
@@ -616,30 +619,6 @@ Rooms.pipe('message.content.updated', function(room, data) {
     });
 
     Rooms.on('selected.ready', checkMyRank);
-
-})();
-
-
-// Notification sound
-(function() {
-
-    // Disable sound on mobile devices because of audio limitations
-    if (/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent)) {
-        return false;
-    } else {
-        Rooms.soundEnabled = true;
-    }
-
-    var sound = new Sound({
-        mp3: '/script/sound/message.mp3',
-        ogg: '/script/sound/message.ogg'
-    });
-
-    Rooms.on('notification', function(room) {
-        if (Rooms.idle && room.soundOn) {
-            sound.play();
-        }
-    });
 
 })();
 

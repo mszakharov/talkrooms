@@ -70,21 +70,6 @@ var Talk = {
         overlay.fadeOut(150);
     }
 
-    function showError(code) {
-        var text = code && errors[code];
-        if (text) {
-            overlay.find('.entry-custom').html(text);
-            showOverlay('.entry-custom');
-        } else {
-            showOverlay('.entry-error');
-        }
-    }
-
-    var errors = {
-        406: 'Пожалуйста, включите куки в&nbsp;вашем браузере.',
-        402: 'Слишком много одновременных соединений. Такое бывает, если открыть много вкладок или несколько раз подряд обновить страницу.'
-    };
-
     Rooms.on('explore', function() {
         overlay.hide(); // Show lists instantly
     });
@@ -108,8 +93,6 @@ var Talk = {
     Rooms.on('shuffle.failed', function() {
         showOverlay('.search-failed');
     });
-
-    Socket.on('error', showError);
 
     overlay.find('.entry-search').on('click', function() {
         Rooms.shuffle();

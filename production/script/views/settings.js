@@ -1,271 +1,130 @@
+// Settings popup
 (function() {
+
+    var Settings = {};
 
     var toolbar = $('.header-toolbar'),
         icon = $('.toolbar-settings');
 
-    var form = $.popup('#room-settings', function() {
-        form.find('.error').remove();
-        submit.prop('disabled', false);
-        toggleControls(Rooms.selected);
+    var popup = $.popup('#room-settings', function() {
         this.fadeIn(120);
         fitPopup();
     });
 
-    var scroller = form.find('.popup-scroll');
-    var content = form.find('.popup-content');
+    var scroller = popup.find('.popup-scroll');
+    var content = popup.find('.popup-content');
 
     function fitPopup() {
         var wh = window.innerHeight;
         var ch = content.height();
         if (ch > wh - 45) {
-            form.css('top', 15);
+            popup.css('top', 15);
             scroller.height(wh - 20).scrollTop(0);
         } else {
-            form.css('top', '');
+            popup.css('top', '');
             scroller.height('');
         }
     }
 
-    function toggleControls(room) {
-        var myRole = room.myRole;
-        var isCreator = myRole.level === 80;
-        if (myRole.isAdmin) {
-            setAdminValues(room.data, isCreator);
-        }
-        toggleAlarm(room.data.level === 0);
-        showAlarm(room, Boolean(room.data.min_session_created));
-        toggleRemove(room.data.level === 80);
-        hash.parent().toggle(Boolean(isCreator && myRole.user_id));
-        closed.toggle(isCreator);
+    function hidePopup() {
+        popup.hide();
     }
-
-    function setAdminValues(data, isCreator) {
-        form.find('.settings-login').toggle(!Me.authorized && isCreator);
-        topic.val(data.topic);
-        hash.val(data.hash).removeClass('invalid');
-        searchable.prop('checked', data.searchable);
-        watched.prop('checked', data.watched);
-        levels.filter('[value="' + data.level + '"]').prop('checked', true);
-        toggleSearchable(data.level < 20);
-    }
-
-    function validateHash(value, full) {
-        if (/[^a-zA-Z\d\-+]/.test(value)) return false;
-        if (full && value.length < 3) return false;
-        if (value.length > 32) return false;
-        return true;
-    }
-
-    var topic = $('#edit-room-topic');
-    topic.on('change', function() {
-        this.value = this.value.trim();
-    });
-
-    var hash = $('#edit-room-hash');
-    hash.on('input', function() {
-        hash.toggleClass('invalid', !validateHash(this.value));
-    });
-    hash.on('change', function() {
-        var value = this.value.trim();
-        var valid = validateHash(value, true);
-        hash.toggleClass('invalid', !valid);
-        this.value = value;
-    });
-
-    var searchable = $('#edit-room-searchable'),
-        watched = $('#edit-room-watched');
-
-    function toggleSearchable(visible) {
-        searchable.closest('.section').toggle(visible);
-    }
-
-    var levels = form.find('.room-levels input');
-    var closed = levels.filter('[value="80"]').closest('.checkbox');
-
-    levels.on('click', function() {
-        var level = Number(this.value);
-        toggleAlarm(level === 0);
-        toggleSearchable(level < 20);
-        toggleRemove(level === 80);
-    });
-
-    var submit = form.find('button[type="submit"]');
 
     icon.on('click', function() {
-        if (!toolbar.data('wasDragged')) form.show();
+        if (!toolbar.data('wasDragged')) popup.show();
     });
 
-    form.on('submit', function(event) {
-        event.preventDefault();
-        if (!Rooms.selected.myRole.isAdmin) {
-            form.hide();
-        } else if (!submit.prop('disabled')) {
-            updateRoom(Rooms.selected);
-        }
-    });
+    Rooms.on('select', hidePopup);
+    Rooms.on('explore', hidePopup);
 
-    function filterChanged(current, data) {
-        var empty = true;
-        var changed = {};
-        for (var key in data) {
-            var value = data[key];
-            if (value !== current[key]) {
-                changed[key] = value;
-                empty = false;
-            }
-        }
-        if (!empty) {
-            return changed;
-        }
-    }
+    Settings.hide = function() {
+        popup.hide();
+    };
 
-    function updateRoom(room) {
-        var data = filterChanged(room.data, {
-            topic: topic.val(),
-            hash: hash.val(),
-            searchable: searchable.prop('checked') ? 1 : 0,
-            watched: watched.prop('checked') ? 1 : 0,
-            level: Number(levels.filter(':checked').attr('value') || room.data.level)
-        });
-        if (!data) {
-            form.hide();
-        } else if (data.topic === '') {
-            topic.val().focus();
-        } else if (data.hash && !validateHash(data.hash, true)) {
-            hash.focus();
-        } else {
-            submit.prop('disabled', true);
-            Rest.rooms
-                .update(room.data.hash, data)
-                .always(function() {
-                    submit.prop('disabled', false);
-                })
-                .done(function() {
-                    form.hide();
-                })
-                .fail(showError);
-        }
-    }
+    Settings.find = function(selector) {
+        return content.find(selector);
+    };
 
-    function showError(error) {
-        if (error.status === 409) {
-            var context = hash.parent();
-            context.append('<p class="error">Увы, этот адрес уже занят, выберите другой</p>');
-            hash.one('input', function() {
-                context.find('.error').remove();
-            });
-        }
-    }
-
-    var alarmOff = form.find('.alarm-off');
-    var alarmOn = form.find('.alarm-on');
-    var alarmTime = alarmOn.find('.alarm-time');
-
-    function toggleAlarm(visible) {
-        alarmOff.parent().toggle(visible);
-    }
-
-    function getHumanTime(iso) {
-        return iso ? 'с ' + (new Date(iso)).toHumanTime() : '';
-    }
-
-    function showAlarm(room, on) {
-        alarmOff.toggle(!on);
-        alarmOn.toggle(on);
-        if (on) {
-            alarmOn.find('.alarm-time').text(getHumanTime(room.data.min_session_created));
-        }
-    }
-
-    function showAlarmOn() {
-        showAlarm(Rooms.selected, true);
-    }
-
-    function showAlarmOff() {
-        showAlarm(Rooms.selected, false);
-    }
-
-    function setAlarm(on) {
-        var room = Rooms.selected;
-        return Rest.rooms.update(room.data.hash, {
-            min_session_created: on
-        });
-    }
-
-    alarmOff.find('.button').on('click', function() {
-        setAlarm(true).done(showAlarmOn);
-    });
-
-    alarmOn.find('.alarm-cancel').on('click', function() {
-        setAlarm(false).done(showAlarmOff);
-    });
-
-    var remove = content.find('.room-remove');
-    remove.find('.link').on('click', function() {
-        var room = Rooms.selected;
-        Rest.rooms.update(room.data.hash, {deleted: true}).then(hide);
-    });
-
-    function toggleRemove(visible) {
-        var me = Rooms.selected.myRole;
-        remove.toggle(visible && me.level === 80);
-    }
-
-    function toggleSettings(room) {
-        var me = room.myRole;
-        var enabled = Boolean(me.isAdmin || (me.isModerator && room.data.level === 0));
-        icon.toggle(enabled);
-        if (!enabled) form.hide();
-    }
-
-    function toggleAdminSections(room) {
-        form.find('.admin-sections').toggle(room.myRole.isAdmin);
-        if (room.myRole.isAdmin) {
-            setAdminValues(room.data);
-        }
-    }
-
-    Rooms.on('my.rank.updated', function(room) {
-        toggleAdminSections(room);
-        toggleSettings(room);
-    });
-
-    Rooms.on('selected.ready', function(room) {
-        toggleAdminSections(room);
-        toggleSettings(room);
-    });
-
-    Rooms.on('selected.level.updated', function(room) {
-        if (room.myRole.isModerator) {
-            toggleSettings(room);
-        }
-    });
-
-    Rooms.on('selected.alarm.updated', function(room) {
-        if (room.myRole.isModerator) {
-            showAlarm(Boolean(room.data.min_session_created));
-        }
-    });
-
-    function hide() {
-        form.hide();
-    }
-
-    Rooms.on('select', hide);
-    Rooms.on('explore', hide);
-
-    if (Rooms.selected && Rooms.selected.myRole) {
-        toggleAdminSections(Rooms.selected);
-        toggleSettings(Rooms.selected);
-    }
+    window.Settings = Settings;
 
 })();
 
-// Restore deleted room
-$('.entry-restore').on('click', function() {
-    var room = Rooms.selected;
-    Rooms.restore(room).fail(function() {
-        room.leave();
-        alert('Восстановление уже невозможно');
+// Unread messages
+(function() {
+
+    var $options = $('#settings-subscription').find('input[name="unread-notification"]');
+
+    $options.on('click', function() {
+        var room = Rooms.selected;
+        var key = 'filter_unread_in_' + room.data.room_id;
+        if (this.value === 'me') {
+            localStorage.setItem(key, 1);
+            room.filterUnread = true;
+        } else {
+            localStorage.removeItem(key);
+            room.filterUnread = false;
+        }
     });
-});
+
+    Rooms.on('selected.ready', function(room) {
+        $options.eq(room.filterUnread ? 1 : 0).prop('checked', true);
+    });
+
+    Rooms.on('subscribed', function(room) {
+        var stored = localStorage.getItem('filter_unread_in_' + room.data.room_id);
+        room.filterUnread = Boolean(stored);
+    });
+
+})();
+
+// New message sound
+(function() {
+
+    var sound;
+
+    var $sound = $('#unread-sound');
+
+    // Disable sound on mobile devices because of audio limitations
+    if (/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent)) {
+        $sound.closest('.settings-section').hide();
+        return false;
+    }
+
+    function loadSound(enabled) {
+        if (!sound) sound = new Sound({
+            mp3: '/script/sound/message.mp3',
+            ogg: '/script/sound/message.ogg'
+        });
+    }
+
+    Rooms.on('selected.ready', function(room) {
+        $sound.prop('checked', room.soundEnabled);
+    });
+
+    Rooms.on('subscribed', function(room) {
+        var stored = localStorage.setItem('sound_in_' + room.data.room_id, 1);
+        room.soundEnabled = Boolean(stored);
+        if (room.soundEnabled) {
+            loadSound();
+        }
+    });
+
+    Rooms.on('notification', function(room) {
+        if (room.soundEnabled && Rooms.idle) {
+            sound.play();
+        }
+    });
+
+    $sound.on('click', function() {
+        var room = Rooms.selected;
+        room.soundEnabled = this.checked;
+        if (this.checked) {
+            loadSound();
+            localStorage.setItem('sound_in_' + room.data.room_id, 1);
+            sound.play(); // Sound demo
+        } else {
+            localStorage.removeItem('sound_in_' + room.data.room_id);
+        }
+    });
+
+})();

@@ -1,6 +1,7 @@
 function Events() {
 
     var events = {};
+    var slice = Array.prototype.slice;
 
     this.on = function(type, callback) {
         events[type] = [callback].concat(events[type] || []);
@@ -17,11 +18,17 @@ function Events() {
         }
     };
 
-    this.trigger = function(type) {
+    this.trigger = function(type, data) {
         var list = events[type];
-        var args = Array.prototype.slice.call(arguments, 1);
-        for (var i = list && list.length; i--;) {
-            list[i].apply(this, args);
+        if (list) {
+            var i = list.length;
+            if (arguments.length > 2) {
+                var args = slice.call(arguments, 1);
+                while (i--) list[i].apply(this, args);
+            } else {
+                // Use faster call for most common single argument
+                while (i--) list[i].call(this, data);
+            }
         }
     };
 

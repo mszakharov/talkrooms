@@ -106,11 +106,9 @@ var Me = new Events();
         Me.recent_rooms = data.recent_rooms || [];
     }
 
-    Me.reload = function() {
+    Me.fetch = function() {
         return this.ready = Rest.sessions.get('me').done(update);
     };
-
-    Me.reload();
 
 })();
 
@@ -188,14 +186,14 @@ Me.isHidden = function(data) {
     function reconnect() {
         clearTimeout(connectionTimer);
         Rest.sockets.get(Socket.id)
-            .done(openSocket)
-            .fail(socketLost);
+            .then(openSocket)
+            .catch(socketLost);
     }
 
     function socketLost(xhr) {
         if (xhr.status == 404) {
             Socket.id = null;
-            Me.reload().then(createSocket);
+            Socket.trigger('lost');
         } else {
             connectLater();
         }
@@ -207,21 +205,12 @@ Me.isHidden = function(data) {
         connectionTimer = setTimeout(reconnect, delay * 1000);
     }
 
-    function createSocket() {
-        return Rest.sockets.create().done(socketCreated).fail(socketFailed);
-    }
-
     function socketCreated(socket) {
         token = socket.token;
         Socket.id = socket.socket_id;
         Socket.trigger('created');
         openSocket();
     }
-
-    function socketFailed(xhr) {
-        Socket.trigger('error', xhr.status);
-    }
-
 
     function onOpen() {
         closedInstantly = 0;
@@ -244,13 +233,51 @@ Me.isHidden = function(data) {
         Socket.trigger(event[0], event[1]);
     }
 
-    Me.ready.then(createSocket);
+    Socket.create = function() {
+        return Rest.sockets.create()
+            .then(socketCreated);
+    };
 
     $window.on('beforeunload', disconnect);
 
     window.Socket = Socket;
 
 })();
+
+// Get session and create socket
+(function() {
+
+    var errors = {
+        406: 'Пожалуйста, включите куки в&nbsp;вашем браузере',
+        402: 'Слишком много одновременных соединений',
+        500: 'Ведутся технические работы'
+    };
+
+    function prepare(saveSelected) {
+        Me.fetch()
+            .then(Socket.create)
+            .then(function() {
+                Rooms.reset(Me.subscriptions, saveSelected);
+            })
+            .catch(showError);
+    }
+
+    function showError(xhr) {
+        $('<div class="fatal-error"></div>')
+            .html(xhr.status && errors[xhr.status] || errors[500])
+            .appendTo('body');
+    }
+
+    // when the page loads
+    prepare(true);
+
+    // if socket has expired
+    Socket.on('lost', function() {
+        prepare();
+    });
+
+})();
+
 
 // Debug socket events
 (function() {

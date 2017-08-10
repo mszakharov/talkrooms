@@ -79,7 +79,7 @@
     }
 
     section.find('.about-action .link').on('click', function() {
-        Room.create().fail(failed);
+        Rooms.create().fail(failed);
     });
 
 })();

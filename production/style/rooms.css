@@ -297,27 +297,6 @@ html.in-rooms {
 .toolbar-tools.hidden {
     display: none;
 }
-/* Message sound */
-.toolbar-sound {
-    -webkit-flex-shrink: 0;
-        -ms-flex-negative: 0;
-            flex-shrink: 0;
-    width: 24px;
-    height: 30px;
-    margin-top: 12px;
-    padding: 8px 7px 0;
-    color: #A3A3A3;
-    cursor: pointer;
-}
-.toolbar-sound-bell {
-    fill: none;
-}
-.toolbar-sound-on {
-    color: #479BCC;
-}
-.toolbar-sound-on .toolbar-sound-bell {
-    fill: #479BCC;
-}
 /* Filters */
 .toolbar-filter {
     -webkit-flex-shrink: 0;
@@ -352,7 +331,6 @@ html.in-rooms {
 }
 /* Room icons */
 .toolbar-settings {
-    display: none;
     -webkit-flex-shrink: 0;
         -ms-flex-negative: 0;
             flex-shrink: 0;
@@ -966,23 +944,15 @@ html.in-rooms {
 }
 .room {
     position: relative;
-    margin: 0 0 14px 24px;
+    margin: 0 0 14px 16px;
     padding: 0;
 }
-.room-subscribe {
+.room:before {
+    content: '#';
     position: absolute;
-    top: 3px;
-    left: -24px;
-    width: 24px;
-    height: 16px;
-    background: url('hall/subscribe.svg') no-repeat;
-    cursor: pointer;
-}
-.room-subscribed .room-subscribe {
-    background-position: 0 -40px;
-}
-.room-subscribing .room-subscribe {
-    background-position: 0 -20px;
+    top: 1px;
+    left: -16px;
+    color: #838180;
 }
 .hall a {
     border-bottom: 1px solid rgba(27, 111, 133, .5);
@@ -1034,6 +1004,19 @@ html.in-rooms {
     color: #19778F;
     text-decoration: none;
 }
+/* Unread messages icon */
+.subscription-unread:after {
+    content: '';
+    position: absolute;
+    right: 19px;
+    top: 13px;
+    width: 11px;
+    height: 11px;
+    border: 1px solid #D7AF51;
+    border-radius: 7px;
+    background: #FACF69;
+}
+/* Highlight selected room */
 .subscription-selected {
     margin-left: 13px;
     padding-left: 13px;
@@ -1052,16 +1035,9 @@ html.in-rooms {
 .subscription-selected a {
     cursor: default;
 }
-.subscription-unread:after {
-    content: '';
-    position: absolute;
-    right: 19px;
-    top: 13px;
-    width: 11px;
-    height: 11px;
-    border: 1px solid #D7AF51;
-    border-radius: 7px;
-    background: #FACF69;
+/* Prevent unread icon in selected room */
+.subscription-selected:after {
+    display: none;
 }
 .subscription-exit {
     position: absolute;
