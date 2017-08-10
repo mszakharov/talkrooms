@@ -52,8 +52,7 @@
 // New message sound
 (function() {
 
-    var sound,
-        soundEnabled;
+    var sound;
 
     var $sound = $('#unread-sound');
 
@@ -63,39 +62,40 @@
         return false;
     }
 
-    function toggleSound(enabled) {
-        if (enabled === soundEnabled) return;
-        if (enabled) {
-            if (!sound) sound = new Sound({
-                mp3: '/script/sound/message.mp3',
-                ogg: '/script/sound/message.ogg'
-            });
-            //Room.on('talk.updated', notify);
-            $sound.prop('checked', true);
-        } else {
-            //Room.off('talk.updated', notify);
-            $sound.prop('checked', false);
+    function loadSound(enabled) {
+        if (!sound) sound = new Sound({
+            mp3: '/script/sound/message.mp3',
+            ogg: '/script/sound/message.ogg'
+        });
+    }
+
+    Rooms.on('selected.ready', function(room) {
+        $sound.prop('checked', room.soundEnabled);
+    });
+
+    Rooms.on('subscribed', function(room) {
+        var stored = localStorage.setItem('sound_in_' + room.data.room_id, 1);
+        room.soundEnabled = Boolean(stored);
+        if (room.soundEnabled) {
+            loadSound();
         }
-        soundEnabled = enabled;
-    }
+    });
 
-    function notify() {
-        if (Room.idle) sound.play();
-    }
-
-    Rooms.on('select', function(room) {
-        if (room.data.room_id) {
-            var stored = localStorage.getItem('sound_in_' + room.data.room_id);
-            toggleSound(Boolean(stored));
+    Rooms.on('notification', function(room) {
+        if (room.soundEnabled && Rooms.idle) {
+            sound.play();
         }
     });
 
     $sound.on('click', function() {
-        toggleSound(this.checked);
-        if (soundEnabled) {
-            localStorage.setItem('sound_in_' + Room.data.room_id, 1);
+        var room = Rooms.selected;
+        room.soundEnabled = this.checked;
+        if (this.checked) {
+            loadSound();
+            localStorage.setItem('sound_in_' + room.data.room_id, 1);
+            sound.play(); // Sound demo
         } else {
-            localStorage.removeItem('sound_in_' + Room.data.room_id);
+            localStorage.removeItem('sound_in_' + room.data.room_id);
         }
     });
 

@@ -25,12 +25,13 @@
     function createRoom(data) {
         var room = new Rooms.Room(data);
         indexRoom(room);
-        room.checkUnread();
         return room;
     }
 
     function subscribed(room) {
         indexRoom(room); // reindex room_id from response
+        Rooms.trigger('subscribed', room);
+        room.checkUnread();
         if (room === Rooms.selected) {
             Rooms.trigger('selected.ready', room);
         }
@@ -564,14 +565,14 @@ Rooms.pipe('role.seen_message_id.updated', function(room, data) {
 // Messages
 Rooms.pipe('message.created', function(room, data) {
     if (room.isVisible(data)) {
-        var forMe = room.isForMe(data);
+        var unread = room.filterUnread ? room.isForMe(data) : !room.isMy(data);
         if (room === Rooms.selected) {
             Talk.appendMessage(data);
-        } else if (!room.unread && !room.isMy(data)) {
+        } else if (!room.unread && unread) {
             room.unread = true;
             Rooms.trigger('updated');
         }
-        if (forMe) {
+        if (unread) {
             Rooms.trigger('notification', room);
         }
     }
@@ -615,30 +616,6 @@ Rooms.pipe('message.content.updated', function(room, data) {
     });
 
     Rooms.on('selected.ready', checkMyRank);
-
-})();
-
-
-// Notification sound
-(function() {
-
-    // Disable sound on mobile devices because of audio limitations
-    if (/android|blackberry|iphone|ipad|ipod|mini|mobile/i.test(navigator.userAgent)) {
-        return false;
-    } else {
-        Rooms.soundEnabled = true;
-    }
-
-    var sound = new Sound({
-        mp3: '/script/sound/message.mp3',
-        ogg: '/script/sound/message.ogg'
-    });
-
-    Rooms.on('notification', function(room) {
-        if (Rooms.idle && room.soundOn) {
-            sound.play();
-        }
-    });
 
 })();
 

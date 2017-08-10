@@ -28,7 +28,6 @@
 
 /* Subscriptions settings */
 #settings-subscription {
-    display: none;
     position: relative;
 	z-index: 1;
     border-radius: 5px;
