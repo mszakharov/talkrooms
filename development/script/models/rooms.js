@@ -191,7 +191,7 @@
 
         var room = this.byId[room_id];
 
-        if (!room) {
+        if (!room || room.isDeleted) {
             return false;
         }
 

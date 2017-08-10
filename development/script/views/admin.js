@@ -147,7 +147,11 @@
 
     remove.find('.link').on('click', function() {
         var room = Rooms.selected;
-        Rest.rooms.update(room.data.hash, {deleted: true}).then(hide);
+        Rest.rooms
+            .update(room.data.hash, {deleted: true})
+            .then(function() {
+                Settings.hide();
+            });
     });
 
     Rooms.on('my.rank.updated', toggleControls);
