@@ -67,6 +67,76 @@
 
 })();
 
+
+// Alarm section in room settings
+(function() {
+
+    var $section = $('#settings-alarm');
+
+    var alarmOff = $section.find('.alarm-off');
+    var alarmOn = $section.find('.alarm-on');
+    var alarmTime = alarmOn.find('.alarm-time');
+
+    function toggleAlarm(room) {
+        var visible = room.myRole.isModerator && room.data.level === 0;
+        if (visible) {
+            showAlarm(room, Boolean(room.data.min_session_created));
+        }
+        $section.toggle(visible);
+    }
+
+    function getHumanTime(iso) {
+        return iso ? 'с ' + (new Date(iso)).toHumanTime() : '';
+    }
+
+    function showAlarm(room, on) {
+        alarmOff.toggle(!on);
+        alarmOn.toggle(on);
+        if (on) {
+            alarmOn.find('.alarm-time').text(getHumanTime(room.data.min_session_created));
+        }
+    }
+
+    function showAlarmOn() {
+        showAlarm(Rooms.selected, true);
+    }
+
+    function showAlarmOff() {
+        showAlarm(Rooms.selected, false);
+    }
+
+    function setAlarm(on) {
+        var room = Rooms.selected;
+        return Rest.rooms.update(room.data.hash, {
+            min_session_created: on
+        });
+    }
+
+    alarmOff.find('.button').on('click', function() {
+        setAlarm(true).done(showAlarmOn);
+    });
+
+    alarmOn.find('.alarm-cancel').on('click', function() {
+        setAlarm(false).done(showAlarmOff);
+    });
+
+    Rooms.on('selected.alarm.updated', function(room) {
+        if (room.myRole.isModerator) {
+            showAlarm(room, Boolean(room.data.min_session_created));
+        }
+    });
+
+    Rooms.on('selected.level.updated', toggleAlarm);
+    Rooms.on('my.rank.updated', toggleAlarm);
+    Rooms.on('selected.ready', toggleAlarm);
+
+    if (Rooms.selected && Rooms.selected.myRole) {
+        toggleAlarm(Rooms.selected);
+    }
+
+})();
+
+
 // Whip sound
 (function() {
 
@@ -95,7 +165,7 @@
 
 })();
 
-// Moderate section
+// Moderate section in profile
 (function() {
 
     var MODERATOR = 50;

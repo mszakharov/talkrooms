@@ -53,12 +53,6 @@
     <div class="header-toolbar-scroll">
         <div class="toolbar-title changing"></div>
         <div class="toolbar-tools hidden">
-            <div class="toolbar-sound" title="Звук нового сообщения в неактивном окне">
-                <svg width="24" height="24">
-                    <path class="toolbar-sound-bell" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4.5,18 C6.5,16,7,13,7,9.25 C7,3,17,3,17,9.25 C17,13,17.5,16,19.5,18 z"/>
-                    <path fill="currentColor" d="M8.837,20 A3.5,3.5,0,0,0,15.163,20 z M10.94,4.56 a1.5,1.5,0,1,1,2.12,0 z"/>
-                </svg>
-            </div>
             <div class="toolbar-filter filter-my" title="Только сообщения для меня и мои">Со мной</div>
             <div class="toolbar-settings" title="Настройки комнаты"></div>
         </div>
@@ -323,70 +317,91 @@
 	            <label for="rank-guest">Гость</label>
 	        </div>
         </form>
-
     </div>
 
 </div>
 </div>
 </div>
 
-<form id="room-settings" class="popup" novalidate>
+<div id="room-settings" class="popup">
 <div class="popup-scroll">
 <div class="popup-content">
-    <div class="admin-sections">
-    <div class="section settings-login">
-        <p class="login-links">Войдите через
-            <a class="login-fb" href="/api/login/facebook">Фейсбук</a>,
-            <a class="login-vk" href="/api/login/vk">Вконтакте</a> или
-            <a class="login-ok" href="/api/login/ok">Одноклассники</a>
-        </p>
-        <p class="hint">Без&nbsp;авторизации вы потеряете доступ к&nbsp;управлению комнатой, если сбросите историю браузера</p>
-    </div>
-    <div class="section">
-        <div class="textfield">
-            <label for="edit-room-topic">Название комнаты</label>
-            <input type="text" id="edit-room-topic" maxlength="64">
+
+    <div id="settings-subscription">
+        <div class="settings-section">
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="unread-notification" id="unread-all" value="all"></span>
+                <label for="unread-all">Отслеживать все&nbsp;новые сообщения в&nbsp;этой&nbsp;комнате</label>
+            </div>
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="unread-notification" id="unread-me" value="me"></span>
+                <label for="unread-me">Только сообщения мне</label>
+            </div>
         </div>
-        <div class="textfield">
-            <label for="edit-room-hash">Адрес комнаты</label>
-            <input type="text" id="edit-room-hash" maxlength="32" pattern="[a-zA-Z\d]">
-            <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
-        </div>
-    </div>
-    <div class="section room-levels">
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-all" value="0"></span>
-            <label for="room-level-all">Вход для всех</label>
-        </div>
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-authorized" value="10"></span>
-            <label for="room-level-authorized">Нужна авторизация</label>
-            <p class="hint">Неавторизованных посетителей можно впустить индивидуально</p>
-        </div>
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-personal" value="20"></span>
-            <label for="room-level-personal">По приглашению</label>
-            <p class="hint">Индивидуально для каждого посетителя</p>
-        </div>
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-admin" value="80"></span>
-            <label for="room-level-admin">Только я</label>
+        <div class="settings-section subscription-sound">
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="checkbox" id="unread-sound"></span>
+                <label for="unread-sound">Звук нового сообщения</label>
+            </div>
         </div>
     </div>
-    <div class="section">
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="checkbox" id="edit-room-searchable"></span>
-            <label for="edit-room-searchable">Случайные гости</label>
-            <p class="hint">Когда комната не&nbsp;пуста, в&nbsp;неё через поиск комнат будут приходить случайные собеседники</p>
+
+    <form id="settings-admin" novalidate>
+        <div class="settings-section settings-login">
+            <p class="login-links">Войдите через
+                <a class="login-fb" href="/api/login/facebook">Фейсбук</a>,
+                <a class="login-vk" href="/api/login/vk">Вконтакте</a> или
+                <a class="login-ok" href="/api/login/ok">Одноклассники</a>
+            </p>
+            <p class="hint">Без&nbsp;авторизации вы потеряете доступ к&nbsp;управлению комнатой, если сбросите историю браузера</p>
         </div>
-        <div class="checkbox">
-            <span class="checkbox-input"><input type="checkbox" id="edit-room-watched"></span>
-            <label for="edit-room-watched">Фильтр сообщений</label>
-            <p class="hint">Новички не смогут писать сообщения с&nbsp;флудом, матом или&nbsp;ссылками</p>
+        <div class="settings-section">
+            <div class="textfield">
+                <label for="edit-room-topic">Название комнаты</label>
+                <input type="text" id="edit-room-topic" maxlength="64">
+            </div>
+            <div class="textfield">
+                <label for="edit-room-hash">Адрес комнаты</label>
+                <input type="text" id="edit-room-hash" maxlength="32" pattern="[a-zA-Z\d]">
+                <p class="hint">Латинские буквы, цифры, +&nbsp;и&nbsp;-, не&nbsp;меньше 3&nbsp;символов</p>
+            </div>
         </div>
-    </div>
-    </div>
-    <div class="section">
+        <div class="settings-section room-levels">
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-all" value="0"></span>
+                <label for="room-level-all">Вход для всех</label>
+            </div>
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-authorized" value="10"></span>
+                <label for="room-level-authorized">Нужна авторизация</label>
+                <p class="hint">Неавторизованных посетителей можно впустить индивидуально</p>
+            </div>
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-personal" value="20"></span>
+                <label for="room-level-personal">По приглашению</label>
+                <p class="hint">Индивидуально для каждого посетителя</p>
+            </div>
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="radio" name="room-level" id="room-level-admin" value="80"></span>
+                <label for="room-level-admin">Только я</label>
+            </div>
+        </div>
+        <div class="settings-section">
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="checkbox" id="edit-room-searchable"></span>
+                <label for="edit-room-searchable">Случайные гости</label>
+                <p class="hint">Когда комната не&nbsp;пуста, в&nbsp;неё через поиск комнат будут приходить случайные собеседники</p>
+            </div>
+            <div class="checkbox">
+                <span class="checkbox-input"><input type="checkbox" id="edit-room-watched"></span>
+                <label for="edit-room-watched">Фильтр сообщений</label>
+                <p class="hint">Новички не смогут писать сообщения с&nbsp;флудом, матом или&nbsp;ссылками</p>
+            </div>
+        </div>
+        <button class="settings-admin-submit" type="submit">Готово</button>
+    </form>
+
+    <div class="settings-section" id="settings-alarm">
         <div class="alarm-off">
             <div class="button">Объявить тревогу</div>
             <p class="hint">Нарушители в&nbsp;игноре не&nbsp;смогут зайти под&nbsp;другим именем</p>
@@ -396,12 +411,15 @@
             <p class="hint">В&nbsp;комнату не&nbsp;могут войти неавторизованные посетители, открывшие этот сайт впервые. Это&nbsp;помешает нарушителям обойти игнор</p>
         </div>
     </div>
+
     <div class="submit">
-        <button type="submit">Готово</button>
+        <button>Готово</button>
     </div>
+
     <div class="room-remove">
         <span class="link">Удалить комнату</span>
     </div>
+
 </div>
 </div>
 </form>
@@ -460,6 +478,7 @@
 <script src="/script/views/hall.js"></script>
 <script src="/script/views/talk.js"></script>
 <script src="/script/views/reply.js"></script>
+<script src="/script/views/settings.js"></script>
 <script src="/script/views/profile.js"></script>
 
 <script>

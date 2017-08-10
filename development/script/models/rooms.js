@@ -598,9 +598,9 @@ Rooms.pipe('message.content.updated', function(room, data) {
         checkRank(me);
         if (me.isModerator) {
             $.require('views/moderate.js');
-            $.require('views/settings.js');
         }
         if (me.isAdmin) {
+            $.require('views/admin.js');
             $.require('views/ranks.js');
         }
     }
