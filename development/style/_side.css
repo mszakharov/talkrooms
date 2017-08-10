@@ -36,6 +36,20 @@
     text-decoration: none;
 }
 
+/* Unread messages icon */
+.subscription-unread::after {
+    content: '';
+    position: absolute;
+    right: 19px;
+    top: 13px;
+    width: 11px;
+    height: 11px;
+    border: 1px solid #D7AF51;
+    border-radius: 7px;
+    background: #FACF69;
+}
+
+/* Highlight selected room */
 .subscription-selected {
     margin-left: 13px;
     padding-left: 13px;
@@ -54,16 +68,9 @@
     cursor: default;
 }
 
-.subscription-unread::after {
-    content: '';
-    position: absolute;
-    right: 19px;
-    top: 13px;
-    width: 11px;
-    height: 11px;
-    border: 1px solid #D7AF51;
-    border-radius: 7px;
-    background: #FACF69;
+/* Prevent unread icon in selected room */
+.subscription-selected::after {
+    display: none;
 }
 
 .subscription-exit {

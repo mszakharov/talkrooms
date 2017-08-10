@@ -31,9 +31,10 @@
     function subscribed(room) {
         indexRoom(room); // reindex room_id from response
         Rooms.trigger('subscribed', room);
-        room.checkUnread();
         if (room === Rooms.selected) {
             Rooms.trigger('selected.ready', room);
+        } else {
+            room.checkUnread();
         }
         Rooms.trigger('updated');
     }
