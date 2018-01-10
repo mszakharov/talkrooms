@@ -1,0 +1,68 @@
+.content {
+    margin: 0 auto;
+    padding: 40px 40px 60px;
+    max-width: 800px;
+}
+
+h1 {
+    margin: 0 0 20px;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 38px;
+}
+
+.privacy {
+    margin-top: 24px;
+    margin-left: 0;
+    padding-left: 0;
+}
+.privacy ol {
+    margin-left: 0;
+    padding-left: 0;
+    margin-top: 6px;
+}
+.privacy ol ol {
+    margin-left: 2em;
+}
+.privacy li {
+    margin: 0 0 24px;
+    font-size: 24px;
+    line-height: 26px;
+}
+.privacy li li {
+    margin: 0 0 6px;
+    font-size: 17px;
+    line-height: 21px;
+}
+
+/* Убираем дефолтную нумерацию */
+li {
+    list-style-type: none;
+}
+
+/* Нумерация первого уровня */
+ol {
+    counter-reset: list1;
+}
+ol li:before {
+    counter-increment: list1;
+    content: counter(list1) ". ";
+}
+
+/* Нумерация второго уровня */
+ol ol {
+    counter-reset: list2;
+}
+ol ol li:before {
+    counter-increment: list2;
+    content: counter(list1) "." counter(list2) ". ";
+}
+
+/* Нумерация третьего уровня */
+ol ol ol {
+    counter-reset: list3;
+}
+ol ol ol li:before {
+    counter-increment: list3;
+    content: counter(list1) "." counter(list2) "." counter(list3) ". ";
+}
