@@ -39,6 +39,7 @@ gulp.task('html', function() {
 gulp.task('index', function() {
     return gulp
         .src([
+            'development/privacy.html',
             'development/robots.txt',
             'development/*.png'
         ])
