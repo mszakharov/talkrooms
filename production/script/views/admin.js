@@ -13,6 +13,8 @@
     var submit = Settings.find('.submit button');
     var remove = Settings.find('.room-remove');
 
+    searchable.closest('.checkbox').hide();
+
     function toggleControls(room) {
         var myRole = room.myRole;
         var isCreator = myRole.level === 80;
@@ -75,7 +77,7 @@
         var data = filterChanged(room.data, {
             topic: topic.val(),
             hash: hash.val(),
-            searchable: searchable.prop('checked') ? 1 : 0,
+            //searchable: searchable.prop('checked') ? 1 : 0,
             watched: watched.prop('checked') ? 1 : 0,
             level: Number(levels.filter(':checked').attr('value') || room.data.level)
         });
