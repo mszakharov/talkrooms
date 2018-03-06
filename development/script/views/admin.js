@@ -13,7 +13,7 @@
     var submit = Settings.find('.submit button');
     var remove = Settings.find('.room-remove');
 
-    searchable.closest('.checkbox').hide();
+    searchable.prop('disabled', true);
 
     function toggleControls(room) {
         var myRole = room.myRole;
@@ -37,6 +37,7 @@
         topic.val(data.topic);
         hash.val(data.hash).removeClass('invalid');
         searchable.prop('checked', data.searchable);
+        searchable.closest('.checkbox').toggle(Boolean(data.searchable));
         watched.prop('checked', data.watched);
         levels.filter('[value="' + data.level + '"]').prop('checked', true);
         toggleSearchable(data.level < 20);
