@@ -124,7 +124,7 @@ Me.isHidden = function(data) {
 (function() {
 
     var notice;
-    var version = 38;
+    var version = 39;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
