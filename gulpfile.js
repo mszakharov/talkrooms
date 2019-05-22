@@ -40,6 +40,7 @@ gulp.task('index', function() {
     return gulp
         .src([
             'development/privacy.html',
+            'development/terms.html',
             'development/robots.txt',
             'development/*.png'
         ])
