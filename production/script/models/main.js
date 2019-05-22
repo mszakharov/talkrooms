@@ -95,6 +95,7 @@ var Me = new Events();
     function update(data) {
         Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
+        Me.provider_id = data.provider_id;
         Me.ignores = data.ignores;
         Me.subscriptions = data.subscriptions;
         Me.checkVersion(data.talkrooms);
@@ -123,7 +124,7 @@ Me.isHidden = function(data) {
 (function() {
 
     var notice;
-    var version = 38;
+    var version = 39;
 
     function showNotice(description) {
         notice = $('<div class="updated-notice"></div>')
