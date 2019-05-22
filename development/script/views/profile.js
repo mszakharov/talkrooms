@@ -145,8 +145,7 @@ Profile.send = function(data) {
 
     var $section = $('#profile-view');
 
-    var $social = $section.find('.profile-social'),
-        $photo = $section.find('.profile-photo'),
+    var $photo = $section.find('.profile-photo'),
         $userpic = $section.find('.profile-userpic'),
         $nickname = $section.find('.profile-nickname'),
         $status = $section.find('.profile-status');
@@ -172,13 +171,6 @@ Profile.send = function(data) {
             $status.html(Rooms.Roles.formatStatus(role.status)).show();
         } else {
             $status.hide().text('');
-        }
-        if (role.profile_url && Me.authorized) {
-            $social.attr('href', role.profile_url);
-            $social.attr('title', matchTitle(role.profile_url));
-            $social.show();
-        } else {
-            $social.hide();
         }
     }
 
@@ -317,7 +309,7 @@ Profile.send = function(data) {
     var status = $('#my-status');
 
     var photo = form.find('.my-photo');
-    var login = /(facebook|vk|ok)/;
+    var login = ['facebook', 'vk', 'ok'];
 
     var roomUrl = /http\S+talkrooms.ru\/(#[\w\-+]+)/;
 
@@ -352,8 +344,8 @@ Profile.send = function(data) {
         var role = Profile.role;
         nickname.val(role.nickname);
         status.val(role.status);
-        if (role.profile_url) {
-            photo.find('a').attr('href', '/api/login/' + role.profile_url.match(login)[1]);
+        if (Me.provider_id != null) {
+            photo.find('a').attr('href', '/api/login/' + login[Me.provider_id]);
             photo.css('background-image', role.photo ? String.mix('url("/photos/$1")', role.photo) : '');
             photo.show();
         } else {

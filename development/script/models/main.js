@@ -95,6 +95,7 @@ var Me = new Events();
     function update(data) {
         Me.rand_nickname = Boolean(data.rand_nickname);
         Me.authorized = Boolean(data.user_id);
+        Me.provider_id = data.provider_id;
         Me.ignores = data.ignores;
         Me.subscriptions = data.subscriptions;
         Me.checkVersion(data.talkrooms);
