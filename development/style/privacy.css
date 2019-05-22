@@ -66,3 +66,12 @@ ol ol ol li:before {
     counter-increment: list3;
     content: counter(list1) "." counter(list2) "." counter(list3) ". ";
 }
+
+/* Нумерация четвёртого уровня */
+ol ol ol ol {
+    counter-reset: list4;
+}
+ol ol ol ol li:before {
+    counter-increment: list4;
+    content: counter(list1) "." counter(list2) "." counter(list3) "." counter(list4) ". ";
+}
