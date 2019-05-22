@@ -69,6 +69,7 @@ html.in-rooms {
     height: 100%;
 }
 #side {
+    z-index: 1;
     width: 25%;
     overflow-x: hidden;
 }
